@@ -19,7 +19,7 @@ To get started, consider this simple star SVG file.
 ![Star](https://github.com/joeax/svidget/raw/master/demo/widgets/star.svg)
 
 And here's its SVG:
-```
+```xml
 <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:svidget="http://www.svidget.org/svidget" width="200" height="200">
 	<defs>
 		<linearGradient id="backgroundGradient" y1="0" y2="100%" x1="0" x2="0">
@@ -41,7 +41,7 @@ The brute force approach would be to embed the SVG directly into the HTML, and w
 
 With Svidget, you componentize your UI and its logic as a widget in a SVG file.
 
-```
+```xml
 <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" 
 **xmlns:svidget="http://www.svidget.org/svidget"**
 width="200" height="200">
@@ -72,8 +72,11 @@ width="200" height="200">
 There are 3 artifacts to a widget: **params**, **actions**, and **events**. 
 
 > **Params** - these are the data endpoints. They can be read from and set at any point during the widget's lifecycle.
+
 > **Actions** - these are your action endpoints (aka methods). They are abstractions to underlying functionality in the widget. They can represent a single function, mutliple functions, or nothing at all.
+
 > **Events** - these represent notifications from the widget. In addition to these, params and actions also have events when they are set or invoked.
+
 
 Ok so now that we have an SVG widget, let's use it on a page:
 
@@ -102,7 +105,6 @@ For more information, see the Wiki page. Svidget website coming soon.
 ###Compatibility
 These frameworks have been tested and shown to play nice with Svidget within an SVG file.
 
-(provide links)
 > - jQuery 2.x and above
 > - D3.js
 > - svg.js
@@ -110,6 +112,7 @@ These frameworks have been tested and shown to play nice with Svidget within an 
 
 Basically any JavaScript framework that can be embedded in an SVG file will work. 
 A general rule is if the framework only supports IE9 and above it will work. Frameworks that try to support non-HTML5 browsers like IE6 probably won't.
+
 
 ####Falling Back
 In non-HTML5 browsers, Svidget will attempt to fall back to fallback content specified in the <object> tag.
