@@ -1,0 +1,8 @@
+TAGS
+*~
+_*
+*.dat
+.DS_Store
+node_modules
+obj
+playground
