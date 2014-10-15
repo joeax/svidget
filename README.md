@@ -20,7 +20,7 @@ To get started, consider this simple star SVG file.
 
 And here's its SVG:
 ```xml
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:svidget="http://www.svidget.org/svidget" width="200" height="200">
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="200" height="200">
 	<defs>
 		<linearGradient id="backgroundGradient" y1="0" y2="100%" x1="0" x2="0">
 			<stop offset="0%" stop-color="#fff" stop-opacity="0.5" />
@@ -43,7 +43,7 @@ With Svidget, you componentize your UI and its logic as a widget in a SVG file.
 
 ```xml
 <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" 
-**xmlns:svidget="http://www.svidget.org/svidget"**
+xmlns:svidget="http://www.svidget.org/svidget"
 width="200" height="200">
 
 <svidget:params>
@@ -53,13 +53,13 @@ width="200" height="200">
 </svidget:params>
 
 <svidget:actions>
-	<svidget:action name="flip" public="true" binding="flip" description="Flips the star upside down and back.">
-		<svidget:actionparam name="duration" type="number" default="1.5" description="The time in secs to complete the flip."  />
+	<svidget:action name="spin" external="true" binding="spin" description="Spins the star.">
+		<svidget:actionparam name="power" type="number" default="5" description="The amount of power to exert on the star to begin its rotation."  />
 	</svidget:action>
 </svidget:actions>
 
 <svidget:events>
-	<svidget:event name="shapeHover" description="Triggered for a mouse over or touch hover on the shape." />
+	<svidget:event name="spinComplete" description="Triggered for a mouse over or touch hover on the shape." />
 </svidget:events>
 
 <script type="application/javascript" xlink:href="../scripts/svidget.js"></script>
