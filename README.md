@@ -3,7 +3,7 @@
 
 Svidget.js (SVG + widget) is a robust and powerful framework for building complex data visualization widgets in SVG. 
 
-Svidget is not another data visualization framework like [D3](https://github.com/mbostock/d3) or [SnapSVG](https://github.com/adobe-webplatform/Snap.svg). Rather, it is a framework for componetizing your data visualizations and exposing it as a widget to use you any HTML5 page. As a matter of fact, you can combine Svidget.js with D3 or any popular visualization framework, provided it can be embedded directly into an SVG file (see Compatibility section  link! below). Best of all, it is endorsed by Chuck Norris!*
+Svidget is not another data visualization framework like [D3](https://github.com/mbostock/d3) or [SnapSVG](https://github.com/adobe-webplatform/Snap.svg). Rather, it is a framework for componetizing your data visualizations and exposing it as a widget to use you any HTML5 page. As a matter of fact, you can combine Svidget.js with D3 or any popular visualization framework, provided it can be embedded directly into an SVG file (see Compatibility below). Best of all, it is endorsed by Chuck Norris!*
 
 <small>\* Just kidding</small>
 
@@ -16,7 +16,7 @@ Download the latest stable builds from the `releases` folder.
 ###Using
 To get started, consider this simple star SVG file.
 
-![Star](https://github.com/joeax/svidget/demo/widgets/star.svg)
+![Star](https://github.com/joeax/svidget/raw/master/demo/widgets/star.svg)
 
 And here's its SVG:
 ```
@@ -41,12 +41,35 @@ The brute force approach would be to embed the SVG directly into the HTML, and w
 
 With Svidget, you componentize your UI and its logic as a widget in a SVG file.
 
-(code snippet with Svidget xml here)
+```
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" 
+**xmlns:svidget="http://www.svidget.org/svidget"**
+width="200" height="200">
+
+<svidget:params>
+	<svidget:param name="borderColor" shortname="bd" type="string" subtype="color" binding="#starfront@stroke" />
+	<svidget:param name="borderWidth" shortname="bw" type="number" binding="#starfront@stroke-width,#starback@stroke-width" />
+	<svidget:param name="backgroundColor" shortname="bg" type="string" subtype="color" binding="#starback@fill" />
+</svidget:params>
+
+<svidget:actions>
+	<svidget:action name="flip" public="true" binding="flip" description="Flips the star upside down and back.">
+		<svidget:actionparam name="duration" type="number" default="1.5" description="The time in secs to complete the flip."  />
+	</svidget:action>
+</svidget:actions>
+
+<svidget:events>
+	<svidget:event name="shapeHover" description="Triggered for a mouse over or touch hover on the shape." />
+</svidget:events>
+
+<script type="application/javascript" xlink:href="../scripts/svidget.js"></script>
+
+<defs>
+...
+<!-- rest of SVG widget -->
 ```
 
-```
-
-As you can see from the code there are 3 artifacts to a widget: **params**, **actions**, and **events**. 
+There are 3 artifacts to a widget: **params**, **actions**, and **events**. 
 
 > **Params** - these are the data endpoints. They can be read from and set at any point during the widget's lifecycle.
 > **Actions** - these are your action endpoints (aka methods). They are abstractions to underlying functionality in the widget. They can represent a single function, mutliple functions, or nothing at all.
