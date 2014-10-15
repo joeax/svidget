@@ -2,6 +2,7 @@ TAGS
 *~
 _*
 *.dat
+*.suo
 .DS_Store
 node_modules
 obj
