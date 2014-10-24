@@ -10,7 +10,7 @@ Svidget is not another data visualization framework like [D3](https://github.com
 > Svidget is currently under active development. Although it is functionally complete and stable, expect issues. I am currently rewriting all the tests, finalizing the documentation, and working on some demos. Check here often for updates.
 
 ###Download
-Download the latest stable builds from the `releases` folder.
+Download the latest stable builds from the `dist` folder.
 
 
 ###Using
