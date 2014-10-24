@@ -14,23 +14,12 @@ Prerequisites:
 
 ******************************************/
 
-/* Namespaces */
-
 Svidget.ParamCollection = function (array, parent) {
 	Svidget.ObjectCollection.apply(this, [array, Svidget.Param]);
 	this.__type = "Svidget.ParamCollection";
 	
 	var that = this;
 	this.parent = parent;
-	// handled in Widget now
-	//if (parent != null) {
-	//	this.onAdded(function (p) {
-	//		that.parent.paramAdded(p);
-	//	});
-	//	this.onRemoved(function (p) {
-	//		that.parent.paramRemoved(p);
-	//	});
-	//}
 }
 
 Svidget.ParamCollection.prototype = new Svidget.ObjectCollection;

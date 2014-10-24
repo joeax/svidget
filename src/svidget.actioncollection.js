@@ -20,15 +20,6 @@ Svidget.ActionCollection = function (array, parent) {
 	
 	var that = this;
 	this.parent = parent;
-	// handled in Widget now
-	//if (parent != null) {
-	//	this.onAdded(function (a) {
-	//		that.parent.actionAdded(a);
-	//	});
-	//	this.onRemoved(function (a) {
-	//		that.parent.actionRemoved(a);
-	//	});
-	//}
 }
 
 Svidget.ActionCollection.prototype = new Svidget.ObjectCollection;

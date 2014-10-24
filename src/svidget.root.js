@@ -105,7 +105,7 @@ Svidget.Root.prototype = {
 		}
 	},
 
-	// overriden in prototypes
+	// protected: overriden in prototypes
 	initInternal: function () { },
 
 	ready: function () {

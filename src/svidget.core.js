@@ -23,6 +23,7 @@ var Svidget = {};
 
 Svidget.emptyArray = [];
 Svidget.root = window; // note: this may be different for node.js
+Svidget.version = "0.1.1";
 
 
 /* REGION Special Shortcut Methods */

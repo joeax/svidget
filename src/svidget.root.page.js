@@ -12,12 +12,13 @@ Prerequisites:
 ******************************************/
 
 
-
-// todo: we are eventually going to need to move private methods inside the constructor to make them private
-// need to figure out best approach
-// maybe split the page and widget sides into separate prototype objects
+/* Notes:
+	 todo: we are eventually going to need to move private methods inside the constructor to make them private
+	 need to figure out best approach
+	 maybe split the page and widget sides into separate prototype objects
 
 // 7/22: add more Svidget.log to analyze order of signals, also figure out why params not populated on widget and circle changing to green
+*/
 
 Svidget.Root.PagePrototype = {
 

@@ -56,16 +56,16 @@ Svidget.Widget = function () {
 	this.wireCollectionAddRemoveHandlers(privates.events, that.eventAdded, that.eventRemoved);
 
 
-	this.init();
+	this._init();
 }
 
 Svidget.Widget.prototype = {
 
-	init: function () {
+	_init: function () {
 		// constructor logic
 	},
 
-	// Called by parent (via global object) to signal that is has established its relationship with the parent page.
+	/* Called by parent (via global object) to signal that is has established its relationship with the parent page.
 	// Params:
 	//   id: the ID assigned to this widget
 	//   paramValues: the param values as they were declared on the page, or provided if widget declared programmatically
@@ -96,7 +96,7 @@ Svidget.Widget.prototype = {
 //			this.readyConnected();
 
 //		this.loaded = true;
-//	},
+//	},*/
 
 	start: function () {
 		// if DOM not ready then readyConnected(0 will be called when ready()

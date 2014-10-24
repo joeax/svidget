@@ -56,9 +56,12 @@ Svidget.WidgetReference = function (id, paramValueObj, declaringElement, element
 		if (privates.element != null) return false;
 		if (!Svidget.DOM.isElement(ele)) return false;
 		privates.element = ele;
-		// self-destructing set accessor
+		// self-destructing set accessor, todo: delete too?
 		this.setElement = null;
 	},
+
+	// initialize params from <object> tag on page, these will be replaced when the widget updates the values and sends them back to the page
+	initParamsFromObject.call(that, paramValueObj);
 
 	// set an instance to this on declaring element
 	declaringElement.widgetReference = this;
@@ -69,6 +72,13 @@ Svidget.WidgetReference = function (id, paramValueObj, declaringElement, element
 	this.wireCollectionAddRemoveHandlers(privates.actions, that.actionProxyAdded, that.actionProxyRemoved);
 	// wire events for events add/remove
 	this.wireCollectionAddRemoveHandlers(privates.events, that.eventProxyAdded, that.eventProxyRemoved);
+
+	function initParamsFromObject(paramValueObj) {
+		if (paramValueObj == null) return;
+		for (var name in paramValueObj) {
+			this.addParamProxy(name, paramValueObj[name], { connected: false });
+		}
+	}
 }
 
 Svidget.WidgetReference.prototype = {
@@ -82,15 +92,18 @@ Svidget.WidgetReference.prototype = {
 		return this.id();
 	},
 
+	// should this be settable from the page?
 	enabled: function (val) {
-		var res = this.getset("enabled", val);
+		var enabled = this.getset("enabled");
+		return enabled;
+		/*var res = this.getset("enabled", val);
 		// if undefined its a get so return value, if res is false then set failed
 		if (val === undefined || !!!res) return res;
 		// fire "changed" event
 		// todo: signal widget
 		// todo: uncomment when events are ready
 		// this.trigger("changed", { property: "enabled" });
-		return true;
+		return true;*/
 	},
 
 	url: function () {
@@ -213,6 +226,18 @@ Svidget.WidgetReference.prototype = {
 	// internal
 	removeParamProxy: function (name) {
 		return this.params().remove(name);
+	},
+
+	// internal
+	// adds or updates the param proxy
+	refreshParamProxy: function (name, value, options) {
+		var p = this.param(name);
+		if (p == null)
+			return this.params().add(nameOrObject, value, options, this);
+		else {
+			p.refreshProperties(options);
+			return p;
+		}
 	},
 
 	// internal
@@ -413,18 +438,18 @@ Svidget.WidgetReference.prototype = {
 		return val;
 	},
 
-	//state: function () {
+	/*state: function () {
 	//	// possible: declared, initialized, loaded
 	//	//return "declared";
 	//	var state = this.getset("state");
 	//	return state;
-	//},
+	//},*/
 
 	start: function () {
 		this.getset("started", true);
 	},
 
-	//setState: function (state) {
+	/*setState: function (state) {
 	//	var states = ["declared", "initialized", "loaded"];
 	//	var index = states.indexOf(state);
 	//	if (index < 0) return false;
@@ -432,20 +457,20 @@ Svidget.WidgetReference.prototype = {
 	//	if (index <= states.indexOf(curState)) return false;
 	//	this.getset("state", state);
 	//	return true;
-	//},
+	//}, */
 
 	// REGION: Populate
 
 	// Inflates this object with the transport JSON object
 	populate: function (widgetObj) {
 		if (this.populated()) return;
-		// build params/action proxies
+		/* build params/action proxies
 		//		var transport = {
 		//			id: this.id(),
 		//			enabled: this.enabled(),
 		//			params: this.toParamsTransport(),
 		//			actions: this.toActionsTransport()
-		//		};
+		//		}; */
 		// enabled
 		this.enabled(widgetObj.enabled);
 		// params
@@ -463,7 +488,9 @@ Svidget.WidgetReference.prototype = {
 		if (params && Svidget.isArray(params)) {
 			for (var i = 0; i < params.length; i++) {
 				var p = params[i];
-				this.addParamProxy(p.name, p.value, p);
+				// refresh - add or update param
+				var paramProxy = this.refreshParamProxy(p.name, p.value, p);
+				paramProxy.connect(); // mark the param as connected
 			}
 		}
 	},

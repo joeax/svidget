@@ -52,10 +52,17 @@ Svidget.extend(Svidget.EventDescProxy, {
 	},
 
 	// overwrites: Svidget.Proxy.on
-	//on: function (data, name, handler) {
-	//	this.eventContainer().on(this.triggerEventName(), data, name, handler);
-	//},
+	on: function (type, data, name, handler) {
+		// if type is function, then assume type not passes so use default event name
+		if (Svidget.isFunction(type)) {
+			handler = type;
+			type = this.triggerEventName();
+		}
+		this.eventContainer().on(type, data, name, handler);
+	},
 
+
+	// todo: rename to on() adapt args
 	// data, name, handler
 	// data, handler
 	// handler
@@ -64,10 +71,16 @@ Svidget.extend(Svidget.EventDescProxy, {
 	},
 
 	// overwrites: Svidget.Proxy.off
-	//off: function (handlerOrName) {
-	//	this.eventContainer().off(this.triggerEventName(), handlerOrName);
-	//},
+	off: function (type, handlerOrName) {
+		// if type is function, then assume type not passes so use default event name
+		if (Svidget.isFunction(type)) {
+			handlerOrName = type;
+			type = this.triggerEventName();
+		}
+		this.eventContainer().off(type, handlerOrName);
+	},
 
+	// todo: rename to off() adapt args
 	offTrigger: function (handlerOrName) {
 		this.eventContainer().off(this.triggerEventName(), handlerOrName);
 	},

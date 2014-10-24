@@ -29,7 +29,8 @@ Svidget.Proxy = function (parent, valueObj, propList, writePropList, eventList) 
 		writable: writePropCol.toArray(),
 		propertyChangeFuncs: new Svidget.Collection(),
 		eventContainer: new Svidget.EventContainer(eventList, that),
-		parent: parent
+		parent: parent,
+		connected: valueObj.connected == null ? true : !!valueObj.connected // default to true
 	};
 	// private accessors
 	this.setup(privates);
@@ -46,9 +47,9 @@ Svidget.Proxy = function (parent, valueObj, propList, writePropList, eventList) 
 		var prop = propCol[i] + "";
 		if (prop.length > 0) {
 			this[prop] = buildPropFunc(prop);
-//			this[prop] = function(val) { 
+/*			this[prop] = function(val) { 
 //				return this.getsetProp(prop+"", val); // the +""isn't for casting to string, but to not reference prop var directly
-//			};
+//			}; */
 		}
 	}
 
@@ -69,6 +70,11 @@ Svidget.Proxy.prototype = {
 
 	propertyChangeFuncs: function () {
 		return this.getPrivate("propertyChangeFuncs");
+	},
+
+	// gets whether the proxy is connected to its underlying widget counterpart
+	connected: function (val) {
+		return this.getPrivate("connected");
 	},
 
 	// private
@@ -105,6 +111,22 @@ Svidget.Proxy.prototype = {
 		this.getset(name, val);
 		// trigger change event
 		this.triggerFromWidget("change", { property: name, value: val }, this);
+	},
+
+	// internal
+	// refreshes the proxy object with values from the widget
+	refreshProperties: function (propObj) {
+		for (var name in propObj) {
+			var item = this.getPrivate(name);
+			if (item != null) {
+				this.setPrivate(name, propObj[name]);
+			}
+		}
+	},
+
+	// sets the proxy object as connected to the widget
+	connect: function () {
+		this.setPrivate("connected", true);
 	},
 
 	// obsolete (9/1/2014)

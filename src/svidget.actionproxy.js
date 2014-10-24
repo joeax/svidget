@@ -15,13 +15,6 @@ Svidget.Proxy
 
 ******************************************/
 
-// for settable properties:
-// - notify root of property change
-// - root communicates change to widget
-// - widget communicates success or failure
-//   - if success, widget triggers event
-//   - if fail, root calls fail function with current value, object restores value
-
 Svidget.ActionProxy = function (name, options, parent) {
 	var that = this;
 	var valueObj = {

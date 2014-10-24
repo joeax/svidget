@@ -18,12 +18,12 @@ Svidget.Communicator = function () {
 	this.__type = "Svidget.Communicator";
 	this.sameDomain = null;
 
-	this.init();
+	this._init();
 }
 
 Svidget.Communicator.prototype = {
 
-	init: function () {
+	_init: function () {
 		this.addMessageEvent();
 	},
 

@@ -101,9 +101,15 @@ Svidget.EventDesc.prototype = {
 	// type, data, handler
 	// type, handler
 	on: function (type, data, name, handler) {
+		// if type is function, then assume type not passes so use default event name
+		if (Svidget.isFunction(type)) {
+			handler = type;
+			type = this.eventName();
+		}
 		this.eventContainer().on(type, data, name, handler);
 	},
 
+	// todo: deprecate and use on(), adapt args
 	// data, name, handler
 	// data, handler
 	// handler
@@ -112,9 +118,15 @@ Svidget.EventDesc.prototype = {
 	},
 
 	off: function (type, handlerOrName) {
+		// if type is function, then assume type not passes so use default event name
+		if (Svidget.isFunction(type)) {
+			handlerOrName = type;
+			type = this.eventName();
+		}
 		this.eventContainer().off(type, handlerOrName);
 	},
 
+	// todo: deprecate and use off(), adapt args
 	offTrigger: function (handlerOrName) {
 		this.eventContainer().off(this.eventName(), handlerOrName);
 	},

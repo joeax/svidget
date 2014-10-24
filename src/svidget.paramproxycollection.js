@@ -13,23 +13,12 @@ Svidget.ParamProxy
 
 ******************************************/
 
-/* Namespaces */
-
 Svidget.ParamProxyCollection = function (array, parent) {
 	Svidget.ObjectCollection.apply(this, [array, Svidget.ParamProxy]);
 	this.__type = "Svidget.ParamProxyCollection";
 	
 	var that = this;
 	this.parent = parent;
-	// handled in WidgetReference now
-	//if (parent != null) {
-	//	this.onAdded(function (p) {
-	//		that.parent.paramProxyAdded(p);
-	//	});
-	//	this.onRemoved(function (p) {
-	//		that.parent.paramProxyRemoved(p);
-	//	});
-	//}
 }
 
 Svidget.ParamProxyCollection.prototype = new Svidget.ObjectCollection;
