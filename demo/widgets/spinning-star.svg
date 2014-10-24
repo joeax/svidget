@@ -1,0 +1,87 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:svidget="http://www.svidget.org/svidget"
+		 width="200" height="200">
+
+	<title>Spinning Star</title>
+	<desc>A spinning star widget with params, actions, and events.</desc>
+
+	<svidget:params>
+		<svidget:param name="backgroundColor" shortname="bg" type="string" subtype="color" binding="#starback@fill" />
+		<svidget:param name="borderColor" shortname="bd" type="string" subtype="color" binding="#starfront@stroke" />
+		<svidget:param name="borderWidth" shortname="bw" type="number" binding="#starfront@stroke-width,#starback@stroke-width" />
+	</svidget:params>
+
+	<svidget:actions>
+		<svidget:action name="spin" external="true" binding="spin" description="Spins the star.">
+			<svidget:actionparam name="rotations" type="number" default="4" description="The total number of rotations."  />
+			<svidget:actionparam name="duration" type="number" default="5" description="The total time in seconds that the star should spin."  />
+		</svidget:action>
+	</svidget:actions>
+
+	<svidget:events>
+		<svidget:event name="spinComplete" description="Triggered when the spinning has completed." />
+	</svidget:events>
+
+	<script type="application/javascript" xlink:href="../lib/svidget.js"></script>
+	<script type="application/javascript" xlink:href="../lib/d3.js"></script>
+
+	<defs>
+		<linearGradient id="backgroundGradient" y1="0" y2="100%" x1="0" x2="0">
+			<stop offset="0%" stop-color="#fff" stop-opacity="0.5" />
+			<stop offset="100%" stop-color="#fff" stop-opacity="0.0" />
+		</linearGradient>
+	</defs>
+
+	<g id="star" transform="rotate(0 100 100)" onclick="spin(6)" style="cursor:pointer">
+		<path id="starback" fill="cornflowerblue" stroke="white" stroke-width="6" stroke-linejoin="round" d="M 100 4 L 128.214 61.1672 L 191.301 70.3344 L 145.651 114.833 L 156.427 177.666 L 100 148 L 43.5726 177.666 L 54.3493 114.833 L 8.69857 70.3344 L 71.7863 61.1672 Z" />
+		<path id="starfront" fill="url(#backgroundGradient)" stroke="midnightblue" stroke-width="6" stroke-linejoin="round" d="M 100 4 L 128.214 61.1672 L 191.301 70.3344 L 145.651 114.833 L 156.427 177.666 L 100 148 L 43.5726 177.666 L 54.3493 114.833 L 8.69857 70.3344 L 71.7863 61.1672 Z" display="block" />
+	</g>
+
+	<script type="application/ecmascript">
+		<![CDATA[
+	
+		var curangle = 0;
+		
+		// This is called by the spin action (see binding="spin")
+		function spin(rotations, duration) {
+			spinner("#star", rotations, duration, triggerSpinComplete);
+		}
+		
+		// Triggers the spinComplete event
+		function triggerSpinComplete() {
+			svidget.current().event("spinComplete").trigger();
+		}
+		
+		// Handles the spinning animation
+		function spinner(id, rotations, duration, doneFunc) {
+			// debugger;
+			var ele = d3.select(id);
+
+			// configure animation
+			if (duration <= 0) duration = 1;
+			var totalDeg = rotations * 360;
+			var startTransform = toRotateStr(0);
+			var endTransform = toRotateStr(totalDeg);
+			
+			// start animation
+			ele
+				.transition()
+				.duration(duration * 1000)
+				.ease("cubic-out")
+				.each("end", doneFunc)
+				.attrTween("transform", tween);
+
+			function tween(d, i, a) {
+				return d3.interpolateString(startTransform, endTransform);
+			}
+			
+			function toRotateStr(angle) {
+				return "rotate(" + angle + " 100 100)";
+			}
+
+		}
+	
+  ]]>
+	</script>
+
+</svg>
