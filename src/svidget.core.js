@@ -16,6 +16,10 @@ Dependencies:
 
 /* Global Namespace */
 
+/**
+ * Namespace for all Svidget library classes.
+ * @namspace
+ */
 var Svidget = {};
 
 
@@ -23,7 +27,7 @@ var Svidget = {};
 
 Svidget.emptyArray = [];
 Svidget.root = window; // note: this may be different for node.js
-Svidget.version = "0.1.1";
+Svidget.version = "0.1.2";
 
 
 /* REGION Special Shortcut Methods */
@@ -63,11 +67,13 @@ Svidget.isColor = function (color) {
 	return false;
 }
 
+/*
 // SUMMARY
 // Extends a class with members in the prototype object.
 // REMARKS
 // This is handle in a multiple prototype inheritance scenario. This function can be called for multiple prototypes.
 // This is useful for extending native object prototypes as well.
+*/
 Svidget.extend = function (objtype, prototype, overwrite) {
 	for (var methodName in prototype) {
 		// do we check for hasOwnProperty here? 
@@ -136,7 +142,7 @@ Svidget.Settings.showPrivates = true; //show private members of objects, useful 
 Svidget.Settings.enableLogging = false; // whether console.logging is enabled, turn on for troubleshooting
 
 
-// Prototypal overrides
+/* REGION Prototypal Overrides */
 
 if (!Array.prototype.contains) {
 	Array.prototype.contains = function (obj) {

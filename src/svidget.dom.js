@@ -1,20 +1,15 @@
 ﻿/*****************************************
-svidget.core.js
+svidget.DOM.js
 
-Contains the core framework elements.
+Contains methods for working with DOM elements.
 
 Dependencies:
-(none)
-
-Browser Support:
-IE9+, FF?+, Chrome?+
-
-Prerequisites:
-
+Svidget.Core
+Svidget.Collection
 
 ******************************************/
 
-
+/*
 // Valid Selectors
 // element itself
 // "someid" - reference to element
@@ -22,9 +17,15 @@ Prerequisites:
 // ".someid" - reference to element class
 
 // https://developer.mozilla.org/en-US/docs/Web/API/document.querySelectorAll
+*/
 
 /* Svidget.DOM */
 
+/**
+ * A collection of methods for working with DOM elements.
+ * @static
+ * @memberof Svidget
+ */
 Svidget.DOM = {
 
 	// REMARKS
@@ -193,7 +194,7 @@ Svidget.DOM = {
 	},
 
 	clone: function (item) {
-
+		// todo
 	},
 
 	cloneDetached: function (item) {
@@ -237,7 +238,7 @@ Svidget.DOM = {
 			obj.innerHTML = text + "";
 	},
 
-	// VALIDATION
+	/* REGION Validation */
 
 	// returns null - it means document hasn't loaded yet
 	// returns undefined - it means document is loaded but not accessible due to security (cross domain) constraints
@@ -262,7 +263,7 @@ Svidget.DOM = {
 		return ele instanceof HTMLElement;
 	},
 
-	// MANIPULATION
+	/* REGION Manipulation */
 	// todo move to DomItem
 
 	attach: function (containerEle, eles) {
@@ -294,7 +295,7 @@ Svidget.DOM = {
 		ele.style.visibility = "hidden";
 	},
 
-	// EVENTS
+	/* REGION Events */
 
 	// Note: todo: for on and off
 	// wrap callback in compat layer with jQuery style event object
@@ -344,7 +345,3 @@ Svidget.DOM = {
 	}
 
 };
-
-
-//var doc = document;
-//var docele = document.documentElement;

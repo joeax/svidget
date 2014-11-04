@@ -6,12 +6,17 @@ Defines a generic collection that extends JavaScript Array.
 Last Updated: 03-Sep-2014
 
 Dependencies:
-Svidget.Core
+svidget.core.js
 
 
 ******************************************/
 
-
+/**
+ * Represents a structured collection. Extends array by providing additional methods to select, tranverse, and modify an array.s
+ * @constructor
+ * @augments Array
+ * @param {Array} array - The initial elements of the collection.
+ */
 Svidget.Collection = function (array) {
 	this.__type = "Svidget.Collection";
 	this.source = array;
@@ -26,6 +31,12 @@ Svidget.Collection = function (array) {
 Svidget.Collection.prototype = new Array;
 Svidget.extend(Svidget.Collection, {
 
+	/**
+	 * Returns true if any of the items satisfies the specified predicate function.
+	 * @method
+	 * @param {Function} predicate - A function that accepts an item as input and returns true/false.
+	 * @returns {boolean}
+	*/
 	any: function (predicate) {
 		if (predicate == null) return this.length > 0;
 		for (var i = 0; i < this.length; i++) {
@@ -34,6 +45,12 @@ Svidget.extend(Svidget.Collection, {
 		return false;
 	},
 
+	/**
+	 * Returns true if all of the items satisfies the specified predicate function.
+	 * @method
+	 * @param {Function} predicate - A function that accepts an item as input and returns true/false.
+	 * @returns {boolean}
+	*/
 	all: function (predicate) {
 		if (predicate == null) return false;
 		for (var i = 0; i < this.length; i++) {
@@ -42,10 +59,21 @@ Svidget.extend(Svidget.Collection, {
 		return true;
 	},
 
+	/**
+	 * Returns true if the item is contained in the collection.
+	 * @method
+	 * @param {object} obj - The object to look for.
+	 * @returns {boolean}
+	*/
 	contains: function (obj) {
 		return this.indexOf(obj) >= 0;
 	},
 
+	/**
+	 * Iterates on each item in the collection and performs the operation.
+	 * @method
+	 * @param {Function} operation - A function that accepts an item as input.
+	*/
 	each: function (operation) {
 		for (var i = 0; i < this.length; i++) {
 			var res = operation(this[i]);
@@ -53,6 +81,12 @@ Svidget.extend(Svidget.Collection, {
 		}
 	},
 
+	/**
+	 * Returns the first item in the collection that satisfies the condition in the specified predicate function.
+	 * @method
+	 * @param {Function} predicate - A function that accepts an item as input and returns true/false.
+	 * @returns {object} - The item in the collection.
+	*/
 	first: function (predicate) {
 		if (this.length == 0) return null;
 		if (predicate == null || !typeof predicate === "function") return this[0];
@@ -62,7 +96,27 @@ Svidget.extend(Svidget.Collection, {
 		return null;
 	},
 
-	// Chainable
+	/**
+	 * Returns the last item in the collection that satisfies the condition in the specified predicate function.
+	 * @method
+	 * @param {Function} predicate - A function that accepts an item as input and returns true/false.
+	 * @returns {object} - The item in the collection.
+	*/
+	last: function (predicate) {
+		if (this.length == 0) return null;
+		if (predicate == null || !typeof predicate === "function") return this[0];
+		for (var i = this.length-1; i >= 0; i--) {
+			if (predicate(this[i])) return this[i];
+		}
+		return null;
+	},
+
+	/**
+	 * Iterates on the collection calling the specified selector function and returns a new collection. Chainable.
+	 * @method
+	 * @param {Function} selector - A function that accepts an item as input and returns a value based on it.
+	 * @returns {Svidget.Collection} - The result collection.
+	*/
 	select: function (selector) {
 		var result = [];
 		for (var i = 0; i < this.length; i++) {
@@ -71,7 +125,12 @@ Svidget.extend(Svidget.Collection, {
 		return new Svidget.Collection(result);
 	},
 
-	// Chainable
+	/**
+	 * Iterates on the collection calling the specified predicate filter function and returns a new collection. Chainable.
+	 * @method
+	 * @param {Function} predicate - A function that accepts an item as input and returns true/false.
+	 * @returns {Svidget.Collection} - The result collection.
+	*/
 	where: function (predicate) {
 		var result = [];
 		for (var i = 0; i < this.length; i++) {
@@ -80,6 +139,7 @@ Svidget.extend(Svidget.Collection, {
 		return new Svidget.Collection(result);
 	},
 
+	/*
 	// others, if needed:
 	// average
 	// min
@@ -87,14 +147,19 @@ Svidget.extend(Svidget.Collection, {
 	// sum
 	// agg (generic aggregate function)
 	// concat
-	// first
-	// last
 	// union
 	// intersect
 	// zip
+	*/
 
 	// modifiers
 
+	/**
+	 * Adds an item to the collection.
+	 * @method
+	 * @param {object} obj - The item to add.
+	 * @returns {boolean} - True if add succeeds.
+	*/
 	add: function (obj) {
 		var pos = this.indexOf(obj);
 		if (pos >= 0) return false;
@@ -102,18 +167,38 @@ Svidget.extend(Svidget.Collection, {
 		return true;
 	},
 
+	/**
+	 * Adds an array of items to the collection.
+	 * @method
+	 * @param {Array} array - The items to add.
+	 * @returns {boolean} - True if add succeeds.
+	*/
 	addRange: function (array) {
 		if (!Svidget.isArray(array)) return false;
 		this.push.apply(this, array);
 		return true;
 	},
 
+	/**
+	 * Inserts an item to the collection at the specified index.
+	 * @method
+	 * @param {object} obj - The item to add.
+	 * @param {number} index - The items to add.
+	 * @returns {boolean} - True if add succeeds.
+	*/
 	insert: function (obj, index) {
-		if (index < 0 || index > this.length) return false;
+		index = parseInt(index);
+		if (!isNaN(index) && (index < 0 || index > this.length)) return false;
 		this.splice(index, 0, obj);
 		return true;
 	},
 
+	/**
+	 * Removes an item from the collection. Only removes the first instance of the item found.
+	 * @method
+	 * @param {object} obj - The item to remove.
+	 * @returns {boolean} - True if remove succeeds.
+	*/
 	remove: function (obj) {
 		var pos = this.indexOf(obj);
 		if (pos < 0) return false;
@@ -121,6 +206,12 @@ Svidget.extend(Svidget.Collection, {
 		return true;
 	},
 
+	/**
+	 * Removes an item from the collection. Removes all instances of the item.
+	 * @method
+	 * @param {object} obj - The item to remove.
+	 * @returns {boolean} - True if remove succeeds.
+	*/
 	removeAll: function (obj) {
 		var removed = false;
 		while (this.remove(obj)) {
@@ -129,6 +220,12 @@ Svidget.extend(Svidget.Collection, {
 		return removed;
 	},
 
+	/**
+	 * Removes an item from the collection based on the specified predicate function.
+	 * @method
+	 * @param {Function} predicate - A function that accepts an item as input and returns true/false.
+	 * @returns {boolean} - True if remove succeeds.
+	*/
 	removeWhere: function (predicate) {
 		var result = [];
 		var removed = false;
@@ -143,6 +240,11 @@ Svidget.extend(Svidget.Collection, {
 
 	// misc
 
+	/**
+	 * Returns a new array based on items in the collection.
+	 * @method
+	 * @returns {Array}
+	*/
 	toArray: function () {
 		var arr = [];
 		for (var i = 0; i < this.length; i++) {

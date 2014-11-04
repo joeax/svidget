@@ -1,27 +1,29 @@
 ﻿/*****************************************
-svidget.actionproxy.js
+svidget.actionparamproxy.js
 
-Represents a wrapper to an actual action contained within a widget. Contains a cache of the properties of the action,
-and maintains a constant sync between itself and its underlying action.
+Represents a wrapper to an actual action param contained within a widget action. Contains a cache of the properties of the action param.
 
 Extends: Svidget.Proxy
 
 Dependencies:
-Svidget.Core
-Svidget.Collection
-Svidget.ObjectPrototype
-Svidget.Action
-Svidget.Proxy
+svidget.core
+svidget.collection
+svidget.objectprototype
+svidget.action
+svidget.proxy
 
 ******************************************/
 
-// for settable properties:
-// - notify root of property change
-// - root communicates change to widget
-// - widget communicates success or failure
-//   - if success, widget triggers event
-//   - if fail, root calls fail function with current value, object restores value
 
+/**
+ * Represents a proxy to an ActionParam object.
+ * @class
+ * @augments Svidget.Proxy
+ * @memberof Svidget
+ * @param {string} name - The name of the action param.
+ * @param {object} options - The options for the action param. Example: { type: "string", subtype: "regex", description: "An action param" }
+ * @param {Svidget.WidgetReference} parent - The widget reference instance that is the parent for this action param proxy.
+ */
 Svidget.ActionParamProxy = function (name, options, parent) {
 	var that = this;
 	var valueObj = {
@@ -44,6 +46,11 @@ Svidget.ActionParamProxy = function (name, options, parent) {
 Svidget.ActionParamProxy.prototype = new Svidget.Proxy;
 Svidget.extend(Svidget.ActionParamProxy, {
 
+	/**
+	 * Gets a string representation of this object.
+	 * @method
+	 * @returns {string}
+	*/
 	toString: function () {
 		return "[Svidget.ActionParamProxy { name: \"" + this.name + "\" }]";
 	}

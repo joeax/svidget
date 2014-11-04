@@ -75,6 +75,7 @@
     <Content Include="demo\widgets\star.svg" />
     <Content Include="package.json" />
     <Content Include="README.md" />
+    <Content Include="ReleaseNotes.txt" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="demo\widgets\" />

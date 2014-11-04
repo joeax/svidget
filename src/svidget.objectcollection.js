@@ -11,6 +11,14 @@ Svidget.Collection
 
 /* Namespaces */
 
+/**
+ * Represents a specialized collection for framework objects.
+ * @constructor
+ * @mixes Svidget.ObjectPrototype
+ * @augments Svidget.Collection
+ * @param {Array} array - The initial elements of the collection.
+ * @param {Function} type - The type of objects that the collection should hold.
+ */
 Svidget.ObjectCollection = function (array, type) {
 	// todo: filter input array by type specified
 	Svidget.Collection.apply(this, [array]);
@@ -34,29 +42,56 @@ Svidget.ObjectCollection.prototype.base_add = base.add;
 Svidget.ObjectCollection.prototype.base_remove = base.remove;
 Svidget.extend(Svidget.ObjectCollection, {
 
-	// gets an item in the collection by its index (if number passed) or id/name (if string passed)
+	/**
+	 * Gets an item in the collection by its index (if number passed) or id/name (if string passed).
+	 * @method
+	 * @param {(string|number)} selector - The selector.
+	 * @returns {object} - The object in the collection.
+	*/
 	get: function (selector) {
 		if (typeof selector === "number") return col.getByIndex(selector);
 		return col.getByName(selector);
 	},
 
+	/**
+	 * Gets an item in the collection by its index.
+	 * @method
+	 * @param {number} selector - The index.
+	 * @returns {object} - The object in the collection.
+	*/
 	getByIndex: function (index) {
 		if (index == null || isNaN(index)) return null;
 		index = parseInt(index);
 		return this[index];
 	},
 
+	/**
+	 * Gets an item in the collection by its name.
+	 * @method
+	 * @param {string} selector - The name.
+	 * @returns {object} - The object in the collection.
+	*/
 	getByName: function (name) {
 		return this.first(function (p) {
 			return p.name() == name;
 		});
 	},
 
+	/**
+	 * Gets the object type that this collection holds.
+	 * @method
+	 * @returns {Function} - The type constructor that represents the type.
+	*/
 	type: function() {
 		return this.getset("type");
 	},
 
-	// this returns the newly created object, or null
+	/**
+	 * Adds an item to the collection.
+	 * @method
+	 * @param {object} obj - The item to add.
+	 * @returns {boolean} - The item that was added.
+	*/
 	add: function () {
 		if (arguments.length == 0) return null;
 		// call add overload
@@ -91,7 +126,10 @@ Svidget.extend(Svidget.ObjectCollection, {
 		return obj;
 	},
 
-	// returns the object added if successful, otherwise null
+	/**
+	 * Creates an returns the item.
+	 * @abstract
+	*/
 	create: function () {
 		// override me
 		return null;
@@ -109,6 +147,12 @@ Svidget.extend(Svidget.ObjectCollection, {
 //			return true;
 //		},
 
+	/**
+	 * Removes an item from the collection. Only removes the first instance of the item found.
+	 * @method
+	 * @param {object} obj - The item to remove.
+	 * @returns {boolean} - True if remove succeeds.
+	*/
 	remove: function (name) {
 		var item = this.getByName(name)
 		if (item == null) return false;
@@ -116,8 +160,15 @@ Svidget.extend(Svidget.ObjectCollection, {
 		if (!success) return false;
 		// if succeeded, notify widget
 		this.triggerRemoved(item);
+		return true;
 	},
 
+	/**
+	 * Wraps the specified item in a new ObjectCollection.
+	 * @method
+	 * @param {object} item - The item to make a collection from.
+	 * @returns {Svidget.ObjectCollection} - The collection.
+	*/
 	wrap: function (item) {
 		var items = [item];
 		if (item == null || !item instanceof this.type()) items = [];
@@ -125,7 +176,7 @@ Svidget.extend(Svidget.ObjectCollection, {
 		return col;
 	},
 
-	// EVENTS
+	/* REGION Events */
 
 	// internal
 	// wires up an internal handler when an item is added to the collection
@@ -154,18 +205,3 @@ Svidget.extend(Svidget.ObjectCollection, {
 }, true);   // overwrite base methods, copied above
 
 Svidget.extend(Svidget.Collection, Svidget.ObjectPrototype);
-
-//var base = new Svidget.Collection;
-//Svidget.ParamCollection.prototype.base_add = base.add;
-//Svidget.ParamCollection.prototype.base_remove = base.remove;
-
-//Svidget.extend(Svidget.ParamCollection, base);
-
-
-// tasks:
-// - finish add() methods
-// -
-
-
-// prototype inheritance:
-// http://dailyjs.com/2010/03/04/framework-part-2-oo/

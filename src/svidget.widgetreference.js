@@ -17,16 +17,27 @@ svidget.objectprototype.js
 svidget.param.js
 svidget.paramcollection.js
 
-- set params
-- invoke actions
-- subscribe events
 
 ******************************************/
 
+
+/**
+ * Represents a reference to a widget from the page level.
+ * @constructor
+ * @mixes ObjectPrototype
+ * @memberof Svidget
+ * @param {string} id - The id of the widget this object represents.
+ * @param {object} paramValueObj - The initializing param object. These are usually parsed from the <object> tag.
+ * @param {HTMLElement} declaringElement - The HTML element that was used to declare the widget on the page. This is the <object> element.
+ * @param {HTMLElement} [element] - The element that contains the actual widget. This can be either an <object> or <iframe> element.
+ * @param {boolean} [connected] - Whether the reference is connected to the underlying widget. If false, it passes the params to the widgets then ceases any further communications with it.
+ * @param {boolean} [crossdomain] - Whether the widget is hosted on another domain. This is a hint value to optimize setting up when it is known in advance that the widget is cross domain.
+ */
+/*
 // note: when param/action added/removed (even on initialize)
 // widget fires event, bubbles to page root
 // page root adds/removes param on this object
-
+*/
 Svidget.WidgetReference = function (id, paramValueObj, declaringElement, element, connected, crossdomain) {
 	this.__type = "Svidget.WidgetReference";
 	var that = this;
@@ -83,6 +94,12 @@ Svidget.WidgetReference = function (id, paramValueObj, declaringElement, element
 
 Svidget.WidgetReference.prototype = {
 
+	/**
+	 * Gets the widget ID. 
+	 * @method
+	 * @memberof Svidget.WidgetReference.prototype
+	 * @returns {string} - The widget ID as a string.
+	*/
 	id: function () {
 		var id = this.getset("id");
 		return id;
@@ -92,39 +109,59 @@ Svidget.WidgetReference.prototype = {
 		return this.id();
 	},
 
+	/**
+	 * Gets whether the widget is enabled. 
+	 * @method
+	 * @memberof Svidget.WidgetReference.prototype
+	 * @returns {boolean} - The enabled state.
+	*/
+	/*
 	// should this be settable from the page?
-	enabled: function (val) {
+	*/
+	enabled: function () {
 		var enabled = this.getset("enabled");
 		return enabled;
-		/*var res = this.getset("enabled", val);
-		// if undefined its a get so return value, if res is false then set failed
-		if (val === undefined || !!!res) return res;
-		// fire "changed" event
-		// todo: signal widget
-		// todo: uncomment when events are ready
-		// this.trigger("changed", { property: "enabled" });
-		return true;*/
 	},
 
+	/**
+	 * Gets the url to the widget.
+	 * @method
+	 * @memberof Svidget.WidgetReference.prototype
+	 * @returns {string}
+	*/
 	url: function () {
 		var url = this.getset("url");
 		return url;
 	},
 
-	// RETURNS
-	// The underlying HTML DOM element (either <object> or <iframe>) for this widget reference.
+	/**
+	 * Gets the html element that contains the widget. This is either <object> or <iframe>.
+	 * @method
+	 * @memberof Svidget.WidgetReference.prototype
+	 * @returns {HTMLElement}
+	*/
 	element: function () {
 		var ele = this.getset("element");
 		return ele;
 	},
 
-	// RETURNS
-	// The original HTML DOM <object> element used to declare this widget reference. Optional, null if declared programatically.
+	/**
+	 * Gets the declaring html element that contains the widget. This is the <object> element, or null if declared programatically.
+	 * @method
+	 * @memberof Svidget.WidgetReference.prototype
+	 * @returns {HTMLElement}
+	*/
 	declaringElement: function () {
 		var ele = this.getset("declaringElement");
 		return ele;
 	},
 
+	/**
+	 * Gets the svidget global object for the widget. Only available for same domain widgets.
+	 * @method
+	 * @memberof Svidget.WidgetReference.prototype
+	 * @returns {object}
+	*/
 	root: function () {
 		// gets access to widget's root object, if same domain
 		if (this.isCrossDomain()) {
@@ -139,6 +176,12 @@ Svidget.WidgetReference.prototype = {
 		return win.svidget;
 	},
 
+	/**
+	 * Gets the window object for the widget. Only available for same domain widgets.
+	 * @method
+	 * @memberof Svidget.WidgetReference.prototype
+	 * @returns {Window}
+	*/
 	window: function () {
 		// gets access to widget's window object, if different domain
 		var ele = this.element();
@@ -148,14 +191,23 @@ Svidget.WidgetReference.prototype = {
 		return ele.contentWindow;
 	},
 
-	// gets a reference to the widget DOM document, if cross domain will return null
+	/**
+	 * Gets the document object for the widget. Only available for same domain widgets.
+	 * @method
+	 * @memberof Svidget.WidgetReference.prototype
+	 * @returns {HTMLDocument}
+	*/
 	document: function () {
 		var ele = this.element();
 		return Svidget.DOM.getDocument(ele);
 	},
 
-	// gets whether the widget reference is connected to its underlying widget
-	// if false, then the widget is cut off from the page
+	/**
+	 * Gets whether this widget reference is connected to its underlying widget. If false, then the widget is cut off from the page.
+	 * @method
+	 * @memberof Svidget.WidgetReference.prototype
+	 * @returns {HTMLDocument}
+	*/
 	connected: function (val) {
 		var res = this.getset("connected", val);
 		// if undefined its a get so return value, if res is false then set failed
@@ -163,7 +215,13 @@ Svidget.WidgetReference.prototype = {
 		return true;
 	},
 
-	// gets the crossdomain flag
+	/**
+	 * Gets whether this widget reference has specified that it prefers to connect to the underlying widget as a cross-domain widget, irregardless if it is actually cross-domain or not.
+	 * @method
+	 * @memberof Svidget.WidgetReference.prototype
+	 * @param {boolean} - Sets the property.
+	 * @returns {boolean} - True/false if crossdomain, or if setting then true/false if set succeeded.
+	*/
 	crossdomain: function (val) {
 		var res = this.getset("crossdomain", val);
 		// if undefined its a get so return value, if res is false then set failed
@@ -171,26 +229,66 @@ Svidget.WidgetReference.prototype = {
 		return true;
 	},
 
-	// RETURNS
-	// A collection of ParamProxy objects.
+	/**
+	 * Gets a collection of all ParamProxy objects in the widget reference, or a sub-collection based on the selector.
+	 * Selector can be an integer to get the zero-based item at that index, or a string to select by that ID.
+	 * Examples:
+	 * params(0)
+	 * params("color")
+	 * @method
+	 * @memberof Svidget.WidgetReference.prototype
+	 * @param {object} [selector] - The selector string or integer.
+	 * @returns {Svidget.ParamProxyCollection} - A collection based on the selector, or the entire collection.
+	*/
 	params: function (selector) {
 		var col = this.getset("params");
 		return this.select(col, selector);
 	},
 
+	/**
+	 * Gets the ParamProxy based on the selector.
+	 * Selector can be an integer to get the zero-based item at that index, or a string to select by that ID.
+	 * Examples:
+	 * param(0)
+	 * param("color")
+	 * @method
+	 * @memberof Svidget.WidgetReference.prototype
+	 * @param {object} selector - The index or ID of the param.
+	 * @returns {Svidget.ParamProxy} - The ParamProxy based on the selector. If selector is invalid, null is returned.
+	*/
 	param: function (selector) {
 		var col = this.getset("params");
 		var item = this.selectFirst(col, selector);
 		return item;
 	},
 
-	// RETURNS
-	// A collection of ActionProxy objects.
+	/**
+	 * Gets a collection of all ActionProxy objects in the widget reference, or a sub-collection based on the selector.
+	 * Selector can be an integer to get the zero-based item at that index, or a string to select by that ID.
+	 * Examples:
+	 * actions(0)
+	 * actions("doSomething")
+	 * @method
+	 * @memberof Svidget.WidgetReference.prototype
+	 * @param {object} [selector] - The selector string or integer.
+	 * @returns {Svidget.ActionProxyCollection} - A collection based on the selector, or the entire collection.
+	*/
 	actions: function (selector) {
 		var col = this.getset("actions");
 		return this.select(col, selector);
 	},
 
+	/**
+	 * Gets the ActionProxy based on the selector.
+	 * Selector can be an integer to get the zero-based item at that index, or a string to select by that ID.
+	 * Examples:
+	 * action(1)
+	 * action("doSomething")
+	 * @method
+	 * @memberof Svidget.WidgetReference.prototype
+	 * @param {object} selector - The index or ID of the param.
+	 * @returns {Svidget.ActionProxy} - The ActionProxy based on the selector. If selector is invalid, null is returned.
+	*/
 	action: function (selector) {
 		//var item = this.actions(selector).first();
 		var col = this.getset("actions");
@@ -198,21 +296,40 @@ Svidget.WidgetReference.prototype = {
 		return item;
 	},
 
-	// RETURNS
-	// A collection of EventDesc objects.
+	/**
+	 * Gets a collection of all EventDescProxy objects in the widget reference, or a sub-collection based on the selector.
+	 * Selector can be an integer to get the zero-based item at that index, or a string to select by that ID.
+	 * Examples:
+	 * events(0)
+	 * events("somethingHappened")
+	 * @method
+	 * @memberof Svidget.WidgetReference.prototype
+	 * @param {object} [selector] - The selector string or integer.
+	 * @returns {Svidget.EventDescProxyCollection} - A collection based on the selector, or the entire collection.
+	*/
 	events: function (selector) {
 		var col = this.getset("events");
 		return this.select(col, selector);
 	},
 
-	// public
-	// Returns the first item indicated by selector
+	/**
+	 * Gets the EventDescProxy based on the selector.
+	 * Selector can be an integer to get the zero-based item at that index, or a string to select by that ID.
+	 * Examples:
+	 * events(0)
+	 * events("somethingHappened")
+	 * @method
+	 * @memberof Svidget.WidgetReference.prototype
+	 * @param {object} selector - The index or ID of the param.
+	 * @returns {Svidget.EventDescProxy} - The EventDescProxy based on the selector. If selector is invalid, null is returned.
+	*/
 	event: function (selector) {
 		var col = this.getset("events");
 		var item = this.selectFirst(col, selector);
 		return item;
 	},
 
+	// internal
 	paramValues: function () {
 		var val = this.getset("paramValues");
 		return val;
@@ -260,6 +377,8 @@ Svidget.WidgetReference.prototype = {
 		this.triggerFromWidget("paramremove", param.name());
 	},
 
+	// internal
+	// called from ParamProxy
 	paramProxyBubble: function (type, event, param) {
 		Svidget.log('page: param proxy bubble: ' + param.name());
 		if (type == "change") this.paramProxyChanged(param, event.value);
@@ -307,8 +426,8 @@ Svidget.WidgetReference.prototype = {
 		this.triggerFromWidget("actionremove", action.name());
 	},
 
-	// private
-	// internal, called from action
+	// internal
+	// called from action
 	actionProxyBubble: function (type, event, action) {
 		Svidget.log('page: action proxy bubble: ' + action.name());
 		if (type == "invoke") this.actionProxyInvoked(action, event.value);
@@ -398,14 +517,33 @@ Svidget.WidgetReference.prototype = {
 		return this.getPrivate("eventContainer");
 	},
 
+	/**
+	 * Registers an event handler for the WidgetReference.
+	 * @method
+	 * @memberof Svidget.WidgetReference.prototype
+	 * @param {string} type - The event type i.e. "change", "paramremove".
+	 * @param {object} [data] - Arbirary data to initialize Event object with when event is triggered.
+	 * @param {string} [name] - The name of the handler. Useful when removing the handler for the event.
+	 * @param {Function} handler - The event handler.
+	 * @returns {boolean} - True if the event handler was successfully added.
+	*/
 	on: function (type, data, name, handler) {
 		this.eventContainer().on(type, data, name, handler);
 	},
 
+	/**
+	 * Unregisters an event handler for the WidgetReference.
+	 * @method
+	 * @memberof Svidget.WidgetReference.prototype
+	 * @param {string} type - The event type i.e. "change", "paramremove".
+	 * @param {(Function|string)} handlerOrName - The handler function and/or the handler name used when calling on().
+	 * @returns {boolean} - True if the event handler was successfully removed.
+	*/
 	off: function (type, handlerOrName) {
 		this.eventContainer().off(type, handlerOrName);
 	},
 
+	// internal
 	// Note: no access to trigger() object events here, only from widget
 	// this is invoked from the widget to signal that the event was triggered
 	triggerFromWidget: function (type, value, originalTarget) {
@@ -445,6 +583,8 @@ Svidget.WidgetReference.prototype = {
 	//	return state;
 	//},*/
 
+	// internal
+	// indicates from the widget that it has started.
 	start: function () {
 		this.getset("started", true);
 	},
@@ -461,6 +601,7 @@ Svidget.WidgetReference.prototype = {
 
 	// REGION: Populate
 
+	// internal
 	// Inflates this object with the transport JSON object
 	populate: function (widgetObj) {
 		if (this.populated()) return;

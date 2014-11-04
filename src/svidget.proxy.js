@@ -13,10 +13,30 @@ Svidget.ObjectPrototype
 ******************************************/
 
 
-Svidget.Proxy = function (parent, valueObj, propList, writePropList, eventList) {
+/**
+ * Encapsulates logic for a proxy object that is meant to shadow a concrete one.
+ * @class
+ * @abstract
+ * @mixes ObjectPrototype
+ * @memberof Svidget.Svidget
+ * @param {object} parent - The parent to this object. Usually a Svidget.WidgetReference instance.
+ * @param {object} options - An object containing values to initialize properties. Example: { enabled: true, description: "An event" }
+ * @param {Array} propList - An array of all properties that the underlying object exposes to the proxy.
+ * @param {Array} writePropList - An array of all writable properties that the underlying object exposes to the proxy. A subset of propList.
+ * @param {Array} eventList - An array of all event types that this proxy listens for and/or response to based on the underlying object.
+ */
+/*
+// for settable properties:
+// - notify root of property change
+// - root communicates change to widget
+// - widget communicates success or failure
+//   - if success, widget triggers event
+//   - if fail, root calls fail function with current value, object restores value
+*/
+Svidget.Proxy = function (parent, options, propList, writePropList, eventList) {
 	this.__type = "Svidget.Proxy";
 	var that = this;
-	valueObj = valueObj || {};
+	options = options || {};
 
 	// convert to collections
 	var propCol = new Svidget.Collection(Svidget.isArray(propList) ? propList : null);
@@ -30,15 +50,15 @@ Svidget.Proxy = function (parent, valueObj, propList, writePropList, eventList) 
 		propertyChangeFuncs: new Svidget.Collection(),
 		eventContainer: new Svidget.EventContainer(eventList, that),
 		parent: parent,
-		connected: valueObj.connected == null ? true : !!valueObj.connected // default to true
+		connected: options.connected == null ? true : !!options.connected // default to true
 	};
 	// private accessors
 	this.setup(privates);
 
 	// copy property values to privates
-	for (var p in valueObj) {
+	for (var p in options) {
 		if (privates[p] === undefined) {
-			privates[p] = valueObj[p];
+			privates[p] = options[p];
 		}
 	}
 
@@ -63,6 +83,11 @@ Svidget.Proxy = function (parent, valueObj, propList, writePropList, eventList) 
 
 Svidget.Proxy.prototype = {
 
+	/**
+	 * Gets the parent object.
+	 * @method
+	 * @returns {Svidget.WidgetReference}
+	*/
 	parent: function () {
 		var res = this.getPrivate("parent");
 		return res;
@@ -72,7 +97,14 @@ Svidget.Proxy.prototype = {
 		return this.getPrivate("propertyChangeFuncs");
 	},
 
-	// gets whether the proxy is connected to its underlying widget counterpart
+	/**
+	 * Gets whether the proxy is connected to its underlying widget counterpart.
+	 * @method
+	 * @returns {boolean}
+	*/
+	/*
+	// Note: used by ParamProxy to determine if params from <params> elements or from Widget
+	*/
 	connected: function (val) {
 		return this.getPrivate("connected");
 	},
@@ -90,6 +122,10 @@ Svidget.Proxy.prototype = {
 		return true;
 	},
 
+
+	/**
+	 * @abstract
+	*/
 	handlePropertyChange: function (name, val) {
 		// override me
 	},
@@ -124,7 +160,11 @@ Svidget.Proxy.prototype = {
 		}
 	},
 
-	// sets the proxy object as connected to the widget
+	/**
+	 * Gets whether the proxy object is connected to its underlying object.
+	 * @method
+	 * @returns {boolean}
+	*/
 	connect: function () {
 		this.setPrivate("connected", true);
 	},
@@ -151,10 +191,27 @@ Svidget.Proxy.prototype = {
 		return this.getPrivate("eventContainer");
 	},
 
+	/**
+	 * Registers an event handler for the proxy object.
+	 * @method
+	 * @param {string} type - The event type i.e. "change".
+	 * @param {object} [data] - Arbirary data to initialize Event object with when event is triggered.
+	 * @param {string} [name] - The name of the handler. Useful when removing the handler for the event.
+	 * @param {Function} handler - The event handler.
+	 * @returns {boolean} - True if the event handler was successfully added.
+	*/
 	on: function (type, data, name, handler) {
 		this.eventContainer().on(type, data, name, handler);
 	},
 
+	/**
+	 * Unregisters an event handler for the proxy object.
+	 * @method
+	 * @memberof Svidget.Root.prototype
+	 * @param {string} type - The event type i.e. "change".
+	 * @param {(Function|string)} handlerOrName - The handler function and/or the handler name used when calling on().
+	 * @returns {boolean} - True if the event handler was successfully removed.
+	*/
 	off: function (type, handlerOrName) {
 		this.eventContainer().off(type, handlerOrName);
 	},

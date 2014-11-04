@@ -1,16 +1,11 @@
 ﻿/*****************************************
 svidget.root.widget.js
 
-Contains the root object.
+Contains the root object for SVG widgets.
 
 Dependencies:
-(none)
-
-Browser Support:
-IE9+, FF?+, Chrome?+
-
-Prerequisites:
-
+Svidget.Core
+Svidget.Root
 
 ******************************************/
 
@@ -285,10 +280,22 @@ Svidget.Root.WidgetPrototype = {
 	// ***********************************
 	// REGION: Public Properties
 
+	/**
+	 * Gets the current widget. 
+	 * @method
+	 * @memberof Svidget.Root
+	 * @returns {Svidget.Widget} - The current widget.
+	*/
 	current: function () {
 		return this.getset("current");
 	},
 
+	/**
+	 * Gets whether the widget is connected to a parent page.
+	 * @method
+	 * @memberof Svidget.Root
+	 * @returns {boolean}
+	*/
 	connected: function () {
 		return this.getset("connected");
 	},
@@ -310,6 +317,7 @@ Svidget.Root.WidgetPrototype = {
 
 	/* Signaling */
 
+	/*
 	// NOTE: Except for initialized and loaded, if widget is standalone don't not signal
 
 	//signalInitialized: function () {
@@ -323,6 +331,7 @@ Svidget.Root.WidgetPrototype = {
 	//	Svidget.log("widget: signalLoaded {id: " + this.current().id() + "}");
 	//	this.comm().signalParent("loaded", this.current().toTransport(), this.current().id());
 	//},
+	*/
 
 	signalStartAck: function () {
 		Svidget.log("widget: signalStartAck {id: " + this.current().id() + "}");

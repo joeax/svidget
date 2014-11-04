@@ -1,16 +1,30 @@
 ﻿/*****************************************
 svidget.param.js
 
-Contains the core framework elements.
+Defines a param for the widget.
 
 Dependencies:
 Svidget.Core
 Svidget.EventPrototype
 Svidget.ObjectPrototype
+Svidget.ParamPrototype
+
 
 ******************************************/
 
-
+/**
+ * Represents param for a widget, defined by <svidget:param>
+ * @constructor
+ * @mixes ObjectPrototype
+ * @mixes ParamPrototype
+ * @augments EventPrototype
+ * @memberof Svidget
+ * @param {string} name - The name of the param.
+ * @param {object} value - The value for the param.
+ * @param {object} options - The options for the param. Example: { enabled: true, description: "An event" }
+ * @param {Svidget.Widget} parent - The widget that is the parent for this param.
+ */
+// example usage: widget1.param("backgroundColor").value();
 Svidget.Param = function (name, value, options, parent) {
 	this.__type = "Svidget.Param";
 	// validate:
@@ -49,50 +63,32 @@ Svidget.Param = function (name, value, options, parent) {
 
 Svidget.Param.prototype = {
 
-	// moved to ParamPrototype
-
-	// name is immutable after creation
-//	name: function () {
-//		var res = this.getPrivate("name");
-//		return res;
-	//	},
-
-	//	type: function (val) {
-	//		var res = this.getset("type", val, this.validateType);
-	//		// if undefined its a get so return value, if res is false then set failed
-	//		if (val === undefined || !!!res) return res;
-	//		// fire "changed" event
-	//		this.trigger("changed", { property: "type" });
-
-	//		return true;
-	//	},
-
-	//	subtype: function (val) {
-	//		var res = this.getset("subtype", val, this.validateSubtype);
-	//		// if undefined its a get so return value, if res is false then set failed
-	//		if (val === undefined || !!!res) return res;
-	//		// fire "changed" event
-	//		this.trigger("changed", { property: "subtype" });
-
-	//		return true;
-	//	},
-
-	// name is immutable after creation
+	/**
+	 * Gets the shortname value. This is used for params passed from the query string.
+	 * @method
+	 * @param {boolean} [val] - Sets the enabled state when specified.
+	 * @returns {boolean} - The enabled state when nothing is passed, or true/false if succeeded or failed when setting.
+	*/
 	shortname: function () {
 		var res = this.getPrivate("shortname");
 		return res;
 	},
 
+	// public
 	// attached is a state property
 	// gets whether the param is attached to the widget
+	// todo: do we need for action and event too?
 	attached: function () {
 		var widget = this.getset("widget");
 		return this.widget != null && this.widget instanceof Svidget.Widget;
 	},
 
-	// in get mode: returns value
-	// in set mode: returns true/false if set succeeded
-
+	/**
+	 * Gets or sets whether the event is enabled. 
+	 * @method
+	 * @param {boolean} [val] - Sets the enabled state when specified.
+	 * @returns {boolean} - The enabled state when nothing is passed, or true/false if succeeded or failed when setting.
+	*/
 	enabled: function (val) {
 		var res = this.getset("enabled", val);
 		// if undefined its a get so return value, if res is false then set failed
@@ -103,6 +99,12 @@ Svidget.Param.prototype = {
 		return true;
 	},
 
+	/**
+	 * Gets or sets the param value.
+	 * @method
+	 * @param {boolean} [val] - Sets the enabled state when specified.
+	 * @returns {boolean} - The enabled state when nothing is passed, or true/false if succeeded or failed when setting.
+	*/
 	value: function (val) {
 		var res = this.getset("value", val, this.validateValue);
 		// if undefined its a get so return value, if res is false then set failed
@@ -118,6 +120,12 @@ Svidget.Param.prototype = {
 		return true;
 	},
 
+	/**
+	 * Gets or sets the param binding. This is a CSS+Attributes selector.
+	 * @method
+	 * @param {boolean} [val] - Sets the enabled state when specified.
+	 * @returns {boolean} - The enabled state when nothing is passed, or true/false if succeeded or failed when setting.
+	*/
 	binding: function (bind) {
 		bind = bind !== undefined ? bind + "" : undefined; // coerce to string
 		var res = this.getset("binding", bind);
@@ -135,16 +143,6 @@ Svidget.Param.prototype = {
 		return this.getset("bindingQuery");
 	},
 
-//	validateType: function (t) {
-//		if (!typeof t === "string") return false;
-//		return (Svidget.ParamTypes[t] != undefined);
-//	},
-
-//	validateSubtype: function (t) {
-//		if (!typeof t === "string") return false;
-//		return (Svidget.ParamSubTypes[t] != undefined);
-//	},
-
 	validateValue: function (val) {
 		return true;
 	},
@@ -157,6 +155,11 @@ Svidget.Param.prototype = {
 		bind.setValue(val);
 	},
 
+	/**
+	 * Serializes the Param object for transport across a window boundary.
+	 * @method
+	 * @returns {boolean} - A generic serialized object representing the Param object.
+	*/
 	toTransport: function () {
 		var transport = {
 			name: this.name(),
@@ -172,45 +175,16 @@ Svidget.Param.prototype = {
 
 	// overrides
 
+	/**
+	 * Gets a string representation of this object.
+	 * @method
+	 * @returns {string}
+	*/
 	toString: function () {
 		return "[Svidget.Param { name: \"" + this.name + "\" }]";
 	}
 
 	// todo: reactive version valueR returns function that always returns its live value
-
-	/*type: function (t) {
-	// ** get mode
-	var curType = this.getPrivate("type");
-	if (!t) curType;
-	// ** set mode
-	// only widget can change its parameter types
-	// if (this.isProxy) throw error
-	// validate t
-	if (!this.validateType(t)) return false; // throw error?
-	var oldType = curType;
-	this.setPrivate("type", t);
-	// fire "paramchanged" event
-	this.trigger("changed");
-
-	return true;
-	},
-
-	// in get mode: returns value
-	// in set mode: returns true/false if set succeeded
-	value: function (v) {
-	// ** get mode
-	var curValue = this.getPrivate("value");
-	if (!v) curValue;
-	// ** set mode
-	// validate v
-	// convert v to type
-	var oldValue = curValue;
-	this.setPrivate("value", v);
-	// fire "populated" event
-	this.trigger("populated");
-
-	return true;
-	},*/
 
 }
 
@@ -230,7 +204,7 @@ Svidget.extend(Svidget.Param, new Svidget.EventPrototype(Svidget.Param.eventType
 /*
 
 
-widget1.params("backgroundColor").value();
+widget1.param("backgroundColor").value();
 
 widget1.params["backgroundColor"].value();
 

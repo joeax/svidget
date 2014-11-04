@@ -1,20 +1,24 @@
 ﻿/*****************************************
-svidget.event.js
+svidget.domitem.js
 
-Contains common event functionality.
+Wraps a DOM element or attribute.
 
 Dependencies:
-(none)
+Svidget.Core
+Svidget.Collection
+Svidget.ObjectPrototype
 
 ******************************************/
 
-
-
-// SUMMARY
-// Encapsulates a single DOM element or attribute.
-// REMARKS
+/**
+ * Encapsulates a single DOM element or attribute.
+ * @class
+ * @param {object} source - A DOM element or attribute. Can be null
+ */
+/*
 // An actual DOM element need not be provided.
 // source can be an actual DOM element or attribute, or a object describing one. Object properties must match names.
+*/
 Svidget.DOMItem = function (source) {
 	this.__type = "Svidget.DOMItem";
 	source = source || {}; // default source to empty object
@@ -82,12 +86,20 @@ Svidget.DOMItem.prototype = {
 	//		return null;
 	//	},
 
-	// gets the element or attribute name of the item
+	/**
+	 * Gets the element or attribute name of the item.
+	 * @method
+	 * @returns {string}
+	*/
 	name: function () {
 		return this.getset("name");
 	},
 
-	// gets the element text content or the attribute value
+	/**
+	 * Gets the element text content or the attribute value.
+	 * @method
+	 * @returns {string}
+	*/
 	value: function (val) {
 		var source = this.source();
 		if (val === undefined) return source.value || source.textContent;
@@ -98,10 +110,20 @@ Svidget.DOMItem.prototype = {
 			source.textContent = strval;
 	},
 
+	/**
+	 * Gets the namespace URI for the element or attribute item.
+	 * @method
+	 * @returns {string}
+	*/
 	namespace: function () {
 		return this.getset("namespace");
 	},
 
+	/**
+	 * Gets the namespace type i.e. html, svg, xlink, svidget, etc.
+	 * @method
+	 * @returns {string}
+	*/
 	namespaceType: function () {
 		return this.getset("namespaceType");
 	},
@@ -113,6 +135,11 @@ Svidget.DOMItem.prototype = {
 	//		}
 	//	},
 
+	/**
+	 * Gets whether the item has child elements.
+	 * @method
+	 * @returns {boolean}
+	*/
 	hasElements: function () {
 		if (this.isAttribute()) return false;
 		var source = this.source();
@@ -122,6 +149,11 @@ Svidget.DOMItem.prototype = {
 		return false;
 	},
 
+	/**
+	 * Gets whether the item has attributes. False when the item is an attribute.
+	 * @method
+	 * @returns {boolean}
+	*/
 	hasAttributes: function () {
 		if (this.isAttribute()) return false;
 		var source = this.source();
@@ -131,12 +163,20 @@ Svidget.DOMItem.prototype = {
 		return false;
 	},
 
+	/**
+	 * Gets whether the item is an attribute.
+	 * @method
+	 * @returns {boolean}
+	*/
 	isAttribute: function () {
 		return this.type() == Svidget.NodeType.attribute;
 	},
 
-	// returns child elements as DomItem instances
-	// returns null if this is an attribute
+	/**
+	 * Returns a collection of DOMItem objects representing child elements. Returns null if item is an attribute.
+	 * @method
+	 * @returns {Svidget.Collection} - the collection of DOMItems
+	*/
 	elements: function () {
 		// lazy load
 		if (this.cachedElements != null && Svidget.isArray(this.cachedElements)) return this.cachedElements;
@@ -150,8 +190,11 @@ Svidget.DOMItem.prototype = {
 		return this.cachedElements;
 	},
 
-	// returns attributes as DomItem instances
-	// returns null if this is an attribute
+	/**
+	 * Returns a collection of DOMItem objects representing attributes. Returns null if item is an attribute.
+	 * @method
+	 * @returns {Svidget.Collection} - the collection of DOMItems
+	*/
 	attributes: function () {
 		// lazy load
 		if (this.cachedAttributes != null && Svidget.isArray(this.cachedAttributes)) return this.cachedAttributes;
@@ -165,19 +208,27 @@ Svidget.DOMItem.prototype = {
 		return this.cachedAttributes;
 	},
 
-
-	// gets the underlyind DOM object
+	/**
+	 * Gets the underlying DOM object that this DOMItem instance wraps.
+	 * @method
+	 * @returns {(HTMLElement|HTMLAttribute)} - the underlying DOM object
+	*/
 	source: function () {
 		return this.getset("source");
 	},
 
+	/**
+	 * Returns whether the DOMItem actually wraps an underlying DOM object.
+	 * @method
+	 * @returns {Svidget.Collection} - the collection of DOMItems
+	*/
 	isAttached: function () {
 		return this.getset("sourceDOM");
 	}
 
 }
 
-// todo: extend eventprototype
+// future item: extend EventPrototype when adding events to DOMItem.
 Svidget.extend(Svidget.DOMItem, Svidget.ObjectPrototype);
 
 

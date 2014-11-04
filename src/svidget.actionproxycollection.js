@@ -1,18 +1,25 @@
 ﻿/*****************************************
-svidget.paramproxycollection.js
+svidget.actionproxycollection.js
 
-Defines a collection for ParamProxy objects.
+Defines a collection for ActionProxy objects.
 
 Dependencies:
 Svidget.Core
 Svidget.Collection
 Svidget.ObjectPrototype
 Svidget.ObjectCollection
-Svidget.ParamProxy
-
+Svidget.Proxy
 
 ******************************************/
 
+/**
+ * Represents a collection of ActionProxy objects.
+ * @class
+ * @augments Svidget.ObjectCollection
+ * @memberof Svidget.Svidget
+ * @param {array} array - An array of ActionProxy objects.
+ * @param {Svidget.WidgetReference} parent - The WidgetReference instance that is the parent for this ActionParamProxy collection.
+ */
 Svidget.ActionProxyCollection = function (array, parent) {
 	Svidget.ObjectCollection.apply(this, [array, Svidget.ActionProxy]);
 	this.__type = "Svidget.ActionProxyCollection";

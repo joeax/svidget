@@ -1,6 +1,6 @@
 /*** * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  * Svidget.js v0.1.0
- * Release Date: 2014-10-14
+ * Release Date: 2014-10-23
  * 
  * A framework for creating complex widgets using SVG.
  * 
@@ -643,10 +643,10 @@
     Svidget.Communicator = function() {
         this.__type = "Svidget.Communicator";
         this.sameDomain = null;
-        this.init();
+        this._init();
     };
     Svidget.Communicator.prototype = {
-        init: function() {
+        _init: function() {
             this.addMessageEvent();
         },
         // REGION: Events
@@ -1372,7 +1372,7 @@
                 this.addReadyEvents();
             }
         },
-        // overriden in prototypes
+        // protected: overriden in prototypes
         initInternal: function() {},
         ready: function() {
             // if widget create Widget class
@@ -1915,8 +1915,14 @@
         // type, data, handler
         // type, handler
         on: function(type, data, name, handler) {
+            // if type is function, then assume type not passes so use default event name
+            if (Svidget.isFunction(type)) {
+                handler = type;
+                type = this.eventName();
+            }
             this.eventContainer().on(type, data, name, handler);
         },
+        // todo: deprecate and use on(), adapt args
         // data, name, handler
         // data, handler
         // handler
@@ -1924,8 +1930,14 @@
             this.eventContainer().on(this.eventName(), data, name, handler);
         },
         off: function(type, handlerOrName) {
+            // if type is function, then assume type not passes so use default event name
+            if (Svidget.isFunction(type)) {
+                handlerOrName = type;
+                type = this.eventName();
+            }
             this.eventContainer().off(type, handlerOrName);
         },
+        // todo: deprecate and use off(), adapt args
         offTrigger: function(handlerOrName) {
             this.eventContainer().off(this.eventName(), handlerOrName);
         },
@@ -2187,40 +2199,10 @@
         this.wireCollectionAddRemoveHandlers(privates.actions, that.actionAdded, that.actionRemoved);
         // wire events for events add/remove
         this.wireCollectionAddRemoveHandlers(privates.events, that.eventAdded, that.eventRemoved);
-        this.init();
+        this._init();
     };
     Svidget.Widget.prototype = {
-        init: function() {},
-        // Called by parent (via global object) to signal that is has established its relationship with the parent page.
-        // Params:
-        //   id: the ID assigned to this widget
-        //   paramValues: the param values as they were declared on the page, or provided if widget declared programmatically
-        // Remarks:
-        //   start() may be called at any point during the DOM lifecycle for this widget, i.e. while DOM is still parsing or when completed
-        //	start: function (id, paramValues) {
-        //		if (this.started) return;
-        //		Svidget.log("widget: start {id: " + id + "}");
-        //		// set ID
-        //		this.getset("id", id);
-        //		this.paramValues = paramValues || {};
-        //		// if ready() was called first, widget in standalone mode, so switch to connected mode
-        //		if (this.standalone) this.connect();
-        //		//this.startConnected();
-        //		this.started = true;
-        //		// check if DOM loaded, if not then wait
-        //		//if (!this.loaded) return;
-        //	},
-        //	// called when DOM is finished loading (but assets aren't loaded yet)
-        //	ready: function () {
-        //		// populate objects - params, actions
-        //		this.populateObjects();
-        //		// set up widget as either standalone or connected
-        //		if (!this.started)
-        //			this.readyStandalone();
-        //		else
-        //			this.readyConnected();
-        //		this.loaded = true;
-        //	},
+        _init: function() {},
         start: function() {
             // if DOM not ready then readyConnected(0 will be called when ready()
             //if (this.loaded) this.readyConnected();
@@ -2528,7 +2510,8 @@
             writable: writePropCol.toArray(),
             propertyChangeFuncs: new Svidget.Collection(),
             eventContainer: new Svidget.EventContainer(eventList, that),
-            parent: parent
+            parent: parent,
+            connected: valueObj.connected == null ? true : !!valueObj.connected
         };
         // private accessors
         this.setup(privates);
@@ -2558,6 +2541,10 @@
         },
         propertyChangeFuncs: function() {
             return this.getPrivate("propertyChangeFuncs");
+        },
+        // gets whether the proxy is connected to its underlying widget counterpart
+        connected: function(val) {
+            return this.getPrivate("connected");
         },
         // private
         // this is invoked when attempting to set a property value on the proxy itself
@@ -2594,6 +2581,20 @@
                 value: val
             }, this);
         },
+        // internal
+        // refreshes the proxy object with values from the widget
+        refreshProperties: function(propObj) {
+            for (var name in propObj) {
+                var item = this.getPrivate(name);
+                if (item != null) {
+                    this.setPrivate(name, propObj[name]);
+                }
+            }
+        },
+        // sets the proxy object as connected to the widget
+        connect: function() {
+            this.setPrivate("connected", true);
+        },
         // obsolete (9/1/2014)
         // use regular events ("change", "paramchange")
         onPropertyChange: function(func) {
@@ -2627,12 +2628,6 @@
         }
     };
     Svidget.extend(Svidget.Proxy, Svidget.ObjectPrototype);
-    // for settable properties:
-    // - notify root of property change
-    // - root communicates change to widget
-    // - widget communicates success or failure
-    //   - if success, widget triggers event
-    //   - if fail, root calls fail function with current value, object restores value
     Svidget.ActionProxy = function(name, options, parent) {
         var that = this;
         var valueObj = {
@@ -2812,9 +2807,15 @@
             return this.getPrivate("eventName");
         },
         // overwrites: Svidget.Proxy.on
-        //on: function (data, name, handler) {
-        //	this.eventContainer().on(this.triggerEventName(), data, name, handler);
-        //},
+        on: function(type, data, name, handler) {
+            // if type is function, then assume type not passes so use default event name
+            if (Svidget.isFunction(type)) {
+                handler = type;
+                type = this.triggerEventName();
+            }
+            this.eventContainer().on(type, data, name, handler);
+        },
+        // todo: rename to on() adapt args
         // data, name, handler
         // data, handler
         // handler
@@ -2822,9 +2823,15 @@
             this.eventContainer().on(this.triggerEventName(), data, name, handler);
         },
         // overwrites: Svidget.Proxy.off
-        //off: function (handlerOrName) {
-        //	this.eventContainer().off(this.triggerEventName(), handlerOrName);
-        //},
+        off: function(type, handlerOrName) {
+            // if type is function, then assume type not passes so use default event name
+            if (Svidget.isFunction(type)) {
+                handlerOrName = type;
+                type = this.triggerEventName();
+            }
+            this.eventContainer().off(type, handlerOrName);
+        },
+        // todo: rename to off() adapt args
         offTrigger: function(handlerOrName) {
             this.eventContainer().off(this.triggerEventName(), handlerOrName);
         },
@@ -2964,9 +2971,11 @@
             if (privates.element != null) return false;
             if (!Svidget.DOM.isElement(ele)) return false;
             privates.element = ele;
-            // self-destructing set accessor
+            // self-destructing set accessor, todo: delete too?
             this.setElement = null;
-        }, // set an instance to this on declaring element
+        }, // initialize params from <object> tag on page, these will be replaced when the widget updates the values and sends them back to the page
+        initParamsFromObject.call(that, paramValueObj);
+        // set an instance to this on declaring element
         declaringElement.widgetReference = this;
         // wire events for params add/remove and bubbles
         this.wireCollectionAddRemoveHandlers(privates.params, that.paramProxyAdded, that.paramProxyRemoved);
@@ -2974,6 +2983,14 @@
         this.wireCollectionAddRemoveHandlers(privates.actions, that.actionProxyAdded, that.actionProxyRemoved);
         // wire events for events add/remove
         this.wireCollectionAddRemoveHandlers(privates.events, that.eventProxyAdded, that.eventProxyRemoved);
+        function initParamsFromObject(paramValueObj) {
+            if (paramValueObj == null) return;
+            for (var name in paramValueObj) {
+                this.addParamProxy(name, paramValueObj[name], {
+                    connected: false
+                });
+            }
+        }
     };
     Svidget.WidgetReference.prototype = {
         id: function() {
@@ -2983,15 +3000,10 @@
         name: function() {
             return this.id();
         },
+        // should this be settable from the page?
         enabled: function(val) {
-            var res = this.getset("enabled", val);
-            // if undefined its a get so return value, if res is false then set failed
-            if (val === undefined || !!!res) return res;
-            // fire "changed" event
-            // todo: signal widget
-            // todo: uncomment when events are ready
-            // this.trigger("changed", { property: "enabled" });
-            return true;
+            var enabled = this.getset("enabled");
+            return enabled;
         },
         url: function() {
             var url = this.getset("url");
@@ -3097,6 +3109,15 @@
         // internal
         removeParamProxy: function(name) {
             return this.params().remove(name);
+        },
+        // internal
+        // adds or updates the param proxy
+        refreshParamProxy: function(name, value, options) {
+            var p = this.param(name);
+            if (p == null) return this.params().add(nameOrObject, value, options, this); else {
+                p.refreshProperties(options);
+                return p;
+            }
         },
         // internal
         // handle param added
@@ -3259,35 +3280,13 @@
             var val = this.getset("populated");
             return val;
         },
-        //state: function () {
-        //	// possible: declared, initialized, loaded
-        //	//return "declared";
-        //	var state = this.getset("state");
-        //	return state;
-        //},
         start: function() {
             this.getset("started", true);
         },
-        //setState: function (state) {
-        //	var states = ["declared", "initialized", "loaded"];
-        //	var index = states.indexOf(state);
-        //	if (index < 0) return false;
-        //	var curState = this.state();
-        //	if (index <= states.indexOf(curState)) return false;
-        //	this.getset("state", state);
-        //	return true;
-        //},
         // REGION: Populate
         // Inflates this object with the transport JSON object
         populate: function(widgetObj) {
             if (this.populated()) return;
-            // build params/action proxies
-            //		var transport = {
-            //			id: this.id(),
-            //			enabled: this.enabled(),
-            //			params: this.toParamsTransport(),
-            //			actions: this.toActionsTransport()
-            //		};
             // enabled
             this.enabled(widgetObj.enabled);
             // params
@@ -3304,7 +3303,9 @@
             if (params && Svidget.isArray(params)) {
                 for (var i = 0; i < params.length; i++) {
                     var p = params[i];
-                    this.addParamProxy(p.name, p.value, p);
+                    // refresh - add or update param
+                    var paramProxy = this.refreshParamProxy(p.name, p.value, p);
+                    paramProxy.connect();
                 }
             }
         },
@@ -3341,10 +3342,6 @@
         }
     };
     Svidget.extend(Svidget.WidgetReference, Svidget.ObjectPrototype);
-    // todo: we are eventually going to need to move private methods inside the constructor to make them private
-    // need to figure out best approach
-    // maybe split the page and widget sides into separate prototype objects
-    // 7/22: add more Svidget.log to analyze order of signals, also figure out why params not populated on widget and circle changing to green
     Svidget.Root.PagePrototype = {
         // ***********************************
         // REGION: Initializing

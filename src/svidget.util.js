@@ -11,17 +11,24 @@ Dependencies:
 ******************************************/
 
 
-// Declare Util class
+/**
+ * A collection of util methods.
+ * @static
+ * @memberof Svidget
+ */
 Svidget.Util = {};
 
 
-// SUMMARY
-// Gets all the values from the query string and returns the result as an object.
-// PARAMS
-//  duplicates: if true group duplicates in an array (default == false)
-//  lastOneWins: if true then last duplicate encountered will win, else first one will win (default == false)
-// REMARKS
-// Adapted from SO answer: http://stackoverflow.com/a/2880929/242407
+/**
+ * Gets all the values from the query string and returns the result as an object.
+ * @static
+ * @memberof Svidget
+ * @param {bool} duplicates - if true, group duplicates into an array (default == false)
+ * @param {} lastOneWins - if true, then last duplicate encountered will win, else first one will win (default == false)
+ */
+/*
+Adapted from SO answer: http://stackoverflow.com/a/2880929/242407
+*/
 Svidget.Util.queryString = function (duplicates, lastOneWins) {
 	var match,
         pl = /\+/g,  // Regex for replacing addition symbol with a space

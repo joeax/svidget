@@ -20,8 +20,17 @@ svidget.paramcollection.js
 
 ******************************************/
 
-// note: Widget class should be decoupled from the DOM
 
+/**
+ * Represents the widget.
+ * @class
+ * @mixes Svidget.ObjectPrototype
+ * @augments Svidget.EventPrototype
+ * @memberof Svidget
+ */
+/*
+// note: Widget class should be decoupled from the DOM
+*/
 Svidget.Widget = function () {
 	this.__type = "Svidget.Widget";
 	var that = this;
@@ -40,11 +49,6 @@ Svidget.Widget = function () {
 	})();
 	// private accessors
 	this.setup(privates);
-
-	// this.started = false;
-	// this.loaded = false;
-	// this.standalone = false;
-	// this.paramValues = null;
 
 	// wire events for params add/remove and bubbles
 	this.wireCollectionAddRemoveHandlers(privates.params, that.paramAdded, that.paramRemoved);
@@ -123,14 +127,33 @@ Svidget.Widget.prototype = {
 
 	// REGION: Params
 
-	// select by index: params(0)
-	// select by name: params("color")
-	// return read-only collection: params()
+	/**
+	 * Gets a collection of all Param objects in the widget, or a sub-collection based on the selector.
+	 * Selector can be an integer to get the zero-based item at that index, or a string to select by that ID.
+	 * Examples:
+	 * params(0)
+	 * params("color")
+	 * @method
+	 * @memberof Svidget.Widget.prototype
+	 * @param {object} [selector] - The selector string or integer.
+	 * @returns {Svidget.ParamCollection} - A collection based on the selector, or the entire collection.
+	*/
 	params: function (selector) {
 		var col = this.getset("params");
 		return this.select(col, selector);
 	},
 
+	/**
+	 * Gets the Param based on the selector.
+	 * Selector can be an integer to get the zero-based item at that index, or a string to select by that ID.
+	 * Examples:
+	 * param(0)
+	 * param("color")
+	 * @method
+	 * @memberof Svidget.Widget.prototype
+	 * @param {object} selector - The index or ID of the param.
+	 * @returns {Svidget.Param} - The Param based on the selector. If selector is invalid, null is returned.
+	*/
 	param: function (selector) {
 		//var item = this.params(selector).first();
 		var col = this.getset("params");
@@ -138,16 +161,39 @@ Svidget.Widget.prototype = {
 		return item;
 	},
 
-	// public
+	/**
+	 * Adds a Param to the widget. If a duplicate name is supplied the Param will fail to add.
+	 * Examples:
+	 * addParam("backColor", "#ffee54", { description: "Background color."})
+	 * addParam("color")
+	 * @method
+	 * @memberof Svidget.Widget.prototype
+	 * @param {string} name - The name of the Param to add.
+	 * @param {object} value - The value of the Param.
+	 * @param {object} [options] - The options used to contruct the Param. Example: { enabled: true, description: "A param" }
+	 * @returns {Svidget.Param} - The Param that was added, or null if Param failed to add.
+	*/
+	/*
+	Adding an previously constructed Param object reserved for internal use.
+	*/
 	addParam: function (nameOrObject, value, options) {
 		return this.params().add(nameOrObject, value, options, this);
 	},
 
-	// public
+	/**
+	 * Removes an Param from the widget. 
+	 * Examples:
+	 * removeParam("color")
+	 * @method
+	 * @memberof Svidget.Widget.prototype
+	 * @param {string} name - The name of the Param to remove.
+	 * @returns {Boolean} - True if the Param was successfully removed, false otherwise.
+	*/
 	removeParam: function (name) {
 		return this.params().remove(name);
 	},
 
+	// internal
 	// handle param added
 	paramAdded: function (param) {
 		// raise event
@@ -159,7 +205,7 @@ Svidget.Widget.prototype = {
 		svidget.signalParamAdded(param);
 	},
 
-	// private
+	// internal
 	// handle param removed
 	paramRemoved: function (param) {
 		// raise event
@@ -171,7 +217,8 @@ Svidget.Widget.prototype = {
 		svidget.signalParamRemoved(param.name());
 	},
 
-	// internal, called from param
+	// internal
+	// called from param
 	paramBubble: function (type, event, param) {
 		if (type == "change") this.paramChanged(param, event.value);
 		if (type == "valuechange") this.paramValueChanged(param, event.value);
@@ -195,15 +242,33 @@ Svidget.Widget.prototype = {
 
 	// REGION: Actions
 
-	// public
-	// select by index: params(0)
-	// select by name: params("color")
-	// return read-only collection: params()
+	/**
+	 * Gets a collection of all actions in the widget, or a sub-collection based on the selector.
+	 * Selector can be an integer to get the zero-based item at that index, or a string to select by that ID.
+	 * Examples:
+	 * actions(0)
+	 * actions("doSomething")
+	 * @method
+	 * @memberof Svidget.Widget.prototype
+	 * @param {object} [selector] - 
+	 * @returns {Svidget.ActionCollection} - A collection based on the selector, or the entire collection.
+	*/
 	actions: function (selector) {
 		var col = this.getset("actions");
 		return this.select(col, selector);
 	},
 
+	/**
+	 * Gets the action object based on the selector.
+	 * Selector can be an integer to get the zero-based item at that index, or a string to select by that ID.
+	 * Examples:
+	 * action(1)
+	 * action("doSomething")
+	 * @method
+	 * @memberof Svidget.Widget.prototype
+	 * @param {object} selector - The index or ID of the action.
+	 * @returns {Svidget.Action} - The action based on the selector. If selector is invalid, null is returned.
+	*/
 	action: function (selector) {
 		//var item = this.actions(selector).first();
 		var col = this.getset("actions");
@@ -211,7 +276,19 @@ Svidget.Widget.prototype = {
 		return item;
 	},
 
-	// public
+	/**
+	 * Adds an Action to the widget. If a duplicate name is supplied the action will fail to add.
+	 * Examples:
+	 * addAction("doIt", { binding: function (s) { do_something(s) }, description: "Background color."})
+	 * @method
+	 * @memberof Svidget.Widget.prototype
+	 * @param {string} name - The name of the param to add.
+	 * @param {object} [options] - The options used to contruct the Action. Example: { enabled: true, description: "An action" }
+	 * @returns {Svidget.Action} - The Action that was added, or null if Action failed to add.
+	*/
+	/*
+	Adding an previously constructed Action object reserved for internal use.
+	*/
 	addAction: function (nameOrObject, options) {
 		var action = this.actions().add(nameOrObject, options, this);
 		if (action == null) return action;
@@ -226,7 +303,15 @@ Svidget.Widget.prototype = {
 		}
 	},
 
-	// public
+	/**
+	 * Removes an Action from the widget. 
+	 * Examples:
+	 * removeAction("someAction")
+	 * @method
+	 * @memberof Svidget.Widget.prototype
+	 * @param {string} name - The name of the Action to remove.
+	 * @returns {boolean} - True if the Action was successfully removed, false otherwise.
+	*/
 	removeAction: function (name) {
 		return this.actions().remove(name);
 	},
@@ -303,27 +388,65 @@ Svidget.Widget.prototype = {
 
 	// REGION: Events 
 
-	// public
-	// select by index: events(0)
-	// select by name: events("color")
-	// return read-only collection: events()
+	/**
+	 * Gets a collection of all events in the widget, or a sub-collection based on the selector.
+	 * Selector can be an integer to get the zero-based item at that index, or a string to select by that ID.
+	 * Examples:
+	 * events(0)
+	 * events("somethingHappened")
+	 * @method
+	 * @memberof Svidget.Widget.prototype
+	 * @param {object} [selector] - 
+	 * @returns {Svidget.EventDescCollection} - A collection based on the selector, or the entire collection.
+	*/
 	events: function (selector) {
 		var col = this.getset("events");
 		return this.select(col, selector);
 	},
 
+	/**
+	 * Gets the event object based on the selector.
+	 * Selector can be an integer to get the zero-based item at that index, or a string to select by that ID.
+	 * Examples:
+	 * event(0)
+	 * event("somethingHappened")
+	 * @method
+	 * @memberof Svidget.Widget.prototype
+	 * @param {object} selector - The index or ID of the event.
+	 * @returns {Svidget.EventDesc} - The event based on the selector. If selector is invalid, null is returned.
+	*/
 	event: function (selector) {
 		var col = this.getset("events");
 		var item = this.selectFirst(col, selector);
 		return item;
 	},
 
-	// public
+	/**
+	 * Adds an EventDesc object to the widget. If a duplicate name is supplied the EventDesc will fail to add.
+	 * Examples:
+	 * addEvent("somethingHappened", { description: "An event for that." })
+	 * @method
+	 * @memberof Svidget.Widget.prototype
+	 * @param {string} name - The name of the EventDesc to add.
+	 * @param {object} [options] - The options used to contruct the EventDesc. Example: { enabled: true, description: "An event" }
+	 * @returns {Svidget.Action} - The EventDesc that was added, or null if EventDesc failed to add.
+	*/
+	/*
+	Adding an previously constructed Action object reserved for internal use.
+	*/
 	addEvent: function (nameOrObject, options) {
 		return this.events().add(nameOrObject, options, this);
 	},
 
-	// public
+	/**
+	 * Removes an EventDesc object from the widget. 
+	 * Examples:
+	 * removeEvent("somethingHappened")
+	 * @method
+	 * @memberof Svidget.Widget.prototype
+	 * @param {string} name - The name of the EventDesc to remove.
+	 * @returns {boolean} - True if the EventDesc was successfully removed, false otherwise.
+	*/
 	removeEvent: function (name) {
 		return this.events().remove(name);
 	},
@@ -371,28 +494,62 @@ Svidget.Widget.prototype = {
 		svidget.signalEventChanged(eventDesc, eventValue);
 	},
 
+	/*
 	//bubbleFuncs: function (objectType) {
 	//	if (objectType == "param") return this.paramBubble;
 	//	if (objectType == "action") return this.actionBubble;
 	//	if (objectType == "event") return this.eventBubble;
 	//	return null;
 	//},
+	*/
 
 	// REGION: Properties
 
+	/**
+	 * Gets the widget ID. 
+	 * @method
+	 * @memberof Svidget.Widget.prototype
+	 * @returns {string} - The widget ID as a string.
+	*/
 	id: function () {
 		return this.getset("id");
 	},
 
-	enabled: function () {
-		return this.getset("enabled");
-		// todo: should be settable
+	/**
+	 * Gets or sets whether the widget is enabled. 
+	 * @method
+	 * @memberof Svidget.Widget.prototype
+	 * @param {Boolean} [val] - Sets the enabled state when specified.
+	 * @returns {Boolean} - The enabled state, when nothing is passed, or true/false based on if setting is succeeded or failed.
+	*/
+	enabled: function (val) {
+		var res = this.getset("enabled", val);
+		// if undefined its a get so return value, if res is false then set failed
+		if (val === undefined || !!!res) return res;
+		// fire "changed" event
+		if (this.trigger) this.trigger("change", { property: "enabled", value: val });
+
+		return true;
 	},
 
+	/**
+	 * Gets whether the widget is connected to a parent page. 
+	 * If true, it means the page initialized the widget and is listening for events.
+	 * If false, it means the widget was loaded independently and/or outside of of the control of the framework (standalone mode).
+	 * @method
+	 * @memberof Svidget.Widget.prototype
+	 * @returns {Boolean} - Whether the widget is connected
+	*/
 	connected: function () {
 		return this.getset("connected");
 	},
 
+	/**
+	 * Gets whether the widget has started. This is true once the DOM is loaded.
+	 * @method
+	 * @memberof Svidget.Widget.prototype
+	 * @returns {boolean} - Whether the widget is started.
+	*/
 	started: function () {
 		var val = this.getset("started");
 		return val;
@@ -400,6 +557,12 @@ Svidget.Widget.prototype = {
 
 	// REGION: Communication
 
+	/**
+	 * Serializes the Widget object for transport across a window boundary.
+	 * @method
+	 * @memberof Svidget.Widget.prototype
+	 * @returns {boolean} - A generic serialized object representing the Widget.
+	*/
 	// todo: rename to serialize()
 	toTransport: function () {
 		var transport = {
@@ -412,28 +575,41 @@ Svidget.Widget.prototype = {
 		return transport;
 	},
 
+	// private
 	toParamsTransport: function () {
 		var col = this.params();
 		var ps = col.select(function (p) { return p.toTransport(); }).toArray();
 		return ps;
 	},
 
+	// private
 	toActionsTransport: function () {
 		var col = this.actions();
 		var acs = col.select(function (a) { return a.toTransport(); }).toArray();
 		return acs;
 	},
 
+	// private
 	toEventsTransport: function () {
 		var col = this.events();
 		var evs = col.select(function (e) { return e.toTransport(); }).toArray();
 		return evs;
 	},
 
+	// overrides
+
+	/**
+	 * Gets a string representation of this object.
+	 * @method
+	 * @returns {string}
+	*/
+	toString: function () {
+		return "[Svidget.Widget { id: \"" + this.id() + "\" }]";
+	}
+
 };
 
-// todo: wrap in closure to prevent tampering
-Svidget.Widget.eventTypes = ["paramvaluechange", "paramchange", "paramadd", "paramremove", "actioninvoke", "actionchange", "actionadd", "actionremove", "eventtrigger", "eventadd", "eventremove"];
+Svidget.Widget.eventTypes = ["change", "paramvaluechange", "paramchange", "paramadd", "paramremove", "actioninvoke", "actionchange", "actionadd", "actionremove", "eventtrigger", "eventadd", "eventremove"];
 
 
 Svidget.extend(Svidget.Widget, Svidget.ObjectPrototype);

@@ -13,15 +13,24 @@ Svidget.Action
 
 ******************************************/
 
-
+/**
+ * Represents a param for an action, defined by <svidget:actionparam>.
+ * @class
+ * @mixes Svidget.ObjectPrototype
+ * @augments Svidget.EventPrototype
+ * @memberof Svidget
+ * @param {string} name - The name of the action param.
+ * @param {object} options - The options for the action param. Example: { type: "string", subtype: "regex", description: "An action param" }
+ * @param {Svidget.Widget} parent - The widget instance that is the parent for this action.
+ */
 Svidget.ActionParam = function (name, options, parent) {
 	this.__type = "Svidget.ActionParam";
-	// validate:
+	// todo validate:
 	// name is not null
 	options = options || {};
 
 	// parent must be Action
-	// todo: enforce
+	parent = parent instanceof Svidget.Action ? parent : null; // parent can only be a Action
 
 	// private fields
 	var privates = new (function () {
@@ -51,8 +60,13 @@ Svidget.ActionParam.prototype = {
 		return transport;
 	},
 
-	// overrides
+	/* overrides */
 
+	/**
+	 * Gets a string representation of this object.
+	 * @method
+	 * @returns {string}
+	*/
 	toString: function () {
 		return "[Svidget.ActionParam { name: \"" + this.name + "\" }]";
 	}

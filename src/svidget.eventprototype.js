@@ -1,18 +1,21 @@
 ﻿/*****************************************
-svidget.event.js
+svidget.eventprototype.js
 
-Contains common event functionality.
+Contains common event functionality wrapped as a prototype.
 
 Dependencies:
-Svidget.Collection
+svidget.core.js
+svidget.collection.js
 
 ******************************************/
 
-
-// Encapsulates a set of prototype methods for managing events
-
+/**
+ * Encapsulates a set of prototype methods for managing events.
+ * @class
+ * @memberof Svidget
+ * @param {array} typelist - A list of event types.
+ */
 Svidget.EventPrototype = function (typelist) {
-	// note: fields declared in a prototype become shared across instances until overriden
 	// todo: validate typelist
 	// these are the event types that the base object supports, like "invoke" for action.
 	this.eventTypes = new Svidget.Collection(typelist);
@@ -22,6 +25,7 @@ Svidget.EventPrototype = function (typelist) {
 
 Svidget.EventPrototype.prototype = {
 
+	/*
 	// follows jQuery convention of (type, data, handler)
 	// with a twist, we allow them to specify a name for the handler, for easier removal with off
 	// if the name or handler already was added, then nothing happens and false is returned
@@ -30,6 +34,7 @@ Svidget.EventPrototype.prototype = {
 	//   (type, handler)
 	//   (type, data, handler)
 	//   (type, data, name, handler)
+	*/
 	on: function (type, data, name, handler) {
 		// resolve handler from whether name, data passed
 		handler = handler || (Svidget.isFunction(name) ? name : (Svidget.isFunction(data) ? data : null));
@@ -38,9 +43,11 @@ Svidget.EventPrototype.prototype = {
 		return this.addHandler(type, handler, name, data);
 	},
 
+	/*
 	// allowed signatures
 	//   (type, handler)
 	//   (type, name)
+	*/
 	off: function (type, handlerOrName) {
 		// separate handlerOrName into handler, name
 		var handler = Svidget.isFunction(handlerOrName) ? handlerOrName : null;

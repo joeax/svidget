@@ -11,9 +11,16 @@ Svidget.Collection
 Svidget.ObjectCollection
 Svidget.Action
 
-
 ******************************************/
 
+/**
+ * Represents a collection of Action objects.
+ * @class
+ * @augments Svidget.ObjectCollection
+ * @memberof Svidget.Svidget
+ * @param {array} array - An array of Action objects.
+ * @param {Svidget.Widget} parent - The Widget instance that is the parent for this Action collection.
+ */
 Svidget.ActionCollection = function (array, parent) {
 	Svidget.ObjectCollection.apply(this, [array, Svidget.Action]);
 	this.__type = "Svidget.ActionCollection";

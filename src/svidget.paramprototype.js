@@ -1,26 +1,43 @@
 ﻿/*****************************************
 svidget.paramprototype.js
 
-Contains common functionality for param-based classes.
+Contains common functionality for param-based classes, namely Param and ActionParam.
 
 Dependencies:
 Svidget.EventPrototype
+Svidget.ObjectPrototype
+Svidget.Enums
 
-WidgetGraph.ParamPrototype
-
-$WG.load()
 
 ******************************************/
 
-
+/**
+ * Encapsulates common functionality for a Param and ActionParam.
+ * @class
+ * @abstract
+ * @memberof Svidget
+ */
 Svidget.ParamPrototype = {
 
-	// name is immutable after creation
+	/**
+	 * Gets the param name.
+	 * @method
+	 * @returns {string}
+	*/
+	/*
+	// Note: name is immutable after creation
+	*/
 	name: function () {
 		var res = this.getPrivate("name");
 		return res;
 	},
 
+	/**
+	 * Gets or sets the description.
+	 * @method
+	 * @param {string} [val] - Sets the value when specified.
+	 * @returns {string} - The value for a get, or true/false if succeeded or failed for a set.
+	*/
 	description: function (val) {
 		var res = this.getset("description", val);
 		// if undefined its a get so return value, if res is false then set failed
@@ -31,6 +48,12 @@ Svidget.ParamPrototype = {
 		return true;
 	},
 
+	/**
+	 * Gets or sets the param type. This can be "string", "number", etc. See the Svidget.ParamTypes enum.
+	 * @method
+	 * @param {string} [val] - Sets the value when specified.
+	 * @returns {string} - The value for a get, or true/false if succeeded or failed for a set.
+	*/
 	type: function (val) {
 		var res = this.getset("type", val, this.validateType);
 		// if undefined its a get so return value, if res is false then set failed
@@ -41,6 +64,12 @@ Svidget.ParamPrototype = {
 		return true;
 	},
 
+	/**
+	 * Gets or sets the param subtype. This can be on of the values from the Svidget.ParamSubTypes enum.
+	 * @method
+	 * @param {string} [val] - Sets the value when specified.
+	 * @returns {string} - The value for a get, or true/false if succeeded or failed for a set.
+	*/
 	subtype: function (val) {
 		var res = this.getset("subtype", val, this.validateSubtype);
 		// if undefined its a get so return value, if res is false then set failed

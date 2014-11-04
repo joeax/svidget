@@ -13,7 +13,10 @@ Prerequisites:
 ******************************************/
 
 
-
+/**
+ * Provides communications functionality between a page and a widget. Internal class only.
+ * @class
+ */
 Svidget.Communicator = function () {
 	this.__type = "Svidget.Communicator";
 	this.sameDomain = null;

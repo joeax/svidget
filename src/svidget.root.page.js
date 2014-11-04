@@ -1,13 +1,11 @@
 ﻿/*****************************************
 svidget.root.page.js
 
-Contains the root object.
+Contains the root object definition for the page level.
 
 Dependencies:
-(none)
-
-Prerequisites:
-
+Svidget.Core
+Svidget.Root
 
 ******************************************/
 
@@ -42,6 +40,7 @@ Svidget.Root.PagePrototype = {
 	// ***********************************
 	// REGION: Widget Loading
 
+	/*
 	// 7/9:
 	// figure out how id is initialized/passed
 	// do we discard existing <object> with potentially loaded widget?
@@ -49,6 +48,7 @@ Svidget.Root.PagePrototype = {
 	// - startack
 	// 7/16:
 	// - need to account for case when <iframe> loads, handling initialized for second time
+	*/
 
 	// Parses page for <object role="svidget"> and loads those as widgets
 	loadPageWidgets: function () {
@@ -92,6 +92,7 @@ Svidget.Root.PagePrototype = {
 	},
 
 	readyWidgetReference: function (widget, objEle) { 
+		/*
 		//if (true || !widget.hasElement() || !Svidget.DOM.isElementDocumentReady(widget.element())) {
 		//	// widget hasn't finished loading yet, so defer until it is loaded
 		//	this.addWidgetLoadEvents(objEle, widget);
@@ -100,6 +101,7 @@ Svidget.Root.PagePrototype = {
 		//	// widget dom is ready, so finish processing it now
 		//	this.finishPageWidget(widget);
 		//}
+		*/
 		// if <iframe> already loaded due to data-crossdomain
 		var ele = widget.element() || objEle;
 		this.addWidgetLoadEvents(ele, widget);
@@ -314,6 +316,7 @@ Svidget.Root.PagePrototype = {
 		return col.first(function (w) { return w.id() === id });
 	},
 
+	// internal
 	addWidget: function (widget) {
 		if (this.widgets().contains(widget)) return false;
 		this.widgets().add(widget);
@@ -323,18 +326,24 @@ Svidget.Root.PagePrototype = {
 	// ***********************************
 	// REGION: Public Methods
 
-	// public
-	// sel: element or selector to element for container
-	// url: url to widget
-	// options: options for the widget { standalone: true, crossdomain: false }
-	// paramobj: param object to initialize widget
-	// callback: a callback to invoke when widget is done fully loading (widget downloaded and initialized) or error
-	// RETURNS
-	// A reference to the svidget
-	load: function (sel, urlOrOptions, paramObj, callback) {
+	/**
+	 * Registers an event handler for the "widgetload" event for the global object.
+	 * Examples:
+	 * svidget.load("#container", "mywidget.svg")
+	 * svidget.load("#container", "mywidget.svg", { color: "red" }, loadCallback)
+	 * svidget.load("#container", { url: "mywidget.svg", crossdomain: true }, { color: "red" })
+	 * @method
+	 * @memberof Svidget.Root.prototype
+	 * @param {string} selector - Arbirary data to initialize Event object with when event is triggered.
+	 * @param {(string|object)} urlOrOptions - The url to the widget, or an options object contains properties to initialize the widget reference with.
+	 * @param {object} paramObj - The object to initialize params with.
+	 * @param {Function} callback - A function to call when loading is complete.
+	 * @returns {Svidget.WidgetReference} - The widget reference created, or null if create fails.
+	*/
+	load: function (selector, urlOrOptions, paramObj, callback) {
 		// should we allow multiple sel and create a Widget for each? (hint test a jquery plugin) also: we can have a loadAll (named like queryselectorAll)
 		// resolve container
-		var container = Svidget.DOM.selectElement(sel);
+		var container = Svidget.DOM.selectElement(selector);
 		if (container == null) return null;
 		// resolve urlOrOptions
 		var options = null;
@@ -363,18 +372,41 @@ Svidget.Root.PagePrototype = {
 	// ***********************************
 	// REGION: Public Properties
 
+	/**
+	 * Gets a collection of all widgets, or a sub-collection based on the selector.
+	 * Selector can be an integer to get the zero-based item at that index, or a string to select by that ID.
+	 * Examples:
+	 * widgets(0)
+	 * widgets("widget-1")
+	 * @method
+	 * @memberof Svidget.Root.prototype
+	 * @param {object} [selector] - An integer index or string ID
+	 * @returns {Svidget.ObjectCollection} - A collection based on the selector, or the entire collection.
+	*/
 	widgets: function (selector) {
 		var col = this.getWidgets();
 		return this.select(col, selector);
 		//return col;
 	},
 
+	/**
+	 * Gets the widget based on the selector.
+	 * Selector can be an integer to get the zero-based item at that index, or a string to select by that ID.
+	 * Examples:
+	 * widgets(0)
+	 * widgets("widget-1")
+	 * @method
+	 * @memberof Svidget.Root.prototype
+	 * @param {object} selector - The index or ID of the widget.
+	 * @returns {Svidget.WidgetReference} - The widget reference based on the selector. If selector is invalid, null is returned.
+	*/
 	widget: function (selector) {
 		var col = this.getWidgets();
 		var item = this.selectFirst(col, selector);
 		return item;
 	},
 
+	// private
 	getWidgets: function () {
 		var col = this.getset("widgets");
 		if (col == null) {
@@ -384,6 +416,7 @@ Svidget.Root.PagePrototype = {
 		return col;
 	},
 
+	// private
 	triggerWidgetEvent: function (widgetRef, eventName, data) {
 		var ev = widgetRef.event(eventName);
 		if (ev == null) return;
@@ -464,6 +497,7 @@ Svidget.Root.PagePrototype = {
 		// invoked by widget to notify parent that it has been instantiated
 	handleReceiveWidgetInitialized: function () { //widgetRef, widgetTransport) {
 		Svidget.log("page: handleReceiveWidgetInitialized");
+		/*
 		// moved to loaded handler, since widget will not have this data until widget DOM is ready
 		//this.populateWidgetReference(widgetRef, widgetTransport);
 		// the widget would have to be started, otherwise there is no way this code would be reached because the ID would not have been set yet
@@ -476,6 +510,7 @@ Svidget.Root.PagePrototype = {
 		// update 7/23: if we go with lookup widgetRef by element approach we can ditch this
 		// update 7/24: commented out, resulting in too many checks, handled in loaded handler only now
 		//this.checkUnfinalizedWidgetReferences();
+		*/
 	},
 
 	// invoked by widget to notify parent that it is loaded and ready

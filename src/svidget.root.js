@@ -4,24 +4,23 @@ svidget.root.js
 Contains the root object.
 
 Dependencies:
-(none)
-
-Browser Support:
-IE9+, FF?+, Chrome?+
-
-Prerequisites:
-
+Svidget.Core
 
 ******************************************/
 
 
-
-//(function () {
-
-
+/**
+ * Represents the root object (access via global svidget var).
+ * @constructor
+ * @mixes ObjectPrototype
+ * @memberof Svidget
+ * @param {object} root - The root global object in scope (i.e. window).
+ */
+/*
 // Svidget is an object var not a class var, so instantiate with ()
 // We declare it this way so that we can maintain private members via var
 // REMARKS: this should be instantiated last after all ofther lib scripts loaded
+*/
 Svidget.Root = function (root) {
 	this.__type = "Svidget.Root";
 	//var isWidget = null;
@@ -73,13 +72,6 @@ Svidget.Root.prototype = {
 		this._initReady();
 	},
 
-	//	_initDomObjects: function () {
-	//		return;
-	//		// we need to rework this, we cannot access private vars from a prototype
-	//		if (doc == null) doc = this.root.document;
-	//		if (doc && doc.documentElement) docElement = doc.documentElement;
-	//	},
-
 	_initEvents: function () {
 		//this.addMessageEvent();
 	},
@@ -97,7 +89,7 @@ Svidget.Root.prototype = {
 		// is DOM loaded?
 		// if not attach handler, if so call ready
 		if (this.isDomReady()) {
-			this.ready();
+			this._ready();
 		}
 		else {
 			// add ready handler
@@ -108,7 +100,7 @@ Svidget.Root.prototype = {
 	// protected: overriden in prototypes
 	initInternal: function () { },
 
-	ready: function () {
+	_ready: function () {
 		// if widget create Widget class
 		this.isReady = true;
 		if (this.isWidget()) {
@@ -128,6 +120,12 @@ Svidget.Root.prototype = {
 		return Svidget.DocType.html;
 	},
 
+	/**
+	 * Determines if the framework is instantiated in a widget file.
+	 * @method
+	 * @memberof Svidget.Root.prototype
+	 * @returns {boolean}
+	*/
 	isWidget: function () {
 		this.docType = this.getDocType();
 		return this.docType == Svidget.DocType.svg;
@@ -156,7 +154,7 @@ Svidget.Root.prototype = {
 	},
 
 	ensureReady: function () {
-		if (!this.isReady) this.ready();
+		if (!this.isReady) this._ready();
 		this.isReady = true;
 	},
 
@@ -168,42 +166,78 @@ Svidget.Root.prototype = {
 		this.triggerLoaded();
 	},
 
-	/* Events */
+	/* REGION Events */
 
 	eventContainer: function () {
 		return this.getset("eventContainer");
 	},
 
+	/**
+	 * Registers an event handler for the global object.
+	 * @method
+	 * @memberof Svidget.Root.prototype
+	 * @param {string} type - The event type i.e. "load".
+	 * @param {object} [data] - Arbirary data to initialize Event object with when event is triggered.
+	 * @param {string} [name] - The name of the handler. Useful when removing the handler for the event.
+	 * @param {Function} handler - The event handler.
+	 * @returns {boolean} - True if the event handler was successfully added.
+	*/
 	on: function (type, data, name, handler) {
 		this.eventContainer().on(type, data, name, handler);
 	},
 
+	/**
+	 * Unregisters an event handler for the global object.
+	 * @method
+	 * @memberof Svidget.Root.prototype
+	 * @param {string} type - The event type i.e. "load".
+	 * @param {(Function|string)} handlerOrName - The handler function and/or the handler name used when calling on().
+	 * @returns {boolean} - True if the event handler was successfully removed.
+	*/
 	off: function (type, handler) {
 		this.eventContainer().off(type, handler);
 	},
 
+	// public
 	// triggers the event, using the specified data as input
 	trigger: function (name, value) {
 		// call something on parent widget
 		this.eventContainer().trigger(name, value);
 	},
 
-	// public
-	// wires up a handler for the "load" event
+	/**
+	 * Registers an event handler for the "load" event for the global object.
+	 * @method
+	 * @memberof Svidget.Root.prototype
+	 * @param {object} [data] - Arbirary data to initialize Event object with when event is triggered.
+	 * @param {string} [name] - The name of the handler. Useful when removing the handler for the event.
+	 * @param {Function} handler - The event handler.
+	 * @returns {boolean} - True if the event handler was successfully added.
+	*/
+	/*
 	// note: this can happen before window.onload event
 	// convention: use past tense (ie "loaded") as method name to present tense event name (ie "load")
-	loaded: function (handler) {
-		this.on("load", null, null, handler);
+	*/
+	loaded: function (data, name, handler) {
+		this.on("load", data, name, handler);
 	},
 
-	// public
+	/**
+	 * Registers an event handler for the "widgetload" event for the global object.
+	 * @method
+	 * @memberof Svidget.Root.prototype
+	 * @param {object} [data] - Arbirary data to initialize Event object with when event is triggered.
+	 * @param {string} [name] - The name of the handler. Useful when removing the handler for the event.
+	 * @param {Function} handler - The event handler.
+	 * @returns {boolean} - True if the event handler was successfully added.
+	*/
 	// wires up a handler for the "widgetload" event
-	widgetloaded: function (widgetID, handler) {
-		if (handler === undefined && Svidget.isFunction(widgetID)) {
+	widgetloaded: function (data, name, handler) {
+		/*if (handler === undefined && Svidget.isFunction(widgetID)) {
 			handler = widgetID;
 			widgetID = null;
-		}
-		this.on("widgetload", widgetID, null, handler);
+		}*/
+		this.on("widgetload", data, name, handler);
 	},
 
 	triggerLoaded: function () {
@@ -240,12 +274,23 @@ Svidget.Root.prototype = {
 
 	/* Properties */
 
-	// virtual, overriden in root.widget
+	/**
+	 * Gets the current widget. 
+	 * @method
+	 * @abstract
+	 * @returns {Svidget.Widget} - The current widget.
+	*/
 	current: function () {
 		return null;
 	},
 
-	// todo: confirm we need
+	/**
+	 * Gets whether the widget is connected to a parent page.
+	 * @method
+	 * @abstract
+	 * @memberof Svidget.Root
+	 * @returns {boolean}
+	*/
 	connected: function (val) {
 		var res = this.getset("connected", val);
 		// if undefined its a get so return value, if res is false then set failed
@@ -259,7 +304,7 @@ Svidget.Root.prototype = {
 Svidget.extend(Svidget.Root, Svidget.ObjectPrototype);
 
 
-
+/*
 // Events:
 // .on('load')
 // .on('widgetload')
@@ -292,3 +337,4 @@ Svidget.extend(Svidget.Root, Svidget.ObjectPrototype);
 //	MyObj.prototype = innerPrototype;
 
 //}
+*/

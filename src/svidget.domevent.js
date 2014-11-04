@@ -1,10 +1,12 @@
 ﻿/*****************************************
-svidget.event.js
+svidget.domevent.js
 
 Contains common event functionality.
 
 Dependencies:
 (none)
+
+Note: This is a future item, and is not being used at this time.
 
 ******************************************/
 

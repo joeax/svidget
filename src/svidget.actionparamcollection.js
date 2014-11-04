@@ -14,8 +14,14 @@ Svidget.ActionParam
 
 ******************************************/
 
-/* Namespaces */
-
+/**
+ * Represents a collection of ActionParam objects.
+ * @class
+ * @augments Svidget.ObjectCollection
+ * @memberof Svidget.Svidget
+ * @param {array} array - An array of ActionParam objects.
+ * @param {Svidget.Action} parent - The Action instance that is the parent for this ActionParam collection.
+ */
 Svidget.ActionParamCollection = function (array, parent) {
 	Svidget.ObjectCollection.apply(this, [array, Svidget.ActionParam]);
 	this.__type = "Svidget.ActionParamCollection";

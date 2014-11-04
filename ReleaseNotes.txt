@@ -6,3 +6,7 @@
 0.1.1
 - widget.params() collection initially populated from <param> elements in <object> element that instantiated the widget
 - allow calling EventDesc/EventDescProxy .on() and .off() with just a handler
+
+0.1.2
+- added Svidget.Collection.last()
+- minor fixes with Collection and Action

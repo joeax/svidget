@@ -15,13 +15,15 @@ Svidget.Proxy
 
 ******************************************/
 
-// for settable properties:
-// - notify root of property change
-// - root communicates change to widget
-// - widget communicates success or failure
-//   - if success, widget triggers event
-//   - if fail, root calls fail function with current value, object restores value
-
+/**
+ * Represents a proxy to an EventDesc object.
+ * @class
+ * @augments Svidget.Proxy
+ * @memberof Svidget
+ * @param {string} name - The name of the event.
+ * @param {object} options - The options for the event. Example: { enabled: true, description: "An event" }
+ * @param {Svidget.WidgetReference} parent - The widget reference instance that is the parent for this event proxy.
+ */
 Svidget.EventDescProxy = function (name, options, parent) {
 	var eventName = "trigger";
 	var that = this;
@@ -51,7 +53,15 @@ Svidget.extend(Svidget.EventDescProxy, {
 		return this.getPrivate("eventName");
 	},
 
-	// overwrites: Svidget.Proxy.on
+	/**
+	 * Registers an event handler for the EventDescProxy object.
+	 * @method
+	 * @param {string} [type] - The event type i.e. "change". If not specified it is assumed it is for the event itself.
+	 * @param {object} [data] - Arbirary data to initialize Event object with when event is triggered.
+	 * @param {string} [name] - The name of the handler. Useful when removing the handler for the event.
+	 * @param {Function} handler - The event handler.
+	 * @returns {boolean} - True if the event handler was successfully added.
+	*/
 	on: function (type, data, name, handler) {
 		// if type is function, then assume type not passes so use default event name
 		if (Svidget.isFunction(type)) {
@@ -70,7 +80,13 @@ Svidget.extend(Svidget.EventDescProxy, {
 		this.eventContainer().on(this.triggerEventName(), data, name, handler);
 	},
 
-	// overwrites: Svidget.Proxy.off
+	/**
+	 * Unregisters an event handler for the EventDescProxy object.
+	 * @method
+	 * @param {string} [type] - The event type i.e. "change", "paramremove". If not specified it is assumed it is for the event itself.
+	 * @param {(Function|string)} handlerOrName - The handler function and/or the handler name used when calling on().
+	 * @returns {boolean} - True if the event handler was successfully removed.
+	*/
 	off: function (type, handlerOrName) {
 		// if type is function, then assume type not passes so use default event name
 		if (Svidget.isFunction(type)) {
@@ -85,7 +101,11 @@ Svidget.extend(Svidget.EventDescProxy, {
 		this.eventContainer().off(this.triggerEventName(), handlerOrName);
 	},
 
-	// this is called at page level, to trigger the event (if external) on the widget
+	/**
+	 * Triggers the event for the EventDesc object. Event must be external.
+	 * @method
+	 * @param {object} value - The value to set to the Event.value property.
+	*/
 	trigger: function (value) {
 		// generally an event wouldn't be triggerable from outside, but we leave in the ability for testing purposes
 		if (!this.canTrigger()) return false;
@@ -105,6 +125,11 @@ Svidget.extend(Svidget.EventDescProxy, {
 
 	// overrides
 
+	/**
+	 * Gets a string representation of this object.
+	 * @method
+	 * @returns {string}
+	*/
 	toString: function () {
 		return "[Svidget.EventDescProxy { name: \"" + this.name + "\" }]";
 	}

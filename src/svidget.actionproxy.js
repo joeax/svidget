@@ -7,14 +7,23 @@ and maintains a constant sync between itself and its underlying action.
 Extends: Svidget.Proxy
 
 Dependencies:
-Svidget.Core
-Svidget.Collection
-Svidget.ObjectPrototype
-Svidget.Action
-Svidget.Proxy
+svidget.core.js
+svidget.collection.js
+svidget.objectprototype.js
+svidget.action.js
+svidget.proxy.js
 
 ******************************************/
 
+/**
+ * Represents a proxy to an Action object.
+ * @class
+ * @augments Svidget.Proxy
+ * @memberof Svidget.Svidget
+ * @param {string} name - The name of the action.
+ * @param {object} options - The options for the action. Example: { enabled: true, description: "An action" }
+ * @param {Svidget.WidgetReference} parent - The widget reference instance that is the parent for this action proxy.
+ */
 Svidget.ActionProxy = function (name, options, parent) {
 	var that = this;
 	var valueObj = {
@@ -41,6 +50,12 @@ Svidget.ActionProxy = function (name, options, parent) {
 Svidget.ActionProxy.prototype = new Svidget.Proxy;
 Svidget.extend(Svidget.ActionProxy, {
 
+	/**
+	 * Invokes the action. The params passes in will be passed to the action params in order.
+	 * @method
+	 * @param {...object} args - The arguments that correspond to action params.
+	 * @returns {boolean} - True if invoke succeeds.
+	*/
 	invoke: function () {
 		// build args obj from arguments
 		if (!this.canInvoke()) return false;
@@ -57,15 +72,31 @@ Svidget.extend(Svidget.ActionProxy, {
 		this.triggerFromWidget("invoke", { returnValue: returnVal }, this);
 	},
 
-	// action params
-	// select by index: params(0)
-	// select by name: params("color")
-	// return read-only collection: params()
+	/**
+	 * Gets a collection of all ActionParamProxy objects, or a sub-collection based on the selector.
+	 * Selector can be an integer to get the zero-based item at that index, or a string to select by that ID.
+	 * Examples:
+	 * params(0)
+	 * params("color")
+	 * @method
+	 * @param {(string|number)} [selector] - The selector string or integer.
+	 * @returns {Svidget.ActionParamProxyCollection} - A collection based on the selector, or the entire collection.
+	*/
 	params: function (selector) {
 		var col = this.getset("params");
 		return this.select(col, selector);
 	},
 
+	/**
+	 * Gets the ActionParamProxy based on the selector.
+	 * Selector can be an integer to get the zero-based item at that index, or a string to select by that ID.
+	 * Examples:
+	 * param(0)
+	 * param("color")
+	 * @method
+	 * @param {(string|number)} selector - The index or ID of the param.
+	 * @returns {Svidget.ActionParam} - The ActionParamProxy based on the selector. If selector is invalid, null is returned.
+	*/
 	param: function (selector) {
 		var col = this.getset("params");
 		var item = this.selectFirst(col, selector);
@@ -103,6 +134,11 @@ Svidget.extend(Svidget.ActionProxy, {
 		this.triggerFromWidget("paramremove", param.name());
 	},
 
+	/**
+	 * Gets a string representation of this object.
+	 * @method
+	 * @returns {string}
+	*/
 	toString: function () {
 		return "[Svidget.ActionProxy { name: \"" + this.name + "\" }]";
 	}

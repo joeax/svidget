@@ -1,19 +1,26 @@
 ﻿/*****************************************
 svidget.paramcollection.js
 
-Contains the core framework elements.
+Defines a collection for Param objects.
+
+Last Updated: 03-Sep-2014
 
 Dependencies:
-(none)
-
-Browser Support:
-IE9+, FF?+, Chrome?+
-
-Prerequisites:
-
+Svidget.Core
+Svidget.Collection
+Svidget.ObjectCollection
+Svidget.Action
 
 ******************************************/
 
+/**
+ * Represents a collection of Param objects.
+ * @constructor
+ * @augments ObjectCollection
+ * @memberof Svidget
+ * @param {array} array - An array of Param objects.
+ * @param {Svidget.Widget} parent - The Widget instance that is the parent for this Param collection.
+ */
 Svidget.ParamCollection = function (array, parent) {
 	Svidget.ObjectCollection.apply(this, [array, Svidget.Param]);
 	this.__type = "Svidget.ParamCollection";

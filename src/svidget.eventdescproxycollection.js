@@ -13,8 +13,14 @@ Svidget.ParamProxy
 
 ******************************************/
 
-/* Namespaces */
-
+/**
+ * Represents a collection of EventDescProxy objects.
+ * @constructor
+ * @augments ObjectCollection
+ * @memberof Svidget
+ * @param {array} array - An array of EventDescProxy objects.
+ * @param {Svidget.WidgetReference} parent - The WidgetReference instance that is the parent for this EventDescProxy collection.
+ */
 Svidget.EventDescProxyCollection = function (array, parent) {
 	Svidget.ObjectCollection.apply(this, [array, Svidget.EventDescProxy]);
 	this.__type = "Svidget.EventDescProxyCollection";

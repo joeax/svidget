@@ -6,18 +6,27 @@ Defines an action entity for a widget.
 Last Updated: 03-Sep-2014
 
 Dependencies:
-Svidget.Core
-Svidget.Collection
-Svidget.EventPrototype
-Svidget.ObjectPrototype
-Svidget.ActionParam
-Svidget.ActionParamCollection
-Svidget.Widget
+svidget.core.js
+svidget.collection.js
+svidget.eventprototype.js
+svidget.objectprototype.js
+svidget.actionparam.js
+svidget.actionparamcollection.js
+svidget.widget.js
 
 ******************************************/
 
 
-
+/**
+ * Represents an widget action, defined by <svidget:action>.
+ * @class
+ * @mixes Svidget.ObjectPrototype
+ * @augments Svidget.EventPrototype
+ * @memberof Svidget
+ * @param {string} name - The name of the action.
+ * @param {object} options - The options for the action param. Example: { enabled: true, description: "An action" }
+ * @param {Svidget.Widget} parent - The widget instance that is the parent for this action.
+ */
 Svidget.Action = function (name, options, parent) {
 	this.__type = "Svidget.Action";
 	// validate:
@@ -56,12 +65,12 @@ Svidget.Action = function (name, options, parent) {
 				return new Function("return " + bind);
 			else 
 				return new Function(bind);
-			//try {
+			/*//try {
 			//	return eval(options.binding);
 			//}
 			//catch (ex) {
 			//	return undefined;
-			//}
+			//}*/
 		}
 		return null;
 	}
@@ -71,11 +80,6 @@ Svidget.Action = function (name, options, parent) {
 	privates.bindingFunc = this.buildBindingFunc(privates.binding);
 
 	// wire up event bubble parent
-	//if (parent && parent.actionBubble) {
-	//	for (var i = 0; i < Svidget.Action.eventTypes.length; i++) {
-	//		this.setBubbleParent(Svidget.Action.eventTypes[i], Svidget.wrap(parent.actionBubble, parent));
-	//	}
-	//}
 	this.registerBubbleCallback(Svidget.Action.eventTypes, parent, parent.actionBubble);
 
 	// add/remove event handlers for params
@@ -85,22 +89,37 @@ Svidget.Action = function (name, options, parent) {
 
 Svidget.Action.prototype = {
 
-	// name is immutable after creation
+	/* REGION Public Properties */
+
+	/**
+	 * Gets the action name.
+	 * @method
+	 * @returns {string}
+	*/
+	/*
+	// Note: name is immutable after creation
+	*/
 	name: function () {
 		var res = this.getPrivate("name");
 		return res;
 	},
 
-	// attached is a state property
-	// gets whether the param is attached to the widget
+	/**
+	 * Gets whether the action is attached to the widget.
+	 * @method
+	 * @returns {boolean}
+	*/
 	attached: function () {
 		var widget = this.getset("widget");
 		return this.widget != null && this.widget instanceof Svidget.Widget;
 	},
 
-	// in get mode: returns value
-	// in set mode: returns true/false if set succeeded
-
+	/**
+	 * Gets or sets whether the action is enabled. 
+	 * @method
+	 * @param {boolean} [val] - Sets the enabled state when specified.
+	 * @returns {boolean} - The enabled state when nothing is passed, or true/false if succeeded or failed when setting.
+	*/
 	enabled: function (val) {
 		var res = this.getset("enabled", val);
 		// if undefined its a get so return value, if res is false then set failed
@@ -111,16 +130,12 @@ Svidget.Action.prototype = {
 		return true;
 	},
 
-	external: function (val) {
-		var res = this.getset("external", val);
-		// if undefined its a get so return value, if res is false then set failed
-		if (val === undefined || !!!res) return res;
-		// fire "changed" event
-		this.trigger("change", { property: "external", value: val });
-
-		return true;
-	},
-
+	/**
+	 * Gets or sets the description.
+	 * @method
+	 * @param {string} [val] - Sets the value when specified.
+	 * @returns {string} - The value for a get, or true/false if succeeded or failed for a set.
+	*/
 	description: function (val) {
 		var res = this.getset("description", val);
 		// if undefined its a get so return value, if res is false then set failed
@@ -131,9 +146,36 @@ Svidget.Action.prototype = {
 		return true;
 	},
 
+	/**
+	 * Gets or sets whether the action is external and can be invoked from the page. 
+	 * @method
+	 * @param {boolean} [val] - Sets the value when specified.
+	 * @returns {boolean} - The value for a get, or true/false if succeeded or failed for a set.
+	*/
+	external: function (val) {
+		var res = this.getset("external", val);
+		// if undefined its a get so return value, if res is false then set failed
+		if (val === undefined || !!!res) return res;
+		// fire "changed" event
+		this.trigger("change", { property: "external", value: val });
+
+		return true;
+	},
+
+	/**
+	 * Gets or sets the binding for the action. This can be a global function name, or a function.
+	 * @method
+	 * @param {Boolean} [val] - Sets the value when specified.
+	 * @returns {Boolean} - The value for a get, or true/false if succeeded or failed for a set.
+	*/
 	binding: function (bind) {
-		// todo: bind can be string or function, so check for both, enforce
-		//bind = bind !== undefined ? bind + "" : undefined; // coerce to string
+		// bind can be string or function, so check for both, enforce
+		if (bind !== undefined) {
+			if (typeof (bind) !== "function") bind = bind + ""; // coerce to string
+			// update bindingFunc
+			var func = this.buildBindingFunc(bind);
+			this.getset("bindingFunc", func);
+		}
 		var res = this.getset("binding", bind);
 		// if undefined its a get so return value, if res is false then set failed
 		if (bind === undefined || !!!res) return res;
@@ -144,17 +186,23 @@ Svidget.Action.prototype = {
 	},
 
 	bindingFunc: function () {
-		var bind = this.binding();
+		var bind = this.getset("binding");
 		var func = this.buildBindingFunc(bind);
 		return func;
 	},
 
-	// invocation
+	/* REGION Invocation */
 
+	/**
+	 * Invokes the action. The params passes in will be passed to the action params in order.
+	 * @method
+	 * @param {...object} args - The arguments that correspond to action params.
+	 * @returns {boolean} - True if invoke succeeds.
+	*/
 	invoke: function () {
 		if (!this.enabled()) return false;
 		var func = this.invocableBindingFunc();
-		if (!func) return;
+		if (!func) return false;
 		var returnVal = func.apply(null, arguments); //Svidget.root, arguments);
 		//var argObj = this.toArgumentObject(Svidget.array(arguments));
 		this.trigger("invoke", { returnValue: returnVal });
@@ -183,14 +231,33 @@ Svidget.Action.prototype = {
 		return argsObj;
 	},
 
-	// select by index: params(0)
-	// select by name: params("color")
-	// return read-only collection: params()
+	/* REGION Params */
+
+	/**
+	 * Gets a collection of all ActionParam objects, or a sub-collection based on the selector.
+	 * Selector can be an integer to get the zero-based item at that index, or a string to select by that ID.
+	 * Examples:
+	 * params(0)
+	 * params("color")
+	 * @method
+	 * @param {(string|number)} [selector] - The selector string or integer.
+	 * @returns {Svidget.ActionParamCollection} - A collection based on the selector, or the entire collection.
+	*/
 	params: function (selector) {
 		var col = this.getset("params");
 		return this.select(col, selector);
 	},
 
+	/**
+	 * Gets the ActionParam based on the selector.
+	 * Selector can be an integer to get the zero-based item at that index, or a string to select by that ID.
+	 * Examples:
+	 * param(0)
+	 * param("color")
+	 * @method
+	 * @param {(string|number)} selector - The index or ID of the param.
+	 * @returns {Svidget.ActionParam} - The ActionParam based on the selector. If selector is invalid, null is returned.
+	*/
 	param: function (selector) {
 		//var item = this.params(selector).first();
 		var col = this.getset("params");
@@ -198,12 +265,31 @@ Svidget.Action.prototype = {
 		return item;
 	},
 
-	// public
+	/**
+	 * Adds a ActionParam to the action. If a duplicate name is supplied the ActionParam will fail to add.
+	 * Examples:
+	 * addParam("backColor")
+	 * addParam("backColor", { description: "Background color."})
+	 * @method
+	 * @param {string} name - The name of the ActionParam to add.
+	 * @param {object} [options] - The options used to contruct the ActionParam. Example: { description: "A param" }
+	 * @returns {Svidget.ActionParam} - The ActionParam that was added, or null if ActionParam failed to add.
+	*/
+	/*
+	Adding an previously constructed Param object reserved for internal use.
+	*/
 	addParam: function (name, options) {
 		return this.params().add(name, options, this);
 	},
 
-	// public
+	/**
+	 * Removes an ActionParam from the action. 
+	 * Examples:
+	 * removeParam("color")
+	 * @method
+	 * @param {string} name - The name of the ActionParam to remove.
+	 * @returns {boolean} - True if the Param was successfully removed, false otherwise.
+	*/
 	removeParam: function (name) {
 		return this.params().remove(name);
 	},
@@ -233,6 +319,11 @@ Svidget.Action.prototype = {
 
 	// helpers
 
+	/**
+	 * Serializes the Action object for transport across a window boundary.
+	 * @method
+	 * @returns {boolean} - A generic serialized object representing the Action.
+	*/
 	toTransport: function () {
 		var transport = {
 			name: this.name(),
@@ -253,8 +344,13 @@ Svidget.Action.prototype = {
 
 	// overrides
 
+	/**
+	 * Gets a string representation of this object.
+	 * @method
+	 * @returns {string}
+	*/
 	toString: function () {
-		return "[Svidget.Action { name: \"" + this.name + "\" }]";
+		return "[Svidget.Action { name: \"" + this.name() + "\" }]";
 	}
 
 }

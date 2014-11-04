@@ -4,8 +4,6 @@ svidget.paramproxy.js
 Represents a wrapper to an actual param contained within a widget. Contains a cache of the properties of the param,
 and maintains a constant sync between itself and its underlying param.
 
-Extends: Svidget.Proxy
-
 Dependencies:
 Svidget.Core
 Svidget.Collection
@@ -15,13 +13,17 @@ Svidget.Proxy
 
 ******************************************/
 
-// for settable properties:
-// - notify root of property change
-// - root communicates change to widget
-// - widget communicates success or failure
-//   - if success, widget triggers event
-//   - if fail, root calls fail function with current value, object restores value
 
+/**
+ * Represents a proxy to an Param object.
+ * @class
+ * @augments Svidget.Proxy
+ * @memberof Svidget
+ * @param {string} name - The name of the param proxy.
+ * @param {object} value - The value for the param proxy.
+ * @param {object} options - The options for the param proxy. Example: { enabled: true, description: "An event" }
+ * @param {Svidget.WidgetReference} parent - The widget reference that is the parent for this param.
+ */
 Svidget.ParamProxy = function (name, value, options, parent) {
 	var valueObj = {
 		name: name,
@@ -61,6 +63,11 @@ Svidget.extend(Svidget.ParamProxy, {
 		this.triggerFromWidget("valuechange", { value: val }, this);
 	},
 
+	/**
+	 * Gets a string representation of this object.
+	 * @method
+	 * @returns {string}
+	*/
 	toString: function () {
 		return "[Svidget.ParamProxy { name: \"" + this.name + "\" }]";
 	}
