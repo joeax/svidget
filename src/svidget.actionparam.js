@@ -34,11 +34,12 @@ Svidget.ActionParam = function (name, options, parent) {
 
 	// private fields
 	var privates = new (function () {
-		this.writable = ["type", "subtype", "description"];
+		this.writable = ["type", "subtype", "description", "defvalue"];
 		this.name = name;
 		this.type = options.type || "string";
 		this.subtype = options.subtype || null;
 		this.description = options.description;
+		this.defvalue = options.defvalue; //todo: convert to type
 		this.parent = parent;
 	})();
 	// private accessors
@@ -60,6 +61,38 @@ Svidget.ActionParam.prototype = {
 		return transport;
 	},
 
+	/* REGION Events */
+
+	/**
+	* Adds an event handler for the "change" event. 
+	 * @method
+	 * @param {object} [data] - Arbirary data to initialize Event object with when event is triggered.
+	 * @param {string} [name] - The name of the handler. Useful when removing the handler for the event.
+	 * @param {Function} handler - The event handler.
+	 * @returns {boolean} - True if the event handler was successfully added.
+	*/
+	onchange: function (data, name, handler) {
+		return this.on("change", data, name, handler);
+	},
+
+	ondeclaredchange: function (handler) {
+		return this.onchange(null, Svidget.declaredHandlerName, handler);
+	},
+
+	/**
+	* Removes an event handler for the "change" event. 
+	* @method
+	* @param {(Function|string)} handlerOrName - The handler function and/or the handler name used when calling on().
+	* @returns {boolean} - True if the event handler was successfully removed.
+	*/
+	offchange: function (handlerOrName) {
+		this.off("change", handlerOrName);
+	},
+
+	offdeclaredchange: function () {
+		return this.offchange(Svidget.declaredHandlerName);
+	},
+
 	/* overrides */
 
 	/**
@@ -74,8 +107,8 @@ Svidget.ActionParam.prototype = {
 }
 
 Svidget.ActionParam.eventTypes = ["change"];
-Svidget.ActionParam.optionProperties = ["type", "subtype", "description"];
-Svidget.ActionParam.allProxyProperties = ["name", "type", "subtype", "description"];
+Svidget.ActionParam.optionProperties = ["type", "subtype", "description", "defvalue"];
+Svidget.ActionParam.allProxyProperties = ["name", "type", "subtype", "description", "defvalue"];
 Svidget.ActionParam.writableProxyProperties = [];
 
 Svidget.extend(Svidget.ActionParam, Svidget.ObjectPrototype);

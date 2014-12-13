@@ -596,6 +596,186 @@ Svidget.Widget.prototype = {
 		return evs;
 	},
 
+	/**
+	* Adds an event handler for the "paramadd" event. 
+	 * @method
+	 * @param {object} [data] - Arbirary data to initialize Event object with when event is triggered.
+	 * @param {string} [name] - The name of the handler. Useful when removing the handler for the event.
+	 * @param {Function} handler - The event handler.
+	 * @returns {boolean} - True if the event handler was successfully added.
+	*/
+	onparamadd: function (data, name, handler) {
+		return this.on("paramadd", data, name, handler);
+	},
+
+	ondeclaredparamadd: function (handler) {
+		return this.onparamadd(null, Svidget.declaredHandlerName, handler);
+	},
+
+	/**
+	* Removes an event handler for the "paramadd" event. 
+	* @method
+	* @param {(Function|string)} handlerOrName - The handler function and/or the handler name used when calling on().
+	* @returns {boolean} - True if the event handler was successfully removed.
+	*/
+	offparamadd: function (handlerOrName) {
+		return this.off("paramadd", handlerOrName);
+	},
+
+	offdeclaredparamadd: function () {
+		return this.offparamadd(Svidget.declaredHandlerName);
+	},
+
+	/**
+	* Adds an event handler for the "paramremove" event. 
+	 * @method
+	 * @param {object} [data] - Arbirary data to initialize Event object with when event is triggered.
+	 * @param {string} [name] - The name of the handler. Useful when removing the handler for the event.
+	 * @param {Function} handler - The event handler.
+	 * @returns {boolean} - True if the event handler was successfully added.
+	*/
+	onparamremove: function (data, name, handler) {
+		return this.on("paramremove", data, name, handler);
+	},
+
+	ondeclaredparamremove: function (handler) {
+		return this.onparamremove(null, Svidget.declaredHandlerName, handler);
+	},
+
+	/**
+	* Removes an event handler for the "paramremove" event. 
+	* @method
+	* @param {(Function|string)} handlerOrName - The handler function and/or the handler name used when calling on().
+	* @returns {boolean} - True if the event handler was successfully removed.
+	*/
+	offparamremove: function (handlerOrName) {
+		return this.off("paramremove", handlerOrName);
+	},
+
+	offdeclaredparamremove: function () {
+		return this.offparamremove(Svidget.declaredHandlerName);
+	},
+
+	/**
+* Adds an event handler for the "actionadd" event. 
+ * @method
+ * @action {object} [data] - Arbirary data to initialize Event object with when event is triggered.
+ * @action {string} [name] - The name of the handler. Useful when removing the handler for the event.
+ * @action {Function} handler - The event handler.
+ * @returns {boolean} - True if the event handler was successfully added.
+*/
+	onactionadd: function (data, name, handler) {
+		return this.on("actionadd", data, name, handler);
+	},
+
+	ondeclaredactionadd: function (handler) {
+		return this.onactionadd(null, Svidget.declaredHandlerName, handler);
+	},
+
+	/**
+	* Removes an event handler for the "actionadd" event. 
+	* @method
+	* @action {(Function|string)} handlerOrName - The handler function and/or the handler name used when calling on().
+	* @returns {boolean} - True if the event handler was successfully removed.
+	*/
+	offactionadd: function (handlerOrName) {
+		return this.off("actionadd", handlerOrName);
+	},
+
+	offdeclaredactionadd: function () {
+		return this.offactionadd(Svidget.declaredHandlerName);
+	},
+
+	/**
+	* Adds an event handler for the "actionremove" event. 
+	 * @method
+	 * @action {object} [data] - Arbirary data to initialize Event object with when event is triggered.
+	 * @action {string} [name] - The name of the handler. Useful when removing the handler for the event.
+	 * @action {Function} handler - The event handler.
+	 * @returns {boolean} - True if the event handler was successfully added.
+	*/
+	onactionremove: function (data, name, handler) {
+		return this.on("actionremove", data, name, handler);
+	},
+
+	ondeclaredactionremove: function (handler) {
+		return this.onactionremove(null, Svidget.declaredHandlerName, handler);
+	},
+
+	/**
+	* Removes an event handler for the "actionremove" event. 
+	* @method
+	* @action {(Function|string)} handlerOrName - The handler function and/or the handler name used when calling on().
+	* @returns {boolean} - True if the event handler was successfully removed.
+	*/
+	offactionremove: function (handlerOrName) {
+		return this.off("actionremove", handlerOrName);
+	},
+
+	offdeclaredactionremove: function () {
+		return this.offactionremove(Svidget.declaredHandlerName);
+	},
+
+	/**
+* Adds an event handler for the "eventadd" event. 
+* @method
+* @event {object} [data] - Arbirary data to initialize Event object with when event is triggered.
+* @event {string} [name] - The name of the handler. Useful when removing the handler for the event.
+* @event {Function} handler - The event handler.
+* @returns {boolean} - True if the event handler was successfully added.
+*/
+	oneventadd: function (data, name, handler) {
+		return this.on("eventadd", data, name, handler);
+	},
+
+	ondeclaredeventadd: function (handler) {
+		return this.oneventadd(null, Svidget.declaredHandlerName, handler);
+	},
+
+	/**
+	* Removes an event handler for the "eventadd" event. 
+	* @method
+	* @event {(Function|string)} handlerOrName - The handler function and/or the handler name used when calling on().
+	* @returns {boolean} - True if the event handler was successfully removed.
+	*/
+	offeventadd: function (handlerOrName) {
+		return this.off("eventadd", handlerOrName);
+	},
+
+	offdeclaredeventadd: function () {
+		return this.offeventadd(Svidget.declaredHandlerName);
+	},
+
+	/**
+	* Adds an event handler for the "eventremove" event. 
+	 * @method
+	 * @event {object} [data] - Arbirary data to initialize Event object with when event is triggered.
+	 * @event {string} [name] - The name of the handler. Useful when removing the handler for the event.
+	 * @event {Function} handler - The event handler.
+	 * @returns {boolean} - True if the event handler was successfully added.
+	*/
+	oneventremove: function (data, name, handler) {
+		return this.on("eventremove", data, name, handler);
+	},
+
+	ondeclaredeventremove: function (handler) {
+		return this.oneventremove(null, Svidget.declaredHandlerName, handler);
+	},
+
+	/**
+	* Removes an event handler for the "eventremove" event. 
+	* @method
+	* @event {(Function|string)} handlerOrName - The handler function and/or the handler name used when calling on().
+	* @returns {boolean} - True if the event handler was successfully removed.
+	*/
+	offeventremove: function (handlerOrName) {
+		return this.off("eventremove", handlerOrName);
+	},
+
+	offdeclaredeventremove: function () {
+		return this.offeventremove(Svidget.declaredHandlerName);
+	},
+
 	// overrides
 
 	/**

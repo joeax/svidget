@@ -80,6 +80,22 @@ Svidget.ParamPrototype = {
 		return true;
 	},
 
+	/**
+	 * Gets or sets the param defvalue. This is the default value if nothing (or undefined) is set.
+	 * @method
+	 * @param {string} [val] - Sets the value when specified.
+	 * @returns {string} - The value for a get, or true/false if succeeded or failed for a set.
+	*/
+	defvalue: function (val) {
+		var res = this.getset("defvalue", val, this.validateSubtype);
+		// if undefined its a get so return value, if res is false then set failed
+		if (val === undefined || !!!res) return res;
+		// fire "change" event
+		if (this.trigger) this.trigger("change", { property: "defvalue", value: val });
+
+		return true;
+	},
+
 	validateType: function (t) {
 		if (!typeof t === "string") return false;
 		return (Svidget.ParamTypes[t] != undefined);

@@ -27,8 +27,8 @@ var Svidget = {};
 
 Svidget.emptyArray = [];
 Svidget.root = window; // note: this may be different for node.js
-Svidget.version = "0.1.2";
-
+Svidget.version = "0.1.1";
+Svidget.declaredHandlerName = "_declared";
 
 /* REGION Special Shortcut Methods */
 
@@ -92,6 +92,27 @@ Svidget.wrap = function (func, context) {
 		return func.apply(context, arguments);
 	};
 	return p;
+}
+
+// Find the function by name in the specified scope, or just return it if is already a function
+// By default scope == global scope
+Svidget.findFunction = function (funcNameOrInstance, scope) {
+	if (typeof funcNameOrInstance === "function") {
+		return funcNameOrInstance;
+	}
+	if (scope == null) scope = Svidget.root; // global scope
+	if (funcNameOrInstance != null) {
+		var bind = funcNameOrInstance + ""; //coerce to string
+		var func = scope[bind];
+		if (func == null) return null;
+		if (typeof func === "function") return func;
+		// bind is an expression, so just wrap it in a function
+		if (bind.substr(0, 7) != "return ")
+			return new Function("return " + bind);
+		else
+			return new Function(bind);
+	}
+	return null;
 }
 
 Svidget.log = function (msg) {

@@ -1,5 +1,5 @@
 /*** * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
- * Svidget.js v0.1.1
+ * Svidget.js v0.1.2
  * Release Date: 2014-11-03
  * 
  * A framework for creating complex widgets using SVG.
@@ -39,7 +39,7 @@
     Svidget.emptyArray = [];
     Svidget.root = window;
     // note: this may be different for node.js
-    Svidget.version = "0.1.1";
+    Svidget.version = "0.1.2";
     /** @function Svidget.array
     Builds an array from any collection, be it another array, HTMLCollection, etc. */
     Svidget.array = function(anyCollection) {

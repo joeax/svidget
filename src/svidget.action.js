@@ -51,40 +51,39 @@ Svidget.Action = function (name, options, parent) {
 	this.setup(privates);
 
 	// todo: move to core or util
-	this.buildBindingFunc = function (bind) {
-		if (typeof bind === "function") {
-			return bind;
-		}
-		else if (bind != null) {
-			bind = bind + ""; //coerce to string
-			var func = Svidget.root[bind];
-			if (func == null) return null;
-			if (typeof func === "function") return func;
-			// bind is an expression, so just wrap it in a function
-			if (bind.substr(0, 7) != "return ")
-				return new Function("return " + bind);
-			else 
-				return new Function(bind);
-			/*//try {
-			//	return eval(options.binding);
-			//}
-			//catch (ex) {
-			//	return undefined;
-			//}*/
-		}
-		return null;
-	}
+	//this.buildBindingFunc = function (bind) {
+	//	if (typeof bind === "function") {
+	//		return bind;
+	//	}
+	//	else if (bind != null) {
+	//		bind = bind + ""; //coerce to string
+	//		var func = Svidget.root[bind];
+	//		if (func == null) return null;
+	//		if (typeof func === "function") return func;
+	//		// bind is an expression, so just wrap it in a function
+	//		if (bind.substr(0, 7) != "return ")
+	//			return new Function("return " + bind);
+	//		else 
+	//			return new Function(bind);
+	//		/*//try {
+	//		//	return eval(options.binding);
+	//		//}
+	//		//catch (ex) {
+	//		//	return undefined;
+	//		//}*/
+	//	}
+	//	return null;
+	//}
 
 	// create bindingFunc from binding
 	// binding can be string or function
-	privates.bindingFunc = this.buildBindingFunc(privates.binding);
+	privates.bindingFunc = Svidget.findFunction(privates.binding);
 
 	// wire up event bubble parent
 	this.registerBubbleCallback(Svidget.Action.eventTypes, parent, parent.actionBubble);
 
 	// add/remove event handlers for params
 	this.wireCollectionAddRemoveHandlers(privates.params, that.paramAdded, that.paramRemoved);
-
 }
 
 Svidget.Action.prototype = {
@@ -173,7 +172,7 @@ Svidget.Action.prototype = {
 		if (bind !== undefined) {
 			if (typeof (bind) !== "function") bind = bind + ""; // coerce to string
 			// update bindingFunc
-			var func = this.buildBindingFunc(bind);
+			var func = Svidget.findFunction(bind);
 			this.getset("bindingFunc", func);
 		}
 		var res = this.getset("binding", bind);
@@ -187,7 +186,7 @@ Svidget.Action.prototype = {
 
 	bindingFunc: function () {
 		var bind = this.getset("binding");
-		var func = this.buildBindingFunc(bind);
+		var func = Svidget.findFunction(bind);
 		return func;
 	},
 
@@ -203,7 +202,8 @@ Svidget.Action.prototype = {
 		if (!this.enabled()) return false;
 		var func = this.invocableBindingFunc();
 		if (!func) return false;
-		var returnVal = func.apply(null, arguments); //Svidget.root, arguments);
+		var argArray = this.buildArgumentArray(Svidget.array(arguments));
+		var returnVal = func.apply(null, argArray); //Svidget.root, arguments);
 		//var argObj = this.toArgumentObject(Svidget.array(arguments));
 		this.trigger("invoke", { returnValue: returnVal });
 		return true;
@@ -219,17 +219,39 @@ Svidget.Action.prototype = {
 		return func;
 	},
 
+	// builds an array of argument to use in invoke() based on the action params
+	buildArgumentArray: function (args) {
+		var argsArray = [];
+		args = args == null ? [] : args;
+		var col = this.params();
+		// loop through action params
+		for (var i = 0; i < col.length; i++) {
+			var p = col[i];
+			var arg = undefined;
+			if (i < args.length) arg = args[i];
+			if (arg === undefined) arg = p.defvalue(); // an arg wasn't supplied by caller, so use default value from action param if provided
+			argsArray.push(arg);
+		}
+		return argsArray;
+	},
+
 	// build an object based on the action params, and values from arguments on invoke
+	// update: not currently used
 	toArgumentObject: function (args) {
 		var argsObj = {};
 		var col = this.params();
-		for (var i = 0; i < args.length; i++) {
-			if (i >= col.length) break;
+		// loop through action params
+		for (var i = 0; i < col.length; i++) {
 			var p = col[i];
-			argsObj[p.name()] = args[i];
+			var arg = undefined;
+			if (i < args.length) arg = args[i];
+			if (arg === undefined) arg = p.defvalue(); // an arg wasn't supplied by caller, so use default value from action param if provided
+			argsObj[p.name()] = arg;
 		}
 		return argsObj;
 	},
+
+
 
 	/* REGION Params */
 
@@ -317,6 +339,158 @@ Svidget.Action.prototype = {
 		this.trigger("paramremove", param.name());
 	},
 
+	/* REGION Events */
+
+	/**
+	* Adds an event handler for the "change" event. 
+	 * @method
+	 * @param {object} [data] - Arbirary data to initialize Event object with when event is triggered.
+	 * @param {string} [name] - The name of the handler. Useful when removing the handler for the event.
+	 * @param {Function} handler - The event handler.
+	 * @returns {boolean} - True if the event handler was successfully added.
+	*/
+	onchange: function (data, name, handler) {
+		return this.on("change", data, name, handler);
+	},
+
+	ondeclaredchange: function (handler) {
+		return this.onchange(null, Svidget.declaredHandlerName, handler);
+	},
+
+	/**
+	* Removes an event handler for the "change" event. 
+	* @method
+	* @param {(Function|string)} handlerOrName - The handler function and/or the handler name used when calling on().
+	* @returns {boolean} - True if the event handler was successfully removed.
+	*/
+	offchange: function (handlerOrName) {
+		this.off("change", handlerOrName);
+	},
+
+	offdeclaredchange: function () {
+		return this.offchange(Svidget.declaredHandlerName);
+	},
+
+	/**
+	* Adds an event handler for the "invoke" event. 
+	 * @method
+	 * @param {object} [data] - Arbirary data to initialize Event object with when event is triggered.
+	 * @param {string} [name] - The name of the handler. Useful when removing the handler for the event.
+	 * @param {Function} handler - The event handler.
+	 * @returns {boolean} - True if the event handler was successfully added.
+	*/
+	oninvoke: function (data, name, handler) {
+		return this.on("invoke", data, name, handler);
+	},
+
+	ondeclaredinvoke: function (handler) {
+		return this.oninvoke(null, Svidget.declaredHandlerName, handler);
+	},
+
+	/**
+	* Removes an event handler for the "invoke" event. 
+	* @method
+	* @param {(Function|string)} handlerOrName - The handler function and/or the handler name used when calling on().
+	* @returns {boolean} - True if the event handler was successfully removed.
+	*/
+	offinvoke: function (handlerOrName) {
+		return this.off("invoke", handlerOrName);
+	},
+
+	offdeclaredinvoke: function () {
+		return this.offinvoke(Svidget.declaredHandlerName);
+	},
+
+	/**
+	* Adds an event handler for the "paramadd" event. 
+	 * @method
+	 * @param {object} [data] - Arbirary data to initialize Event object with when event is triggered.
+	 * @param {string} [name] - The name of the handler. Useful when removing the handler for the event.
+	 * @param {Function} handler - The event handler.
+	 * @returns {boolean} - True if the event handler was successfully added.
+	*/
+	onparamadd: function (data, name, handler) {
+		return this.on("paramadd", data, name, handler);
+	},
+
+	ondeclaredparamadd: function (handler) {
+		return this.onparamadd(null, Svidget.declaredHandlerName, handler);
+	},
+
+	/**
+	* Removes an event handler for the "paramadd" event. 
+	* @method
+	* @param {(Function|string)} handlerOrName - The handler function and/or the handler name used when calling on().
+	* @returns {boolean} - True if the event handler was successfully removed.
+	*/
+	offparamadd: function (handlerOrName) {
+		return this.off("paramadd", handlerOrName);
+	},
+
+	offdeclaredparamadd: function () {
+		return this.offparamadd(Svidget.declaredHandlerName);
+	},
+
+	/**
+	* Adds an event handler for the "paramremove" event. 
+	 * @method
+	 * @param {object} [data] - Arbirary data to initialize Event object with when event is triggered.
+	 * @param {string} [name] - The name of the handler. Useful when removing the handler for the event.
+	 * @param {Function} handler - The event handler.
+	 * @returns {boolean} - True if the event handler was successfully added.
+	*/
+	onparamremove: function (data, name, handler) {
+		return this.on("paramremove", data, name, handler);
+	},
+
+	ondeclaredparamremove: function (handler) {
+		return this.onparamremove(null, Svidget.declaredHandlerName, handler);
+	},
+
+	/**
+	* Removes an event handler for the "paramremove" event. 
+	* @method
+	* @param {(Function|string)} handlerOrName - The handler function and/or the handler name used when calling on().
+	* @returns {boolean} - True if the event handler was successfully removed.
+	*/
+	offparamremove: function (handlerOrName) {
+		return this.off("paramremove", handlerOrName);
+	},
+
+	offdeclaredparamremove: function () {
+		return this.offparamremove(Svidget.declaredHandlerName);
+	},
+
+	/**
+	* Adds an event handler for the "paramremove" event. 
+	 * @method
+	 * @param {object} [data] - Arbirary data to initialize Event object with when event is triggered.
+	 * @param {string} [name] - The name of the handler. Useful when removing the handler for the event.
+	 * @param {Function} handler - The event handler.
+	 * @returns {boolean} - True if the event handler was successfully added.
+	*/
+	onparamchange: function (data, name, handler) {
+		return this.on("paramchange", data, name, handler);
+	},
+
+	ondeclaredparamchange: function (handler) {
+		return this.onparamchange(null, Svidget.declaredHandlerName, handler);
+	},
+
+	/**
+	* Removes an event handler for the "paramremove" event. 
+	* @method
+	* @param {(Function|string)} handlerOrName - The handler function and/or the handler name used when calling on().
+	* @returns {boolean} - True if the event handler was successfully removed.
+	*/
+	offparamchange: function (handlerOrName) {
+		return this.off("paramchange", handlerOrName);
+	},
+
+	offdeclaredparamchange: function () {
+		return this.offparamchange(Svidget.declaredHandlerName);
+	},
+
 	// helpers
 
 	/**
@@ -330,7 +504,7 @@ Svidget.Action.prototype = {
 			description: this.description(),
 			external: this.external(),
 			enabled: this.enabled(),
-			//binding: this.binding(), 
+			//binding: this.binding(), // not accessible by proxy
 			params: this.toParamsTransport()
 		};
 		return transport;

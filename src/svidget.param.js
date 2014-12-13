@@ -34,7 +34,7 @@ Svidget.Param = function (name, value, options, parent) {
 
 	// private fields
 	var privates = new (function () {
-		this.writable = ["binding", "enabled", "type", "subtype", "value", "description"];
+		this.writable = ["binding", "enabled", "type", "subtype", "value", "description", "defvalue"];
 		this.name = name;
 		this.shortname = options.shortname;
 		this.description = options.description;
@@ -42,6 +42,8 @@ Svidget.Param = function (name, value, options, parent) {
 		this.type = options.type || "string";
 		this.subtype = options.subtype || null;
 		this.value = value;
+		this.defvalue = options.defvalue; //todo: convert to type
+		this.sanitizer = options.sanitizer || null;
 		this.widget = parent;
 		this.binding = options.binding || null;
 		this.bindingQuery = null;
@@ -51,6 +53,9 @@ Svidget.Param = function (name, value, options, parent) {
 
 	// target or binding
 	privates.bindingQuery = Svidget.DOM.select(privates.binding);
+	// create sanitizerFunc from sanitizer
+	// sanitizer can be string or function
+	privates.sanitizerFunc = Svidget.findFunction(privates.sanitizer);
 
 	this.valuePopulated = false; // flipped to true once a value has been assigned or the default value is applied
 
@@ -111,11 +116,14 @@ Svidget.Param.prototype = {
 		if (val === undefined || !!!res) return res;
 		// check enabled
 		if (!this.enabled()) return false;
-		// todo: validate val using param.validate
+		// sanitize val using param.sanitizer
+		var sanVal = this.applySanitizer(val);
+		//if (sanVal === undefined) return false; // if sanitizer fails to returns a value, assume it has failed
 		// apply to binding
-		this.applyBinding(val);
-		// fire "valuechange" event
-		this.trigger("valuechange", { value: val });
+		this.applyBinding(sanVal);
+		// fire "set" event
+		this.trigger("valuechange", { value: sanVal }); // for backwards compatibility
+		this.trigger("set", { value: sanVal }); // 0.1.3: replaces "valuechange"
 
 		return true;
 	},
@@ -143,6 +151,45 @@ Svidget.Param.prototype = {
 		return this.getset("bindingQuery");
 	},
 
+	/**
+	* Gets or sets the sanitizer function for the param. The sanitizer function is called on set. 
+	* The sanitizer function takes a param and value (param, value) and returns the result value.
+	* This can be a global function name, or a function.
+	* @method
+	* @param {Boolean} [val] - Sets the value when specified.
+	* @returns {Boolean} - The value for a get, or true/false if succeeded or failed for a set.
+	*/
+	sanitizer: function (funcName) {
+		// bind can be string or function, so check for both, enforce
+		if (funcName !== undefined) {
+			if (typeof (funcName) !== "function") funcName = funcName + ""; // coerce to string
+			// update bindingFunc
+			var func = Svidget.findFunction(funcName);
+			this.getset("sanitizerFunc", func);
+		}
+		var res = this.getset("sanitizer", funcName);
+		// if undefined its a get so return value, if res is false then set failed
+		if (bind === undefined || !!!res) return res;
+		// fire "changed" event
+		this.trigger("change", { property: "sanitizer", value: val });
+
+		return true;
+	},
+
+	sanitizerFunc: function () {
+		var bind = this.getset("sanitizer");
+		var func = Svidget.findFunction(bind);
+		return func;
+	},
+
+	applySanitizer: function (val) {
+		var func = this.sanitizerFunc();
+		if (!func) return val;
+		var returnVal = func.call(null, this, val);
+		if (returnVal === undefined) return val; // if they didn't specify a return value, then just revert back to original val
+		return returnVal;
+	},
+
 	validateValue: function (val) {
 		return true;
 	},
@@ -154,6 +201,70 @@ Svidget.Param.prototype = {
 		if (bind == null) return;
 		bind.setValue(val);
 	},
+
+	/* REGION Events */
+
+	/**
+	* Adds an event handler for the "change" event. 
+	* @method
+	* @param {object} [data] - Arbirary data to initialize Event object with when event is triggered.
+	* @param {string} [name] - The name of the handler. Useful when removing the handler for the event.
+	* @param {Function} handler - The event handler.
+	* @returns {boolean} - True if the event handler was successfully added.
+	*/
+	onchange: function (data, name, handler) {
+		return this.on("change", data, name, handler);
+	},
+
+	ondeclaredchange: function (handler) {
+		return this.onchange(null, Svidget.declaredHandlerName, handler);
+	},
+
+	/**
+	* Removes an event handler for the "change" event. 
+	* @method
+	* @param {(Function|string)} handlerOrName - The handler function and/or the handler name used when calling on().
+	* @returns {boolean} - True if the event handler was successfully removed.
+	*/
+	offchange: function (handlerOrName) {
+		this.off("change", handlerOrName);
+	},
+
+	offdeclaredchange: function () {
+		return this.offchange(Svidget.declaredHandlerName);
+	},
+
+	/**
+	* Adds an event handler for the "set" event. 
+	* @method
+	* @param {object} [data] - Arbirary data to initialize Event object with when event is triggered.
+	* @param {string} [name] - The name of the handler. Useful when removing the handler for the event.
+	* @param {Function} handler - The event handler.
+	* @returns {boolean} - True if the event handler was successfully added.
+	*/
+	onset: function (data, name, handler) {
+		return this.on("set", data, name, handler);
+	},
+
+	ondeclaredset: function (handler) {
+		return this.onset(null, Svidget.declaredHandlerName, handler);
+	},
+
+	/**
+	* Removes an event handler for the "set" event. 
+	* @method
+	* @param {(Function|string)} handlerOrName - The handler function and/or the handler name used when calling on().
+	* @returns {boolean} - True if the event handler was successfully removed.
+	*/
+	offset: function (handlerOrName) {
+		return this.off("set", handlerOrName);
+	},
+
+	offdeclaredset: function () {
+		return this.offset(Svidget.declaredHandlerName);
+	},
+
+	/* REGION Misc */
 
 	/**
 	 * Serializes the Param object for transport across a window boundary.
@@ -168,7 +279,7 @@ Svidget.Param.prototype = {
 			type: this.type(),
 			subtype: this.subtype(),
 			value: this.value(),
-			binding: this.binding()
+			// binding: this.binding() // not accessible by proxy
 		};
 		return transport;
 	},
@@ -190,8 +301,8 @@ Svidget.Param.prototype = {
 
 // todo: convert these to functions so that users can't manipulate
 Svidget.Param.eventTypes = ["valuechange", "change"];
-Svidget.Param.optionProperties = ["type", "subtype", "binding", "enabled", "shortname"];
-Svidget.Param.allProxyProperties = ["name", "value", "type", "subtype", "binding", "enabled", "shortname"];
+Svidget.Param.optionProperties = ["type", "subtype", "binding", "sanitizer", "enabled", "shortname", "defvalue"];
+Svidget.Param.allProxyProperties = ["name", "value", "type", "subtype", "enabled", "shortname", "defvalue"]; // 0.1.3: removed "binding", 
 Svidget.Param.writableProxyProperties = ["value"];
 
 Svidget.extend(Svidget.Param, Svidget.ObjectPrototype);

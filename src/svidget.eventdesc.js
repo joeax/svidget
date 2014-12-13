@@ -152,14 +152,21 @@ Svidget.EventDesc.prototype = {
 		this.eventContainer().on(type, data, name, handler);
 	},
 
-	/*
-	// todo: deprecate and use on(), adapt args
-	// data, name, handler
-	// data, handler
-	// handler
+
+	/**
+	* Adds an event handler for the "trigger" event. 
+	 * @method
+	 * @param {object} [data] - Arbirary data to initialize Event object with when event is triggered.
+	 * @param {string} [name] - The name of the handler. Useful when removing the handler for the event.
+	 * @param {Function} handler - The event handler.
+	 * @returns {boolean} - True if the event handler was successfully added.
 	*/
-	onTrigger: function (data, name, handler) {
+	ontrigger: function (data, name, handler) {
 		this.eventContainer().on(this.eventName(), data, name, handler);
+	},
+
+	ondeclaredtrigger: function (handler) {
+		return this.ontrigger(null, Svidget.declaredHandlerName, handler);
 	},
 
 	/**
@@ -178,16 +185,56 @@ Svidget.EventDesc.prototype = {
 		this.eventContainer().off(type, handlerOrName);
 	},
 
-	// todo: deprecate and use off(), adapt args
-	offTrigger: function (handlerOrName) {
+	/**
+	* Removes an event handler for the "trigger" event. 
+	* @method
+	* @param {(Function|string)} handlerOrName - The handler function and/or the handler name used when calling on().
+	* @returns {boolean} - True if the event handler was successfully removed.
+	*/
+	offtrigger: function (handlerOrName) {
 		this.eventContainer().off(this.eventName(), handlerOrName);
 	},
 
+	offdeclaredtrigger: function () {
+		return this.offtrigger(Svidget.declaredHandlerName);
+	},
+
 	/**
-	 * Triggers the event for the EventDesc object.
-	 * @method
-	 * @param {object} value - The value to set to the Event.value property.
+	* Adds an event handler for the "change" event. 
+	* @method
+	* @param {object} [data] - Arbirary data to initialize Event object with when event is triggered.
+	* @param {string} [name] - The name of the handler. Useful when removing the handler for the event.
+	* @param {Function} handler - The event handler.
+	* @returns {boolean} - True if the event handler was successfully added.
 	*/
+	onchange: function (data, name, handler) {
+		return this.on("change", data, name, handler);
+	},
+
+	ondeclaredchange: function (handler) {
+		return this.onchange(null, Svidget.declaredHandlerName, handler);
+	},
+
+	/**
+	* Removes an event handler for the "change" event. 
+	* @method
+	* @param {(Function|string)} handlerOrName - The handler function and/or the handler name used when calling on().
+	* @returns {boolean} - True if the event handler was successfully removed.
+	*/
+	offchange: function (handlerOrName) {
+		this.off("change", handlerOrName);
+	},
+
+	offdeclaredchange: function () {
+		return this.offchange(Svidget.declaredHandlerName);
+	},
+
+	/**
+	* Triggers the event for the EventDesc object.
+	* @method
+	* @param {object} value - The value to set to the Event.value property.
+	*/
+	// Note: The use of type as a param is undocumented here. For public use we only want them passing value as a param.
 	trigger: function (type, value) {
 		if (!this.enabled()) return;
 		if (value === undefined) {
@@ -204,9 +251,9 @@ Svidget.EventDesc.prototype = {
 	// helpers
 
 	/**
-	 * Serializes the EventDesc object for transport across a window boundary.
-	 * @method
-	 * @returns {boolean} - A generic serialized object representing the EventDesc object.
+	* Serializes the EventDesc object for transport across a window boundary.
+	* @method
+	* @returns {boolean} - A generic serialized object representing the EventDesc object.
 	*/
 	toTransport: function () {
 		var transport = {
@@ -221,9 +268,9 @@ Svidget.EventDesc.prototype = {
 	// overrides
 
 	/**
-	 * Gets a string representation of this object.
-	 * @method
-	 * @returns {string}
+	* Gets a string representation of this object.
+	* @method
+	* @returns {string}
 	*/
 	toString: function () {
 		return "[Svidget.EventDesc { name: \"" + this.name + "\" }]";

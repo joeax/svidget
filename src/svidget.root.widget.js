@@ -62,6 +62,8 @@ Svidget.Root.WidgetPrototype = {
 			this.startWidgetStandalone(widget);
 		else
 			this.startWidgetConnected(widget);
+		// 0.1.3: fire loaded event
+		//this.markLoaded();
 	},
 
 	startWidgetStandalone: function (widget) {
@@ -117,11 +119,16 @@ Svidget.Root.WidgetPrototype = {
 	// Populates Params into the widget based on the 
 	// xele == <svidget:params> element
 	populateParams: function (xele) {
+		if (xele == null) return; // param element missing
 		var that = this;
+		var widget = this.current();
 		this.populateElementObjects(xele, function (nextEle, widget) {
 			var param = that.buildParam(nextEle, widget);
 			if (param != null) widget.addParam(param);
 		});
+		// 0.1.3: wire declared add/remove handlers
+		this.wireDeclaredHandler(widget, widget.ondeclaredparamadd, Svidget.DOM.attrValue(xele, "onadd"));
+		this.wireDeclaredHandler(widget, widget.ondeclaredparamremove, Svidget.DOM.attrValue(xele, "onremove"));
 	},
 
 	buildParam: function (xele, widget) {
@@ -131,11 +138,15 @@ Svidget.Root.WidgetPrototype = {
 		var value = Svidget.DOM.attrValue(xele, "value"); //xele.attributes["value"];
 		var options = this.buildOptions(xele, Svidget.Param.optionProperties);
 		var param = new Svidget.Param(name, value, options, widget);
+		this.wireDeclaredChangeHandler(param, Svidget.DOM.attrValue(xele, "onchange"));
+		this.wireDeclaredSetHandler(param, Svidget.DOM.attrValue(xele, "onset"));
 		return param;
 	},
 
 	populateActions: function (xele) {
+		if (xele == null) return; // action element missing
 		var that = this;
+		var widget = this.current();
 		this.populateElementObjects(xele, function (nextEle, widget) {
 			var action = that.buildAction(nextEle, widget);
 			if (action != null) {
@@ -143,16 +154,21 @@ Svidget.Root.WidgetPrototype = {
 				that.populateActionParams(nextEle, action);
 			}
 		});
+		// 0.1.3: wire declared add/remove handlers
+		this.wireDeclaredHandler(widget, widget.ondeclaredactionadd, Svidget.DOM.attrValue(xele, "onadd"));
+		this.wireDeclaredHandler(widget, widget.ondeclaredactionremove, Svidget.DOM.attrValue(xele, "onremove"));
 	},
 
 	// Populates action params into the action
 	// actionEle == <svidget:action> element
 	populateActionParams: function (actionEle, action) {
+		if (actionEle == null) return; // actionparam element missing
 		var that = this;
 		this.populateElementObjects(actionEle, function (nextEle, widget) {
 			var param = that.buildActionParam(nextEle, action);
 			if (param != null) action.addParam(param);
 		});
+
 	},
 
 	buildAction: function (xele, widget) {
@@ -161,6 +177,12 @@ Svidget.Root.WidgetPrototype = {
 		if (name == null) return null; // don't allow a param without a name
 		var options = this.buildOptions(xele, Svidget.Action.optionProperties);
 		var action = new Svidget.Action(name, options, widget);
+		// 0.1.3: wire declared add/remove handlers
+		this.wireDeclaredChangeHandler(action, Svidget.DOM.attrValue(xele, "onchange"));
+		this.wireDeclaredInvokeHandler(action, Svidget.DOM.attrValue(xele, "oninvoke"));		
+		this.wireDeclaredParamAddHandler(action, Svidget.DOM.attrValue(xele, "onparamadd"));
+		this.wireDeclaredParamRemoveHandler(action, Svidget.DOM.attrValue(xele, "onparamremove"));
+		this.wireDeclaredParamChangeHandler(action, Svidget.DOM.attrValue(xele, "onparamchange"));
 		return action;
 	},
 
@@ -170,17 +192,23 @@ Svidget.Root.WidgetPrototype = {
 		if (name == null) return null; // don't allow a param without a name
 		var options = this.buildOptions(xele, Svidget.ActionParam.optionProperties);
 		var param = new Svidget.ActionParam(name, options, action);
+		this.wireDeclaredChangeHandler(param, Svidget.DOM.attrValue(xele, "onchange"));
 		return param;
 	},
 
 	// Populates Params into the widget based on the 
 	// xele == <svidget:events> element
 	populateEvents: function (xele) {
+		if (xele == null) return; // event element missing
 		var that = this;
+		var widget = this.current();
 		this.populateElementObjects(xele, function (nextEle, widget) {
 			var ev = that.buildEvent(nextEle, widget);
 			if (ev != null) widget.addEvent(ev);
 		});
+		// 0.1.3: wire declared add/remove handlers
+		this.wireDeclaredHandler(widget, widget.ondeclaredeventadd, Svidget.DOM.attrValue(xele, "onadd"));
+		this.wireDeclaredHandler(widget, widget.ondeclaredeventremove, Svidget.DOM.attrValue(xele, "onremove"));
 	},
 
 	buildEvent: function (xele, widget) {
@@ -189,6 +217,8 @@ Svidget.Root.WidgetPrototype = {
 		if (name == null) return null; // don't allow a param without a name
 		var options = this.buildOptions(xele, Svidget.EventDesc.optionProperties);
 		var ev = new Svidget.EventDesc(name, options, widget);
+		this.wireDeclaredChangeHandler(ev, Svidget.DOM.attrValue(xele, "onchange"));
+		this.wireDeclaredTriggerHandler(ev, Svidget.DOM.attrValue(xele, "ontrigger"));
 		return ev;
 	},
 
@@ -211,6 +241,41 @@ Svidget.Root.WidgetPrototype = {
 			if (optVal != null) options[optName] = optVal;
 		}
 		return options;
+	},
+
+	wireDeclaredChangeHandler: function (obj, funcStr) {
+		this.wireDeclaredHandler(obj, obj.ondeclaredchange, funcStr);
+	},
+
+	wireDeclaredSetHandler: function (param, funcStr) {
+		this.wireDeclaredHandler(param, param.ondeclaredset, funcStr);
+	},
+
+	wireDeclaredInvokeHandler: function (action, funcStr) {
+		this.wireDeclaredHandler(action, action.ondeclaredinvoke, funcStr);
+	},
+
+	wireDeclaredTriggerHandler: function (event, funcStr) {
+		this.wireDeclaredHandler(event, event.ondeclaredtrigger, funcStr);
+	},
+
+	wireDeclaredParamAddHandler: function (action, funcStr) {
+		this.wireDeclaredHandler(action, action.ondeclaredparamadd, funcStr);
+	},
+
+	wireDeclaredParamRemoveHandler: function (action, funcStr) {
+		this.wireDeclaredHandler(action, action.ondeclaredparamremove, funcStr);
+	},
+
+	wireDeclaredParamChangeHandler: function (action, funcStr) {
+		this.wireDeclaredHandler(action, action.ondeclaredparamchange, funcStr);
+	},
+
+	wireDeclaredHandler: function (obj, wireFunc, funcStr) {
+		if (wireFunc == null) return;
+		var func = Svidget.findFunction(funcStr);
+		if (func == null || !Svidget.isFunction(func)) return;
+		wireFunc.call(obj, func);
 	},
 
 	// Called by parent (via global object) to signal that is has established its relationship with the parent page.
@@ -267,9 +332,12 @@ Svidget.Root.WidgetPrototype = {
 		if (col == null) return;
 		col.each(function (p) {
 			var key = qsMode ? p.shortname() || p.name() : p.name();
-			if (key == null) return;
-			var val = paramValues[key];
-			p.value(val);
+			var val = paramValues[key]; // query string value present so use it
+			if (val === undefined) val = p.defvalue(); // 0.1.3: query string value not present, so use defvalue
+			if (key !== undefined) {
+				// value is present in query string or defvalue attr
+				p.value(val);
+			}
 		});
 	},
 

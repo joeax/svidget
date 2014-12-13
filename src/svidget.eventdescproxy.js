@@ -71,13 +71,16 @@ Svidget.extend(Svidget.EventDescProxy, {
 		this.eventContainer().on(type, data, name, handler);
 	},
 
-
-	// todo: rename to on() adapt args
-	// data, name, handler
-	// data, handler
-	// handler
-	onTrigger: function (data, name, handler) {
-		this.eventContainer().on(this.triggerEventName(), data, name, handler);
+	/**
+	* Adds an event handler for the "trigger" event. 
+	 * @method
+	 * @param {object} [data] - Arbirary data to initialize Event object with when event is triggered.
+	 * @param {string} [name] - The name of the handler. Useful when removing the handler for the event.
+	 * @param {Function} handler - The event handler.
+	 * @returns {boolean} - True if the event handler was successfully added.
+	*/
+	ontrigger: function (data, name, handler) {
+		this.eventContainer().on(this.eventName(), data, name, handler);
 	},
 
 	/**
@@ -96,9 +99,36 @@ Svidget.extend(Svidget.EventDescProxy, {
 		this.eventContainer().off(type, handlerOrName);
 	},
 
-	// todo: rename to off() adapt args
-	offTrigger: function (handlerOrName) {
-		this.eventContainer().off(this.triggerEventName(), handlerOrName);
+	/**
+	* Removes an event handler for the "trigger" event. 
+	* @method
+	* @param {(Function|string)} handlerOrName - The handler function and/or the handler name used when calling on().
+	* @returns {boolean} - True if the event handler was successfully removed.
+	*/
+	offtrigger: function (handlerOrName) {
+		this.eventContainer().off(this.eventName(), handlerOrName);
+	},
+
+	/**
+	* Adds an event handler for the "change" event. 
+	* @method
+	* @param {object} [data] - Arbirary data to initialize Event object with when event is triggered.
+	* @param {string} [name] - The name of the handler. Useful when removing the handler for the event.
+	* @param {Function} handler - The event handler.
+	* @returns {boolean} - True if the event handler was successfully added.
+	*/
+	onchange: function (data, name, handler) {
+		return this.on("change", data, name, handler);
+	},
+
+	/**
+	* Removes an event handler for the "change" event. 
+	* @method
+	* @param {(Function|string)} handlerOrName - The handler function and/or the handler name used when calling on().
+	* @returns {boolean} - True if the event handler was successfully removed.
+	*/
+	offchange: function (handlerOrName) {
+		this.off("change", handlerOrName);
 	},
 
 	/**

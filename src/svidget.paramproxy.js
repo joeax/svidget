@@ -60,7 +60,54 @@ Svidget.extend(Svidget.ParamProxy, {
 		// update value to match source
 		this.getset("value", val);
 		// trigger change event
-		this.triggerFromWidget("valuechange", { value: val }, this);
+		this.triggerFromWidget("valuechange", { value: val }, this); // deprecated: set is the official event
+		this.triggerFromWidget("set", { value: val }, this);
+	},
+
+	/* REGION Events */
+
+	/**
+	* Adds an event handler for the "change" event. 
+	* @method
+	* @param {object} [data] - Arbirary data to initialize Event object with when event is triggered.
+	* @param {string} [name] - The name of the handler. Useful when removing the handler for the event.
+	* @param {Function} handler - The event handler.
+	* @returns {boolean} - True if the event handler was successfully added.
+	*/
+	onchange: function (data, name, handler) {
+		return this.on("change", data, name, handler);
+	},
+
+	/**
+	* Removes an event handler for the "change" event. 
+	* @method
+	* @param {(Function|string)} handlerOrName - The handler function and/or the handler name used when calling on().
+	* @returns {boolean} - True if the event handler was successfully removed.
+	*/
+	offchange: function (handlerOrName) {
+		this.off("change", handlerOrName);
+	},
+
+	/**
+	* Adds an event handler for the "set" event. 
+	* @method
+	* @param {object} [data] - Arbirary data to initialize Event object with when event is triggered.
+	* @param {string} [name] - The name of the handler. Useful when removing the handler for the event.
+	* @param {Function} handler - The event handler.
+	* @returns {boolean} - True if the event handler was successfully added.
+	*/
+	onset: function (data, name, handler) {
+		return this.on("set", data, name, handler);
+	},
+
+	/**
+	* Removes an event handler for the "set" event. 
+	* @method
+	* @param {(Function|string)} handlerOrName - The handler function and/or the handler name used when calling on().
+	* @returns {boolean} - True if the event handler was successfully removed.
+	*/
+	offset: function (handlerOrName) {
+		return this.off("set", handlerOrName);
 	},
 
 	/**

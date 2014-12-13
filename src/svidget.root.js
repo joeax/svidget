@@ -194,8 +194,8 @@ Svidget.Root.prototype = {
 	 * @param {(Function|string)} handlerOrName - The handler function and/or the handler name used when calling on().
 	 * @returns {boolean} - True if the event handler was successfully removed.
 	*/
-	off: function (type, handler) {
-		this.eventContainer().off(type, handler);
+	off: function (type, handlerOrName) {
+		this.eventContainer().off(type, handlerOrName);
 	},
 
 	// public
@@ -218,8 +218,18 @@ Svidget.Root.prototype = {
 	// note: this can happen before window.onload event
 	// convention: use past tense (ie "loaded") as method name to present tense event name (ie "load")
 	*/
+	// deprecate loaded in favor of onload
 	loaded: function (data, name, handler) {
+		this.onload(data, name, handler);
+	},
+	onload: function (data, name, handler) {
 		this.on("load", data, name, handler);
+	},
+	offload: function (handlerOrName) {
+		this.off("load", handlerOrName);
+	},
+	offdeclaredload: function () {
+		this.off("load", Svidget.declaredHandlerName);
 	},
 
 	/**
@@ -237,13 +247,26 @@ Svidget.Root.prototype = {
 			handler = widgetID;
 			widgetID = null;
 		}*/
+		this.widgetloaded(data, name, handler);
+	},
+	onwidgetload: function (data, name, handler) {
 		this.on("widgetload", data, name, handler);
 	},
+	offwidgetload: function (handlerOrName) {
+		this.off("widgetload", handlerOrName);
+	},
+	offdeclaredwidgetload: function () {
+		this.off("widgetload", Svidget.declaredHandlerName);
+	},
 
+	// todo: rename to triggerLoad
+	// internal
 	triggerLoaded: function () {
 		this.trigger("load");
 	},
 
+	// todo: rename to triggerWidgetLoad
+	// internal
 	triggerWidgetLoaded: function (widgetID) {
 		this.trigger("widgetload", widgetID);
 	},

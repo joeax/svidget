@@ -10,3 +10,10 @@
 0.1.2
 - added Svidget.Collection.last()
 - minor fixes with Collection and Action
+
+0.1.3
+- added param.sanitizer property - this is called on set to change or reject the value set
+- added param.defvalue and actionparam.defvalue property
+- added ability to declaratively wire up events using onchange, onset, etc attributes
+- added properties for all specific events for all objects, i.e. on("set", foo) can now be done with onset(foo)
+- renamed param.valuechange event to param.set

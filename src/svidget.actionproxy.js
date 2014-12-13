@@ -134,6 +134,52 @@ Svidget.extend(Svidget.ActionProxy, {
 		this.triggerFromWidget("paramremove", param.name());
 	},
 
+	/* REGION Events */
+
+	/**
+	* Adds an event handler for the "change" event. 
+	 * @method
+	 * @param {object} [data] - Arbirary data to initialize Event object with when event is triggered.
+	 * @param {string} [name] - The name of the handler. Useful when removing the handler for the event.
+	 * @param {Function} handler - The event handler.
+	 * @returns {boolean} - True if the event handler was successfully added.
+	*/
+	onchange: function (data, name, handler) {
+		return this.on("change", data, name, handler);
+	},
+
+	/**
+	* Removes an event handler for the "change" event. 
+	* @method
+	* @param {(Function|string)} handlerOrName - The handler function and/or the handler name used when calling on().
+	* @returns {boolean} - True if the event handler was successfully removed.
+	*/
+	offchange: function (handlerOrName) {
+		this.off("change", handlerOrName);
+	},
+
+	/**
+	* Adds an event handler for the "invoke" event. 
+	 * @method
+	 * @param {object} [data] - Arbirary data to initialize Event object with when event is triggered.
+	 * @param {string} [name] - The name of the handler. Useful when removing the handler for the event.
+	 * @param {Function} handler - The event handler.
+	 * @returns {boolean} - True if the event handler was successfully added.
+	*/
+	oninvoke: function (data, name, handler) {
+		return this.on("invoke", data, name, handler);
+	},
+
+	/**
+	* Removes an event handler for the "invoke" event. 
+	* @method
+	* @param {(Function|string)} handlerOrName - The handler function and/or the handler name used when calling on().
+	* @returns {boolean} - True if the event handler was successfully removed.
+	*/
+	offinvoke: function (handlerOrName) {
+		return this.off("invoke", handlerOrName);
+	},
+
 	/**
 	 * Gets a string representation of this object.
 	 * @method
