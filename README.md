@@ -69,14 +69,17 @@ width="200" height="200">
 <!-- rest of SVG widget -->
 ```
 
-There are 3 artifacts to a widget: **params**, **actions**, and **events**. 
+As you can see Svidget allows you to use a simple declarative syntax with the SVG document itself.
+
+There are 3 main objects in a widget: **params**, **actions**, and **events**. 
 
 > **Params** - these are the data endpoints. They can be read from and set at any point during the widget's lifecycle.
 
-> **Actions** - these are your action endpoints (aka methods). They are abstractions to underlying functionality in the widget. They can represent a single function, mutliple functions, or nothing at all.
+> **Actions** - these are your action endpoints (aka methods). They are abstractions to underlying functionality in the widget. 
 
-> **Events** - these represent notifications from the widget. In addition to these, params and actions also have events when they are set or invoked.
+> **Events** - these represent notifications from the widget. 
 
+In addition to these, params and actions also have events that you can subscribe to when they are set or invoked. See the API for more information.
 
 Ok so now that we have an SVG widget, let's use it on a page:
 
@@ -98,7 +101,7 @@ svidget.load("#widgetContainer", "widgets/star.svg", {
 });
 ```
 
-For more information, see the Wiki page. Svidget website coming soon.
+For more information, see the [Svidget website](http://www.svidget.com).
 
 
 
