@@ -37,7 +37,7 @@ And here's its SVG:
 
 Ok, thats great. But what if I want to add interactivity to this SVG document. Maybe I want to change its colors. And, I want to provide a way for a user to spin it. Oh, and I want to be notified when it's done spinning. 
 
-The brute force approach would be to embed the SVG directly into the HTML, and write my script to manage user interaction and notifications. In the process, I would have interminged SVG with HTML and JavaScript, and that gets messy in a hurry. 
+The brute force approach would be to embed the SVG directly into the HTML, and write my script to manage user interaction and notifications. In the process, I would have intermingled SVG with HTML and JavaScript, and that gets messy in a hurry. 
 
 With Svidget, you componentize your UI and its logic as a widget in a SVG file.
 
