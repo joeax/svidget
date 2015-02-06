@@ -350,7 +350,7 @@ Svidget.WidgetReference.prototype = {
 	refreshParamProxy: function (name, value, options) {
 		var p = this.param(name);
 		if (p == null)
-			return this.params().add(nameOrObject, value, options, this);
+			return this.params().add(name, value, options, this);
 		else {
 			p.refreshProperties(options);
 			return p;

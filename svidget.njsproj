@@ -30,6 +30,16 @@
     <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="demo\lib\d3.js" />
+    <Compile Include="demo\lib\d3.min.js" />
+    <Compile Include="demo\lib\highlight.js" />
+    <Compile Include="demo\lib\jquery-2.1.1.js" />
+    <Compile Include="demo\lib\jquery-2.1.1.min.js" />
+    <Compile Include="demo\lib\jquery-ui.js" />
+    <Compile Include="demo\lib\jquery-ui.min.js" />
+    <Compile Include="demo\lib\spectrum.js" />
+    <Compile Include="demo\lib\svidget.js" />
+    <Compile Include="demo\lib\svidget.min.js" />
     <Compile Include="misc\closure.js" />
     <Compile Include="Gruntfile.js" />
     <Compile Include="src\svidget.action.js" />
@@ -43,6 +53,7 @@
     <Compile Include="src\svidget.collection.js" />
     <Compile Include="src\svidget.communicator.js" />
     <Compile Include="misc\header.js" />
+    <Compile Include="src\svidget.conversion.js" />
     <Compile Include="src\svidget.core.js" />
     <Compile Include="src\svidget.dom.js" />
     <Compile Include="src\svidget.domevent.js" />
@@ -72,12 +83,48 @@
     <Compile Include="src\svidget.widget.js" />
     <Compile Include="src\svidget.widgetreference.js" />
     <Content Include=".gitignore" />
+    <Content Include="demo\css\highlight.css" />
+    <Content Include="demo\css\highlight.tomorrow.css" />
+    <Content Include="demo\css\images\Thumbs.db" />
+    <Content Include="demo\css\images\ui-bg_diagonal-maze_20_6e4f1c_10x10.png" />
+    <Content Include="demo\css\images\ui-bg_diagonal-maze_40_000000_10x10.png" />
+    <Content Include="demo\css\images\ui-bg_fine-grain_10_eceadf_60x60.png" />
+    <Content Include="demo\css\images\ui-bg_fine-grain_10_f8f7f6_60x60.png" />
+    <Content Include="demo\css\images\ui-bg_fine-grain_15_eceadf_60x60.png" />
+    <Content Include="demo\css\images\ui-bg_fine-grain_15_f7f3de_60x60.png" />
+    <Content Include="demo\css\images\ui-bg_fine-grain_15_ffffff_60x60.png" />
+    <Content Include="demo\css\images\ui-bg_fine-grain_65_654b24_60x60.png" />
+    <Content Include="demo\css\images\ui-bg_fine-grain_68_b83400_60x60.png" />
+    <Content Include="demo\css\images\ui-icons_222222_256x240.png" />
+    <Content Include="demo\css\images\ui-icons_3572ac_256x240.png" />
+    <Content Include="demo\css\images\ui-icons_8c291d_256x240.png" />
+    <Content Include="demo\css\images\ui-icons_b83400_256x240.png" />
+    <Content Include="demo\css\images\ui-icons_fbdb93_256x240.png" />
+    <Content Include="demo\css\images\ui-icons_ffffff_256x240.png" />
+    <Content Include="demo\css\jquery-ui.css" />
+    <Content Include="demo\css\jquery-ui.min.css" />
+    <Content Include="demo\css\jquery-ui.structure.css" />
+    <Content Include="demo\css\jquery-ui.structure.min.css" />
+    <Content Include="demo\css\jquery-ui.theme.css" />
+    <Content Include="demo\css\jquery-ui.theme.min.css" />
+    <Content Include="demo\css\spectrum.css" />
+    <Content Include="demo\css\style.css" />
+    <Content Include="demo\images\star.png" />
+    <Content Include="demo\Index.html" />
+    <Content Include="demo\SpinningStar.html" />
+    <Content Include="demo\widgets\spinning-star.svg" />
     <Content Include="demo\widgets\star.svg" />
     <Content Include="package.json" />
     <Content Include="README.md" />
     <Content Include="ReleaseNotes.txt" />
+    <Content Include="svidget.xsd" />
+    <Content Include="tests\schematest.svg" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="demo\css\" />
+    <Folder Include="demo\css\images\" />
+    <Folder Include="demo\images\" />
+    <Folder Include="demo\lib\" />
     <Folder Include="demo\widgets\" />
     <Folder Include="misc\" />
     <Folder Include="demo\" />

@@ -1,4 +1,5 @@
 ﻿Release Notes
+==================================================
 
 0.1.0
 - Initial release
@@ -17,3 +18,13 @@
 - added ability to declaratively wire up events using onchange, onset, etc attributes
 - added properties for all specific events for all objects, i.e. on("set", foo) can now be done with onset(foo)
 - renamed param.valuechange event to param.set
+
+0.2.0
+- added param.coerce property - this coerces the param value to the type/subtype (default is false)
+- added param.typedata property - this contains type information about the subtype
+- subtype="choice" - use in conjuction with typedata to make a choice list (i.e. typedata="apple|orange|banana")
+- new type: array
+- added widget.pagepopulate event
+- added widget.populatedFromPage property
+- minor performance improvements
+- introduced svidget.xsd schema

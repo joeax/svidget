@@ -57,7 +57,8 @@ Svidget.ParamTypes = {
 	object: 0,
 	string: 1,
 	number: 2,
-	bool: 3
+	bool: 3,
+	array: 4
 };
 
 /**
@@ -69,7 +70,8 @@ Svidget.ParamSubTypes = {
 	none: 0,
 	color: 1,
 	integer: 2,
-	regex: 3
+	regex: 3,
+	choice: 4
 };
 
 /**

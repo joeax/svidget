@@ -1,0 +1,26 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:svidget="http://www.svidget.org/svidget">
+	<title>Schema Test</title>
+	<desc>Tests the svidget.xsd schema.</desc>
+	
+	<svidget:params>
+		<svidget:param name="backgroundColor" shortname="bg" type="string" subtype="color" typedata="" coerce="true" description="Hi" defvalue="black" enabled="true" binding="#starback@fill" sanitizer="someFunction" onchange="handleChange" onset="handleSet" />
+		<svidget:param name="borderColor" shortname="bc" type="string" subtype="color" binding="#starfront@stroke" />
+		<svidget:param name="borderColor2" shortname="bc" type="string" subtype="color" binding="#starfront@stroke" />
+	</svidget:params>
+
+	<svidget:actions>
+		<svidget:action name="spin" external="true" binding="spin" description="Spins the star." enabled="true" onchange="handleChange" oninvoke="handleInvoke" onparamadd="handleParamAdd" onparamchange="handleParamChange" onparamremove="handleParamRemove">
+			<svidget:actionparam name="rotations" type="number" subtype="integer" defvalue="4" description="The total number of rotations." onchange="handleChange" />
+			<svidget:actionparam name="duration" type="number" defvalue="5" description="The total time in seconds that the star should spin." />
+			<svidget:actionparam name="duration2" type="number" />
+		</svidget:action>
+		<svidget:action name="spin2" enabled="false" />
+	</svidget:actions>
+
+	<svidget:events>
+		<svidget:event name="spinComplete" description="Triggered when the spinning has completed." external="true" onchange="handleChange" ontrigger="handleTrigger" />
+		<svidget:event name="spinComplete2" description="Triggered when the spinning has completed." />
+	</svidget:events>
+
+</svg>

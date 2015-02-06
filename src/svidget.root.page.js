@@ -27,6 +27,7 @@ Svidget.Root.PagePrototype = {
 		this.idSeed = 1; // seed for widget IDs
 		window._svidget = "page";
 		this.connected(true); // default to true for page
+		Object.defineProperty(this, "$", Svidget.readOnlyProperty(null));
 	},
 
 	/* Page Mode */
@@ -571,11 +572,11 @@ Svidget.Root.PagePrototype = {
 	},
 
 	// valueData: { name: actionName, value: val }
-	handleReceiveWidgetParamValueChanged: function (widgetRef, valueChangePayload) {
-		Svidget.log("page: handleReceiveWidgetParamChanged {param: " + valueChangePayload.name + "}");
-		var param = widgetRef.param(valueChangePayload.name);
+	handleReceiveWidgetParamSet: function (widgetRef, setPayload) {
+		Svidget.log("page: handleReceiveWidgetParamSet {param: " + setPayload.name + "}");
+		var param = widgetRef.param(setPayload.name);
 		if (param == null) return;
-		param.notifyValueChange("value", valueChangePayload.value);
+		param.notifyValueChange("value", setPayload.value);
 	},
 
 	// Handle: Actions

@@ -51,6 +51,8 @@ Svidget.Root.WidgetPrototype = {
 		// load widget objects:
 		// params, actions
 		//alert(doc.readyState);
+		// assign a shortcut to current() i.e. svidget.$.param("text")
+		Object.defineProperty(this, "$", Svidget.readOnlyProperty(widget));
 	},
 
 	startWidget: function () {
@@ -67,6 +69,7 @@ Svidget.Root.WidgetPrototype = {
 	},
 
 	startWidgetStandalone: function (widget) {
+		//Svidget.log("startWidgetStandalone");
 		// read values from query string and populate params
 		var paramValues = this.getParamValuesFromQueryString();
 		this.setParamValues(widget, paramValues, true);
@@ -74,9 +77,11 @@ Svidget.Root.WidgetPrototype = {
 	},
 
 	startWidgetConnected: function (widget) {
+		//Svidget.log("startWidgetConnected");
 		if (this.paramValues != null) {
 			this.setParamValues(this.paramValues);
 			this.paramValues = null; // clear this out, we dont need it anymore
+			widget.setPopulatedFromPage();
 		}
 		widget.start();
 	},
@@ -297,21 +302,19 @@ Svidget.Root.WidgetPrototype = {
 		else {
 			Svidget.log("widget: standalone {id: " + id + "}");
 		}
-		//Svidget.log("widget: connect {id: " + id + "}");
-		//widget.connect(id);
-		//this.getset("connected", true);
-		// set params
-		//this.setParamValues(paramValues);
+
 		this.paramValues = paramValues || {};
-		// if ready() was called first, widget in standalone mode, so switch to connected mode
+		/* if ready() was called first, widget in standalone mode, so switch to connected mode
 		//if (!widget.connected()) this.connect();
-		//this.startConnected();
+		//this.startConnected(); */
 	},
 
 	startWidgetWithPageParams: function () {
+		//Svidget.log("startWidgetWithPageParams");
 		var widget = this.current();
 		if (widget.started()) {
 			this.setParamValues(widget, this.paramValues);
+			widget.setPopulatedFromPage();
 		}
 	},
 
@@ -432,11 +435,11 @@ Svidget.Root.WidgetPrototype = {
 		this.comm().signalParent("paramchanged", changeData, this.current().id());
 	},
 
-	signalParamValueChanged: function (param, changeData) {
+	signalParamSet: function (param, changeData) {
 		if (!this.connected()) return; // no signaling if not connected
-		Svidget.log("widget: signalParamValueChanged {id: " + this.current().id() + "}");
+		Svidget.log("widget: signalParamSet {id: " + this.current().id() + "}");
 		changeData.name = param.name(); // add param name
-		this.comm().signalParent("paramvaluechanged", changeData, this.current().id());
+		this.comm().signalParent("paramset", changeData, this.current().id());
 	},
 
 	// Actions/Action Params

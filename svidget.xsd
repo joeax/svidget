@@ -1,0 +1,307 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:tns="http://www.svidget.org/svidget" targetNamespace="http://www.svidget.org/svidget" elementFormDefault="qualified">
+	<xsd:annotation>
+		<xsd:documentation>This is the svidget schema for version 0.2.0.</xsd:documentation>
+	</xsd:annotation>
+	
+	<!-- <svidget:params> element -->
+	<xsd:element name="params" type="tns:paramContainerType">
+		<xsd:unique name="paramNameUnique">
+			<xsd:selector xpath="tns:param" />
+			<xsd:field xpath="@name" />
+		</xsd:unique>
+	</xsd:element>
+
+	<!-- <svidget:actions> element -->
+	<xsd:element name="actions" type="tns:actionContainerType">
+		<xsd:unique name="actionNameUnique">
+			<xsd:selector xpath="tns:action" />
+			<xsd:field xpath="@name" />
+		</xsd:unique>
+	</xsd:element>
+
+	<!-- <svidget:events> element -->
+	<xsd:element name="events" type="tns:eventContainerType">
+		<xsd:unique name="eventNameUnique">
+			<xsd:selector xpath="tns:event" />
+			<xsd:field xpath="@name" />
+		</xsd:unique>
+	</xsd:element>
+
+	
+	<!-- object container type definitions -->
+		
+	<xsd:complexType name="paramContainerType">
+		<xsd:sequence>
+			<xsd:element name="param" type="tns:paramType" minOccurs="0" maxOccurs="unbounded" />
+		</xsd:sequence>
+		<xsd:attribute name="onadd" type="xsd:string">
+			<xsd:annotation>
+				<xsd:documentation>The name of the function to call (as defined in the global scope) when the &quot;paramadd&quot; event is triggered.</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="onremove" type="xsd:string">
+			<xsd:annotation>
+				<xsd:documentation>The name of the function to call (as defined in the global scope) when the &quot;paramremove&quot; event is triggered.</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+	<!-- unique constraint for name -->
+	</xsd:complexType>
+	
+	<xsd:complexType name="actionContainerType">
+		<xsd:sequence>
+			<xsd:element name="action" type="tns:actionType" minOccurs="0" maxOccurs="unbounded">
+				<xsd:unique name="actionParamNameUnique">
+					<xsd:selector xpath="tns:actionparam" />
+					<xsd:field xpath="@name" />
+				</xsd:unique>
+			</xsd:element>
+		</xsd:sequence>
+		<xsd:attribute name="onadd" type="xsd:string">
+			<xsd:annotation>
+				<xsd:documentation>The name of the function to call (as defined in the global scope) when the &quot;actionadd&quot; event is triggered.</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="onremove" type="xsd:string">
+			<xsd:annotation>
+				<xsd:documentation>The name of the function to call (as defined in the global scope) when the &quot;actionremove&quot; event is triggered.</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+	</xsd:complexType>
+	
+	<xsd:complexType name="eventContainerType">
+		<xsd:sequence>
+			<xsd:element name="event" type="tns:eventType" minOccurs="0" maxOccurs="unbounded" />
+		</xsd:sequence>
+		<xsd:attribute name="onadd" type="xsd:string">
+			<xsd:annotation>
+				<xsd:documentation>The name of the function to call (as defined in the global scope) when the &quot;eventadd&quot; event is triggered.</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="onremove" type="xsd:string">
+			<xsd:annotation>
+				<xsd:documentation>The name of the function to call (as defined in the global scope) when the &quot;eventremove&quot; event is triggered.</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+	</xsd:complexType>
+	
+	<!-- object type definitions -->
+		
+	<xsd:complexType name="paramType">
+		<xsd:attribute name="name" type="xsd:string">
+			<xsd:annotation>
+				<xsd:documentation>The name of the param. Required, must be unique among params.</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="shortname" type="xsd:string">
+			<xsd:annotation>
+				<xsd:documentation>The shortname of the param. This is used when specifying param values through the query string. If not specified the name is used for query string params. Not required.</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="description" type="xsd:string">
+			<xsd:annotation>
+				<xsd:documentation>The description for the param. Not required.</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="type" type="tns:dataTypes" default="object">
+			<xsd:annotation>
+				<xsd:documentation>The type of the param. Default is object.</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="subtype" type="tns:dataSubTypes">
+			<xsd:annotation>
+				<xsd:documentation>The subtype of the param. Not required.</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="typedata" type="xsd:string">
+			<xsd:annotation>
+				<xsd:documentation>The type data that supplements certain for type/subtype combination. For subtype of &quot;choice&quot; this would be a pipe delimited string of choices. Not required.</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="defvalue" type="xsd:string">
+			<xsd:annotation>
+				<xsd:documentation>The default value of the param. When specified, this is applied when the widget is loaded and a value was not supplied for this param.</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="coerce" type="xsd:boolean" default="false">
+			<xsd:annotation>
+				<xsd:documentation>Whether to coerce the value to the type and subtype specified when the value is set. Default is false.</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="binding" type="tns:cssSelectorSyntax">
+			<xsd:annotation>
+				<xsd:documentation>The CSS selector + attribute syntax that maps to one or more elements and/or its attributes in the document. When the param is set the value is automatically applied according to the selector. Not required.</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="sanitizer" type="xsd:string">
+			<xsd:annotation>
+				<xsd:documentation>The function name in global scope that is called when the value is set. The function should evaluate the value and return an alternate value if needed. This is useful for validation or for converting the value. Not required.</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="enabled" type="xsd:boolean" default="true">
+			<xsd:annotation>
+				<xsd:documentation>Whether the param is enabled. When false, the param cannot be set. Default is true.</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="onchange" type="xsd:string">
+			<xsd:annotation>
+				<xsd:documentation>The function name in global scope that handles the onchange event for the param. Not required.</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="onset" type="xsd:string">
+			<xsd:annotation>
+				<xsd:documentation>The function name in global scope that handles the onset event for the param when its value is changed. Not required.</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+	</xsd:complexType>
+	
+	<xsd:complexType name="actionType">
+		<xsd:sequence>
+			<xsd:element name="actionparam" type="tns:actionParamType" minOccurs="0" maxOccurs="unbounded" />
+		</xsd:sequence>
+		<xsd:attribute name="name" type="xsd:string">
+			<xsd:annotation>
+				<xsd:documentation>The name of the action. Required, must be unique among actions.</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="description" type="xsd:string">
+			<xsd:annotation>
+				<xsd:documentation>The description for the action. Not required.</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="binding" type="xsd:string">
+			<xsd:annotation>
+				<xsd:documentation>The function name in global scope that is called when the action is invoked. Not required.</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="external" type="xsd:boolean" default="true">
+			<xsd:annotation>
+				<xsd:documentation>Whether the action can be invoked externally. Default is true.</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="enabled" type="xsd:boolean" default="true">
+			<xsd:annotation>
+				<xsd:documentation>Whether the action is enabled. When false, the action cannot be invoked. Default is true.</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="onchange" type="xsd:string">
+			<xsd:annotation>
+				<xsd:documentation>The function name in global scope that handles the onchange event for the action. Not required.</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="oninvoke" type="xsd:string">
+			<xsd:annotation>
+				<xsd:documentation>The function name in global scope that handles the oninvoke event for the action. Not required.</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="onparamchange" type="xsd:string">
+			<xsd:annotation>
+				<xsd:documentation>The function name in global scope that handles the onparamchange event for any of the action params within the action. Not required.</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="onparamadd" type="xsd:string">
+			<xsd:annotation>
+				<xsd:documentation>The function name in global scope that handles the onparamadd event when an action param is added to the action. Not required.</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="onparamremove" type="xsd:string">
+			<xsd:annotation>
+				<xsd:documentation>The function name in global scope that handles the onparamremove event when an action param is removed from the action. Not required.</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+	</xsd:complexType>
+
+	<xsd:complexType name="eventType">
+		<xsd:attribute name="name" type="xsd:string">
+			<xsd:annotation>
+				<xsd:documentation>The name of the event. Required, must be unique among events.</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="description" type="xsd:string">
+			<xsd:annotation>
+				<xsd:documentation>The description for the event. Not required.</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="external" type="xsd:boolean" default="true">
+			<xsd:annotation>
+				<xsd:documentation>Whether the event can be triggered externally. Default is true.</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="enabled" type="xsd:boolean" default="true">
+			<xsd:annotation>
+				<xsd:documentation>Whether the event is enabled. When false, the event cannot be triggered. Default is true.</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="onchange" type="xsd:string">
+			<xsd:annotation>
+				<xsd:documentation>The function name in global scope that handles the onchange event for the event. Not required.</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="ontrigger" type="xsd:string">
+			<xsd:annotation>
+				<xsd:documentation>The function name in global scope that handles the ontrigger event for the event. Not required.</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+	</xsd:complexType>
+
+	<xsd:complexType name="actionParamType">
+		<xsd:attribute name="name" type="xsd:string">
+			<xsd:annotation>
+				<xsd:documentation>The name of the action param. Required, must be unique among params within the action.</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="description" type="xsd:string">
+			<xsd:annotation>
+				<xsd:documentation>The description for the action param. Not required.</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="type" type="tns:dataTypes" default="object">
+			<xsd:annotation>
+				<xsd:documentation>The type of the action param. Default is object.</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="subtype" type="tns:dataSubTypes">
+			<xsd:annotation>
+				<xsd:documentation>The subtype of the action param. Not required.</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="defvalue" type="xsd:string">
+			<xsd:annotation>
+				<xsd:documentation>The default value of the action param. If an action is invoked with a ordinal param that corresponds to this param, or if undefined is passed, this default value is used.</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="onchange" type="xsd:string">
+			<xsd:annotation>
+				<xsd:documentation>The function name in global scope that handles the onchange event for the action param. Not required.</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+	</xsd:complexType>
+
+	<!-- enum type definitions -->
+		
+	<xsd:simpleType name="dataTypes">
+		<xsd:restriction base="xsd:string">
+			<xsd:enumeration value="object" />
+			<xsd:enumeration value="array" />
+			<xsd:enumeration value="string" />
+			<xsd:enumeration value="number" />
+			<xsd:enumeration value="bool" />
+		</xsd:restriction>
+	</xsd:simpleType>
+	
+	<xsd:simpleType name="dataSubTypes">
+		<xsd:restriction base="xsd:string">
+			<xsd:enumeration value="color" />
+			<xsd:enumeration value="regex" />
+			<xsd:enumeration value="integer" />
+			<xsd:enumeration value="choice" />
+		</xsd:restriction>
+	</xsd:simpleType>
+	
+	<xsd:simpleType name="cssSelectorSyntax">
+		<xsd:restriction base="xsd:string">
+			<xsd:pattern value="((^|,\s*)(#|\.)?[^#\.\r\n,{}@]+(@[^#\.\s,{}@]+)?)+$" />
+		</xsd:restriction>
+	</xsd:simpleType>
+
+</xsd:schema>

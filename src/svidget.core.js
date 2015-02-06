@@ -62,9 +62,17 @@ Svidget.isFunction = function (func) {
 	return (typeof func === "function");
 }
 
+Svidget.isString = function (str) {
+	return (typeof str === "string" || (str.length && str.trim && str.charAt));
+}
+
 Svidget.isColor = function (color) {
 	// todo
 	return false;
+}
+
+Svidget.convert = function (val, type, subtype, typedata) {
+	return Svidget.Conversion.to(val, type, subtype, typedata);
 }
 
 /*

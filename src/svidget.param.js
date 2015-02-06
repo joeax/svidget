@@ -34,16 +34,18 @@ Svidget.Param = function (name, value, options, parent) {
 
 	// private fields
 	var privates = new (function () {
-		this.writable = ["binding", "enabled", "type", "subtype", "value", "description", "defvalue"];
+		this.writable = ["binding", "enabled", "type", "subtype", "value", "description", "defvalue", "typedata", "coerce"];
 		this.name = name;
 		this.shortname = options.shortname;
 		this.description = options.description;
 		this.enabled = options.enabled !== false;
 		this.type = options.type || "string";
 		this.subtype = options.subtype || null;
+		this.typedata = options.typedata || null;
 		this.value = value;
 		this.defvalue = options.defvalue; //todo: convert to type
 		this.sanitizer = options.sanitizer || null;
+		this.coerce = !!options.coerce; // todo: unit test
 		this.widget = parent;
 		this.binding = options.binding || null;
 		this.bindingQuery = null;
@@ -116,14 +118,36 @@ Svidget.Param.prototype = {
 		if (val === undefined || !!!res) return res;
 		// check enabled
 		if (!this.enabled()) return false;
+		var finalVal = val;
+		// coerce val if coerce === true
+		if (this.getset("coerce") === true) {
+			finalVal = this.coerceValue(finalVal);
+		}
 		// sanitize val using param.sanitizer
-		var sanVal = this.applySanitizer(val);
+		finalVal = this.applySanitizer(finalVal);
+		this.setPrivate("value", finalVal); //update actual value to final value
 		//if (sanVal === undefined) return false; // if sanitizer fails to returns a value, assume it has failed
 		// apply to binding
-		this.applyBinding(sanVal);
+		this.applyBinding(finalVal);
 		// fire "set" event
-		this.trigger("valuechange", { value: sanVal }); // for backwards compatibility
-		this.trigger("set", { value: sanVal }); // 0.1.3: replaces "valuechange"
+		this.trigger("valuechange", { value: finalVal }); // for backwards compatibility
+		this.trigger("set", { value: finalVal }); // 0.1.3: replaces "valuechange"
+
+		return true;
+	},
+
+	/**
+	 * Gets or sets whether the event is enabled. 
+	 * @method
+	 * @param {boolean} [val] - Sets the enabled state when specified.
+	 * @returns {boolean} - The enabled state when nothing is passed, or true/false if succeeded or failed when setting.
+	*/
+	coerce: function (val) {
+		var res = this.getset("coerce", val);
+		// if undefined its a get so return value, if res is false then set failed
+		if (val === undefined || !!!res) return res;
+		// fire "changed" event
+		this.trigger("change", { property: "coerce", value: val });
 
 		return true;
 	},
@@ -192,6 +216,10 @@ Svidget.Param.prototype = {
 
 	validateValue: function (val) {
 		return true;
+	},
+
+	coerceValue: function (val) {
+		return Svidget.convert(val, this.type(), this.subtype(), this.typedata());
 	},
 
 	// helpers
@@ -301,8 +329,8 @@ Svidget.Param.prototype = {
 
 // todo: convert these to functions so that users can't manipulate
 Svidget.Param.eventTypes = ["valuechange", "change"];
-Svidget.Param.optionProperties = ["type", "subtype", "binding", "sanitizer", "enabled", "shortname", "defvalue"];
-Svidget.Param.allProxyProperties = ["name", "value", "type", "subtype", "enabled", "shortname", "defvalue"]; // 0.1.3: removed "binding", 
+Svidget.Param.optionProperties = ["type", "subtype", "binding", "sanitizer", "enabled", "shortname", "defvalue", "typedata", "coerce"];
+Svidget.Param.allProxyProperties = ["name", "value", "type", "subtype", "enabled", "shortname", "defvalue", "typedata", "coerce"]; // 0.1.3: removed "binding", 
 Svidget.Param.writableProxyProperties = ["value"];
 
 Svidget.extend(Svidget.Param, Svidget.ObjectPrototype);

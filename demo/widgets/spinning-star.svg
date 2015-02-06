@@ -13,8 +13,8 @@
 
 	<svidget:actions>
 		<svidget:action name="spin" external="true" binding="spin" description="Spins the star.">
-			<svidget:actionparam name="rotations" type="number" default="4" description="The total number of rotations."  />
-			<svidget:actionparam name="duration" type="number" default="5" description="The total time in seconds that the star should spin."  />
+			<svidget:actionparam name="rotations" type="number" defvalue="4" description="The total number of rotations."  />
+			<svidget:actionparam name="duration" type="number" defvalue="5" description="The total time in seconds that the star should spin."  />
 		</svidget:action>
 	</svidget:actions>
 

@@ -36,9 +36,9 @@ Svidget.ActionParam = function (name, options, parent) {
 	var privates = new (function () {
 		this.writable = ["type", "subtype", "description", "defvalue"];
 		this.name = name;
+		this.description = options.description;
 		this.type = options.type || "string";
 		this.subtype = options.subtype || null;
-		this.description = options.description;
 		this.defvalue = options.defvalue; //todo: convert to type
 		this.parent = parent;
 	})();
