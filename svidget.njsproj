@@ -40,6 +40,17 @@
     <Compile Include="demo\lib\spectrum.js" />
     <Compile Include="demo\lib\svidget.js" />
     <Compile Include="demo\lib\svidget.min.js" />
+    <Compile Include="dist\svidget-0.1.0.js" />
+    <Compile Include="dist\svidget-0.1.1.js" />
+    <Compile Include="dist\svidget-0.1.1.min.js" />
+    <Compile Include="dist\svidget-0.1.2.js" />
+    <Compile Include="dist\svidget-0.1.2.min.js" />
+    <Compile Include="dist\svidget-0.1.3.js" />
+    <Compile Include="dist\svidget-0.1.3.min.js" />
+    <Compile Include="dist\svidget-0.2.0.js" />
+    <Compile Include="dist\svidget-0.2.0.min.js" />
+    <Compile Include="dist\svidget.js" />
+    <Compile Include="dist\svidget.min.js" />
     <Compile Include="misc\closure.js" />
     <Compile Include="Gruntfile.js" />
     <Compile Include="src\svidget.action.js" />
