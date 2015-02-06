@@ -7,10 +7,10 @@ Svidget is not another data visualization framework like [D3](https://github.com
 
 <small>\* Just kidding</small>
 
-> Svidget is currently under active development. Although it is functionally complete and stable, expect issues. I am currently rewriting all the tests, finalizing the documentation, and working on some demos. Check here often for updates.
+> Svidget is currently in beta. It is functionally complete and stable. I am currently working on some complex demos, finalizing the unit tests, and getting all documentation ready. For more information visit the [Svidget.js Website](http://www.svidget.com).
 
 ###Download
-Download the latest stable builds from the `dist` folder.
+Download the latest stable builds from the `dist` folder. The current version is **0.2.0**.
 
 
 ###Using
@@ -122,7 +122,7 @@ In non-HTML5 browsers, Svidget will attempt to fall back to fallback content spe
 
 
 ###Build
-The latest builds are in the releases folder. Get started today! Please note that Svidget is in beta (current version 0.1.0), so the API may change without notice.
+The latest builds are in the releases folder. Get started today! 
 
 When reporting issues, please be as descriptive as possible, including steps to reproduce.
 
