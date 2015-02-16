@@ -4630,7 +4630,7 @@
 	 * @returns {boolean} - True if the event handler was successfully added.
 	*/
         ontrigger: function(data, name, handler) {
-            this.eventContainer().on(this.eventName(), data, name, handler);
+            this.eventContainer().on(this.triggerEventName(), data, name, handler);
         },
         /**
 	 * Unregisters an event handler for the EventDescProxy object.
@@ -4654,7 +4654,7 @@
 	* @returns {boolean} - True if the event handler was successfully removed.
 	*/
         offtrigger: function(handlerOrName) {
-            this.eventContainer().off(this.eventName(), handlerOrName);
+            this.eventContainer().off(this.triggerEventName(), handlerOrName);
         },
         /**
 	* Adds an event handler for the "change" event. 
