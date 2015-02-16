@@ -33,6 +33,7 @@ Svidget.Conversion.to = function (val, type, subtype, typedata) {
  */
 Svidget.Conversion.toString = function (val, subtype, typedata) {
 	if (subtype == Svidget.ParamSubTypes.choice) return Svidget.Conversion.toChoiceString(val, typedata);
+	if (Svidget.isArray(val) || typeof val === "object") return JSON.stringify(val);
 	return val + "";
 }
 
@@ -196,28 +197,3 @@ Svidget.Conversion.jsonifyString = function (val) {
 
 	return result;
 }
-
-/*
-// converts an array using single quotes as string delimiters to use double quotes i.e. ['hello', 'world'] => ["hello", "world"]
-// update: this doesn't work for nested arrays
-Svidget.Conversion.jsonifyArrayString2 = function (val) {
-	if (val == null || !Svidget.Conversion.isArrayString(val) || val.indexOf("'") < 0) return val;
-	val = val.trim();
-	val = val.substring(1, val.length - 1); // strip out [ and ]
-	var valArray = val.split(",");
-	var resArray = [];
-	for (var i = 0; i < valArray.length; i++) {
-		var cur = valArray[i];
-		if (cur != null) {
-			cur = cur.trim();
-			if (Svidget.Conversion.isQuotedString(cur))
-				cur = "\"" + cur.substring(1, cur.length - 1) + "\"";
-			else if (Svidget.Conversion.isArrayString(cur))
-				cur = Svidget.Conversion.jsonifyArrayString(cur);
-		}
-		resArray.push(cur);
-	}
-	var result = "[" + resArray.join() + "]";
-	return result;
-}
-*/

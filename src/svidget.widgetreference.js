@@ -43,7 +43,7 @@ Svidget.WidgetReference = function (id, paramValueObj, declaringElement, element
 	var that = this;
 	// privates
 	var privates = new (function () {
-		this.writable = ["enabled", "started", "populated"];
+		this.writable = ["enabled", "started", "populated", "paramValues"];
 		this.params = new Svidget.ParamProxyCollection([], that);
 		this.actions = new Svidget.ActionProxyCollection([], that);
 		this.events = new Svidget.EventDescProxyCollection([], that);
@@ -355,6 +355,13 @@ Svidget.WidgetReference.prototype = {
 			p.refreshProperties(options);
 			return p;
 		}
+	},
+
+	updateParamValue: function (name, value) {
+		var val = this.getset("paramValues");
+		val = val || {};
+		val[name] = value;
+		this.getset("paramValues", val);
 	},
 
 	// internal

@@ -10,7 +10,7 @@ Svidget is not another data visualization framework like [D3](https://github.com
 > Svidget is currently in beta. It is functionally complete and stable. I am currently working on some complex demos, finalizing the unit tests, and getting all documentation ready. For more information visit the [Svidget.js Website](http://www.svidget.com).
 
 ###Download
-Download the latest stable builds from the `dist` folder. The current version is **0.2.0**.
+Download the latest stable builds from the `dist` folder. The current version is **0.2.1**.
 
 
 ###Using

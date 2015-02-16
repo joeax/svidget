@@ -49,6 +49,7 @@ Svidget.extend(Svidget.ParamProxy, {
 	// overrides
 	handlePropertyChange: function (name, val) {
 		if (name == "value") {
+			this.parent().updateParamValue(this.name(), val);
 			svidget.signalPropertyChange(this.parent(), this, "param", name, val);
 		}
 	},
@@ -62,6 +63,16 @@ Svidget.extend(Svidget.ParamProxy, {
 		// trigger change event
 		this.triggerFromWidget("valuechange", { value: val }, this); // deprecated: set is the official event
 		this.triggerFromWidget("set", { value: val }, this);
+	},
+
+	/**
+	 * Gets the serialized param value.
+	 * @method
+	 * @returns {string} - The serialized/stringified value.
+	*/
+	serializedValue: function () {
+		var val = this.value();
+		return Svidget.Conversion.toString(val);
 	},
 
 	/* REGION Events */

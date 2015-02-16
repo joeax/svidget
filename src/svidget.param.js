@@ -137,6 +137,16 @@ Svidget.Param.prototype = {
 	},
 
 	/**
+	 * Gets the serialized param value.
+	 * @method
+	 * @returns {string} - The serialized/stringified value.
+	*/
+	serializedValue: function () {
+		var val = this.value();
+		return Svidget.Conversion.toString(val);
+	},
+
+	/**
 	 * Gets or sets whether the event is enabled. 
 	 * @method
 	 * @param {boolean} [val] - Sets the enabled state when specified.

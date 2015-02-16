@@ -266,8 +266,8 @@ Svidget.Root.PagePrototype = {
 		if (options.width) objEle.setAttribute("width", options.width);
 		if (options.height) objEle.setAttribute("height", options.height);
 		// yes, if these values are false we dont want to write them out
-		if (options.standalone) objEle.setAttribute("data-standalone", options.standalone);
-		if (options.crossdomain) objEle.setAttribute("data-crossdomain", options.crossdomain);
+		if (options.connected !== undefined) objEle.setAttribute("data-connected", options.connected);
+		if (options.crossdomain !== undefined) objEle.setAttribute("data-crossdomain", options.crossdomain);
 		// params
 		for (var key in paramObj) {
 			var paramEle = document.createElement("param");
@@ -442,7 +442,7 @@ Svidget.Root.PagePrototype = {
 			case "paramadded": this.handleReceiveWidgetParamAdded(widget, payload); break;
 			case "paramremoved": this.handleReceiveWidgetParamRemoved(widget, payload); break;
 			case "paramchanged": this.handleReceiveWidgetParamChanged(widget, payload); break;
-			case "paramvaluechanged": this.handleReceiveWidgetParamValueChanged(widget, payload); break;
+			case "paramset": this.handleReceiveWidgetParamSet(widget, payload); break;
 			// actions handlers
 			case "actionadded": this.handleReceiveWidgetActionAdded(widget, payload); break;
 			case "actionremoved": this.handleReceiveWidgetActionRemoved(widget, payload); break;
@@ -576,7 +576,7 @@ Svidget.Root.PagePrototype = {
 		Svidget.log("page: handleReceiveWidgetParamSet {param: " + setPayload.name + "}");
 		var param = widgetRef.param(setPayload.name);
 		if (param == null) return;
-		param.notifyValueChange("value", setPayload.value);
+		param.notifyValueChange(setPayload.value);
 	},
 
 	// Handle: Actions

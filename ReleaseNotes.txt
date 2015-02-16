@@ -28,3 +28,9 @@
 - added widget.populatedFromPage property
 - minor performance improvements
 - introduced svidget.xsd schema
+
+0.2.1
+- fixed issue with setting param from page not persisting before params are pushed to widget
+- fixed issue with svidget.load(), wasn't recognizing connected option
+- fixed issue with widget not sending its update param value to page param proxy
+- added param.serializedValue property to get stringified version of value

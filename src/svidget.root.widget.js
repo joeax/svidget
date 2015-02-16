@@ -57,8 +57,8 @@ Svidget.Root.WidgetPrototype = {
 
 	startWidget: function () {
 		var widget = this.current();
-		// populate objects
-		this.populateObjects();
+		// parse elements - <params>, <actions>, and <events>
+		this.parseElements();
 		// set up widget as either standalone or connected
 		if (!this.connected()) 
 			this.startWidgetStandalone(widget);
@@ -86,9 +86,9 @@ Svidget.Root.WidgetPrototype = {
 		widget.start();
 	},
 	
-	/* Populate Declared Objects */
+	/* Parse Elements as Declared Objects */
 
-	populateObjects: function () {
+	parseElements: function () {
 		// get <svidget:params> xml element
 		var paramsElement = this.getParamsElement();
 		// populate params
@@ -564,9 +564,6 @@ Svidget.Root.WidgetPrototype = {
 		var action = this.current().action(actionName);
 		if (action == null || !action.external()) return; // todo: maybe send some fail message?
 		action.invokeApply(payload.args);
-//		//this.current().start(payload.id, payload.params);
-//		this.connectWidget(payload.id, payload.params);
-//		this.signalStartAck();
 	},
 
 	handleReceiveParentEventTrigger: function (payload) {
