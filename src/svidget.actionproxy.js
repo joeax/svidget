@@ -12,7 +12,7 @@ svidget.collection.js
 svidget.objectprototype.js
 svidget.action.js
 svidget.proxy.js
-
+  
 ******************************************/
 
 /**

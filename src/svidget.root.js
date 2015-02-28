@@ -19,7 +19,7 @@ Svidget.Core
 /*
 // Svidget is an object var not a class var, so instantiate with ()
 // We declare it this way so that we can maintain private members via var
-// REMARKS: this should be instantiated last after all ofther lib scripts loaded
+// REMARKS: this should be instantiated last after all ofther lib scripts loaded  
 */
 Svidget.Root = function (root) {
 	this.__type = "Svidget.Root";

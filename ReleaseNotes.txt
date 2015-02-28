@@ -39,3 +39,4 @@
 - svidget.load event now firing in a widget once widget DOM is fully loaded and ready
 - added action.bindingFunc as public readonly property
 - minor fixes and code cleanup
+

@@ -17,7 +17,7 @@ Svidget.ParamPrototype
  * @constructor
  * @mixes ObjectPrototype
  * @mixes ParamPrototype
- * @augments EventPrototype
+ * @augments EventPrototype  
  * @memberof Svidget
  * @param {string} name - The name of the param.
  * @param {object} value - The value for the param.
