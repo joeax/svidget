@@ -163,7 +163,7 @@ Svidget.Root.prototype = {
 	markLoaded: function () {
 		if (this.getset("loaded") === true) return;
 		this.getset("loaded", true);
-		this.triggerLoaded();
+		this.triggerLoad();
 	},
 
 	/* REGION Events */
@@ -259,15 +259,13 @@ Svidget.Root.prototype = {
 		this.off("widgetload", Svidget.declaredHandlerName);
 	},
 
-	// todo: rename to triggerLoad
 	// internal
-	triggerLoaded: function () {
+	triggerLoad: function () {
 		this.trigger("load");
 	},
 
-	// todo: rename to triggerWidgetLoad
 	// internal
-	triggerWidgetLoaded: function (widgetID) {
+	triggerWidgetLoad: function (widgetID) {
 		this.trigger("widgetload", widgetID);
 	},
 

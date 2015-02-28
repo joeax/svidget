@@ -34,3 +34,8 @@
 - fixed issue with svidget.load(), wasn't recognizing connected option
 - fixed issue with widget not sending its update param value to page param proxy
 - added param.serializedValue property to get stringified version of value
+
+0.2.2
+- svidget.load event now firing in a widget once widget DOM is fully loaded and ready
+- added action.bindingFunc as public readonly property
+- minor fixes and code cleanup

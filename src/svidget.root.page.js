@@ -537,7 +537,7 @@ Svidget.Root.PagePrototype = {
 		if (widgetRef.started()) return;
 		widgetRef.start();
 		this.populateWidgetReference(widgetRef, widgetTransport);
-		this.triggerWidgetLoaded(widgetRef.id());
+		this.triggerWidgetLoad(widgetRef.id());
 		// check if all widgets loaded, if so fire loaded
 		// note: this is probably a bit inefficient, but we'll optimize later
 		if (this.areAllWidgetsStarted()) {

@@ -184,9 +184,16 @@ Svidget.Action.prototype = {
 		return true;
 	},
 
+	/**
+	 * Gets the binding function for the action.
+	 * @method
+	 * @returns {Function} - The binding function.
+	*/
 	bindingFunc: function () {
-		var bind = this.getset("binding");
-		var func = Svidget.findFunction(bind);
+		// fixed, bindingFunc is set in constructor, no need to re-lookup here
+		//var bind = this.getset("binding");
+		//var func = Svidget.findFunction(bind);
+		var func = this.getset("bindingFunc");
 		return func;
 	},
 

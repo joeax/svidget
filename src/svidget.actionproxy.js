@@ -181,6 +181,73 @@ Svidget.extend(Svidget.ActionProxy, {
 	},
 
 	/**
+	* Adds an event handler for the "paramadd" event. 
+	 * @method
+	 * @param {object} [data] - Arbirary data to initialize Event object with when event is triggered.
+	 * @param {string} [name] - The name of the handler. Useful when removing the handler for the event.
+	 * @param {Function} handler - The event handler.
+	 * @returns {boolean} - True if the event handler was successfully added.
+	*/
+	onparamadd: function (data, name, handler) {
+		return this.on("paramadd", data, name, handler);
+	},
+
+	/**
+	* Removes an event handler for the "paramadd" event. 
+	* @method
+	* @param {(Function|string)} handlerOrName - The handler function and/or the handler name used when calling on().
+	* @returns {boolean} - True if the event handler was successfully removed.
+	*/
+	offparamadd: function (handlerOrName) {
+		return this.off("paramadd", handlerOrName);
+	},
+
+	/**
+	* Adds an event handler for the "paramchange" event. 
+	 * @method
+	 * @param {object} [data] - Arbirary data to initialize Event object with when event is triggered.
+	 * @param {string} [name] - The name of the handler. Useful when removing the handler for the event.
+	 * @param {Function} handler - The event handler.
+	 * @returns {boolean} - True if the event handler was successfully added.
+	*/
+	onparamchange: function (data, name, handler) {
+		return this.on("paramchange", data, name, handler);
+	},
+
+	/**
+	* Removes an event handler for the "paramchange" event. 
+	* @method
+	* @param {(Function|string)} handlerOrName - The handler function and/or the handler name used when calling on().
+	* @returns {boolean} - True if the event handler was successfully removed.
+	*/
+	offparamchange: function (handlerOrName) {
+		return this.off("paramchange", handlerOrName);
+	},
+
+	/**
+	* Adds an event handler for the "paramremove" event. 
+	 * @method
+	 * @param {object} [data] - Arbirary data to initialize Event object with when event is triggered.
+	 * @param {string} [name] - The name of the handler. Useful when removing the handler for the event.
+	 * @param {Function} handler - The event handler.
+	 * @returns {boolean} - True if the event handler was successfully added.
+	*/
+	onparamremove: function (data, name, handler) {
+		return this.on("paramremove", data, name, handler);
+	},
+
+	/**
+	* Removes an event handler for the "paramremove" event. 
+	* @method
+	* @param {(Function|string)} handlerOrName - The handler function and/or the handler name used when calling on().
+	* @returns {boolean} - True if the event handler was successfully removed.
+	*/
+	offparamremove: function (handlerOrName) {
+		return this.off("paramremove", handlerOrName);
+	},
+
+
+	/**
 	 * Gets a string representation of this object.
 	 * @method
 	 * @returns {string}

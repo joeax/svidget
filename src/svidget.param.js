@@ -338,7 +338,7 @@ Svidget.Param.prototype = {
 }
 
 // todo: convert these to functions so that users can't manipulate
-Svidget.Param.eventTypes = ["valuechange", "change"];
+Svidget.Param.eventTypes = ["change", "set"];
 Svidget.Param.optionProperties = ["type", "subtype", "binding", "sanitizer", "enabled", "shortname", "defvalue", "typedata", "coerce"];
 Svidget.Param.allProxyProperties = ["name", "value", "type", "subtype", "enabled", "shortname", "defvalue", "typedata", "coerce"]; // 0.1.3: removed "binding", 
 Svidget.Param.writableProxyProperties = ["value"];

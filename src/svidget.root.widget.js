@@ -29,14 +29,12 @@ Svidget.Root.WidgetPrototype = {
 
 	readyWidget: function () {
 		Svidget.log('widget: readyWidget');
-		//alert("widget");
-		//this.loadCurrent();
 		// start widget
 		this.startWidget();
 		// call ready on the widget for final setup
 		//this.current().ready();
 		// notify parent that widget is loaded
-		//this.signalLoaded();
+		this.markLoaded();
 	},
 
 	// ***********************************
