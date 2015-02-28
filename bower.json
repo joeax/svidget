@@ -21,6 +21,13 @@
   },
   "ignore": [
     "**/.*",
+    "demo",
+    "misc",
+    "src",
+    "tests",
+    "Gruntfile.js",
+    "package.json",
+    "node_modules",
     "svidget.njsproj",
     "svidget.sln"
   ]
