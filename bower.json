@@ -1,0 +1,27 @@
+{
+  "name": "svidget",
+  "main": "dist/svidget.min.js",
+  "authors": {
+    "name": "Joe Agster",
+    "email": "joeagster@outlook.com"
+  },
+  "description": "Framework for widgetizing SVG on the web.",
+  "keywords": [
+    "svg",
+    "widget",
+    "visualization",
+    "html5",
+    "javascript"
+  ],
+  "license": "MIT",
+  "homepage": "http://www.svidget.com",
+	"repository": {
+    "type": "git",
+    "url": "git://github.com/joeax/svidget.git"
+  },
+  "ignore": [
+    "**/.*",
+    "svidget.njsproj",
+    "svidget.sln"
+  ]
+}
