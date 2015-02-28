@@ -1,6 +1,6 @@
 {
   "name": "svidget",
-  "main": "dist/svidget.min.js",
+  "main": "dist/svidget.js",
   "authors": {
     "name": "Joe Agster",
     "email": "joeagster@outlook.com"
@@ -29,6 +29,7 @@
     "package.json",
     "node_modules",
     "svidget.njsproj",
-    "svidget.sln"
+    "svidget.sln",
+    "svidget.xsd"
   ]
 }
