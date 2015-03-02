@@ -14,6 +14,8 @@ Dependencies:
 
 ******************************************/
 
+var VERSION = "0.2.3";
+
 /* Global Namespace */
 
 /**
@@ -22,13 +24,20 @@ Dependencies:
  */
 var Svidget = {};
 
+// define window and document if needed
+// note: global declared by closure
+var window = global;
+var document = window.document || {};
+
 
 /* REGION Common Properties */
 
-Svidget.emptyArray = [];
-Svidget.root = window; // note: this may be different for node.js
-Svidget.version = "0.1.1";
+Svidget.root = window; // In server side environments may be global or jsdom-like window
+Svidget.document = document; // In server side environments may be global.document or jsdom-like document
+Svidget.version = VERSION;
 Svidget.declaredHandlerName = "_declared";
+Svidget.emptyArray = [];
+
 
 /* REGION Special Shortcut Methods */
 

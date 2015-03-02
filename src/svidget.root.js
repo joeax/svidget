@@ -19,15 +19,10 @@ Svidget.Core
 /*
 // Svidget is an object var not a class var, so instantiate with ()
 // We declare it this way so that we can maintain private members via var
-// REMARKS: this should be instantiated last after all ofther lib scripts loaded  
+// REMARKS: this should be instantiated last after all ofther lib scripts loaded
 */
 Svidget.Root = function (root) {
 	this.__type = "Svidget.Root";
-	//var isWidget = null;
-	//var isBrowser = null; 
-	//var domLoaded = false;
-	//var doc = document;
-	//var docElement = document.documentElement;
 	var that = this;
 
 	// private fields
@@ -47,10 +42,9 @@ Svidget.Root = function (root) {
 	this.setup(privates);
 
 	// state
-	//this.isWidget = null; // moved to function
 	this.isBrowser = true; // whether in browser or in some other execution environment i.e. Node.js
-	//this.isReady = false; // moved to function
-	this.root = root || window; // i.e. window
+	//this.root = root || window; // i.e. window
+	//this.document = root.document || {};
 	this.docType = null;
 
 	this.setCurrent = function (widget) {
@@ -114,6 +108,7 @@ Svidget.Root.prototype = {
 
 	getDocType: function () {
 		// determine if in widget
+		if (!document.documentElement) return Svidget.DocType.html;
 		var localName = document.documentElement.localName;
 		var namespaceUri = document.documentElement.namespaceURI;
 		if (localName == "svg" && namespaceUri == Svidget.Namespaces.svg) return Svidget.DocType.svg;
@@ -323,39 +318,3 @@ Svidget.Root.prototype = {
 
 
 Svidget.extend(Svidget.Root, Svidget.ObjectPrototype);
-
-
-/*
-// Events:
-// .on('load')
-// .on('widgetload')
-
-
-// core object
-//var svidget = new Svidget.Root(this);
-
-//})();
-
-
-//var doc = document;
-//var docele = document.documentElement;
-
-
-// can be embed a prototype object in object constructor and them assign prototype inside? hmmm
-// would innerPrototype methods be private? probably not
-
-//function MyObj() {
-
-
-//	var innerPrototype = {
-
-//		func1: function () {
-//			alert('func1');
-//		}
-
-//	}
-
-//	MyObj.prototype = innerPrototype;
-
-//}
-*/

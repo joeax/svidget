@@ -14,14 +14,11 @@ Svidget.ObjectPrototype
 
 
 /**
- * Represents the result of a DOM query. Chainable.
+ * Represents the result of a DOM query. Chainable. Behaves similar to a jQuery object.
  * @class
  * @param {Array} domItemCollection - An array or array-like collection of DOMItem objects.
  * @param {string} selector - The selector used to get the items for this query.
  */
-/*
-// Similar to a jQuery object
-*/
 Svidget.DOMQuery = function (domItemCollection, selector) {
 	this.__type = "Svidget.DOMQuery";
 	var items = new Svidget.Collection(domItemCollection); // if domItemCollection not valid its ok, will just initialize an empty collection

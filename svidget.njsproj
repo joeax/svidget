@@ -12,7 +12,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>f9ea8b54-4a2b-4c09-88e8-b58c3bcfa6f4</ProjectGuid>
     <ProjectHome>.</ProjectHome>
-    <StartupFile>app.js</StartupFile>
+    <StartupFile>tests\basictest.js</StartupFile>
     <StartWebBrowser>False</StartWebBrowser>
     <SearchPath>
     </SearchPath>
@@ -51,6 +51,10 @@
     <Compile Include="dist\svidget-0.2.0.min.js" />
     <Compile Include="dist\svidget-0.2.1.js" />
     <Compile Include="dist\svidget-0.2.1.min.js" />
+    <Compile Include="dist\svidget-0.2.2.js" />
+    <Compile Include="dist\svidget-0.2.2.min.js" />
+    <Compile Include="dist\svidget-0.2.3.js" />
+    <Compile Include="dist\svidget-0.2.3.min.js" />
     <Compile Include="dist\svidget.js" />
     <Compile Include="dist\svidget.min.js" />
     <Compile Include="misc\closure.js" />
@@ -95,6 +99,7 @@
     <Compile Include="src\svidget.util.js" />
     <Compile Include="src\svidget.widget.js" />
     <Compile Include="src\svidget.widgetreference.js" />
+    <Compile Include="tests\basictest.js" />
     <Content Include=".gitignore" />
     <Content Include="demo\css\highlight.css" />
     <Content Include="demo\css\highlight.tomorrow.css" />
@@ -127,6 +132,7 @@
     <Content Include="demo\SpinningStar.html" />
     <Content Include="demo\widgets\spinning-star.svg" />
     <Content Include="demo\widgets\star.svg" />
+    <Content Include="bower.json" />
     <Content Include="package.json" />
     <Content Include="README.md" />
     <Content Include="ReleaseNotes.txt" />

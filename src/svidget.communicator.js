@@ -33,6 +33,7 @@ Svidget.Communicator.prototype = {
 	// REGION: Events
 
 	addMessageEvent: function () {
+		if (!window.addEventListener) return;
 		window.addEventListener('message', Svidget.wrap(this.receiveXSM, this), false);
 	},
 
@@ -83,7 +84,7 @@ Svidget.Communicator.prototype = {
 	},
 
 	signalParentXSM: function (name, payload, widgetID) {
-		if (window.parent != null) {
+		if (window.parent != null && window.parent.postMessage != null) {
 			//alert('postMessage');
 			var msg = this.buildSignalParentMessage(name, payload, widgetID);
 			window.parent.postMessage(msg, '*');
@@ -107,6 +108,7 @@ Svidget.Communicator.prototype = {
 
 	// todo: move to Svidget.DOM
 	checkParentSameDomain: function () {
+		if (window.parent == null) return false;
 		try {
 			var d = window.parent.document;
 			return true;
@@ -154,6 +156,7 @@ Svidget.Communicator.prototype = {
 		};
 	}
 
+	/*
 	//	isWidgetSameDomain: function (widgetRef) {
 	//		try {
 	//			var d = widgetRef.document();
@@ -163,5 +166,5 @@ Svidget.Communicator.prototype = {
 	//			return false;
 	//		}
 	//	}
-
+	*/
 }

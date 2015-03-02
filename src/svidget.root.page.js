@@ -226,7 +226,7 @@ Svidget.Root.PagePrototype = {
 	getWidgetIDForElement: function (objEle) {
 		var id = objEle.id; //(objEle.id == null) ? this.generateWidgetID() : objEle.id;
 		// if id points to element (no duplicates, then just use that)
-		if (id != null && document.getElementById(id) == objEle) return id;
+		if (id != null && Svidget.DOM.get(id) == objEle) return id;
 		return this.newWidgetID();
 	},
 
@@ -238,7 +238,7 @@ Svidget.Root.PagePrototype = {
 		while (true) {
 			var id = prefix + idNum;
 			idNum++;
-			if (document.getElementById(id) == null) break;
+			if (Svidget.DOM.get(id) == null) break;
 		}
 		this.idCounter = idNum;
 		return id;
@@ -259,6 +259,7 @@ Svidget.Root.PagePrototype = {
 	},
 
 	buildObjectElement: function (options, paramObj) {
+		if (!document.createElement) return null;
 		var objEle = document.createElement("object");
 		objEle.setAttribute("role", "svidget");
 		objEle.setAttribute("data", options.url);
@@ -387,7 +388,6 @@ Svidget.Root.PagePrototype = {
 	widgets: function (selector) {
 		var col = this.getWidgets();
 		return this.select(col, selector);
-		//return col;
 	},
 
 	/**

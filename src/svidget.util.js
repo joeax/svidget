@@ -30,13 +30,15 @@ Svidget.Util = {};
 Adapted from SO answer: http://stackoverflow.com/a/2880929/242407
 */
 Svidget.Util.queryString = function (duplicates, lastOneWins) {
+	var urlParams = {};
+	if (!window.location) return urlParams;
+	var queryString = (window.location.search == null || window.location.search.length > 0) ? window.location.search : "";
 	var match,
         pl = /\+/g,  // Regex for replacing addition symbol with a space
         search = /([^&=]+)=?([^&]*)/g,
         decode = function (s) { return decodeURIComponent(s.replace(pl, " ")); },
-        query = window.location.search.substring(1);
+        query = queryString.substring(1);
 
-	var urlParams = {};
 	while (match = search.exec(query)) {
 		// index 1 and 2 because those are the subgroups in parens (), index 0 is the whole string match
 		var name = decode(match[1]), value = decode(match[2]);

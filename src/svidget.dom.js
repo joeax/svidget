@@ -31,6 +31,7 @@ Svidget.DOM = {
 	// REMARKS
 	// Wrapper for getElementById
 	get: function (sel) {
+		if (!document.getElementById) return null;
 		return document.getElementById(sel);
 	},
 
@@ -39,6 +40,7 @@ Svidget.DOM = {
 	},
 
 	getByNameNS: function (namespace, tagName, asCollection) {
+		if (!document.getElementsByTagNameNS) return null;
 		var tags = document.getElementsByTagNameNS(namespace, tagName);
 		if (asCollection) {
 			return new Svidget.Collection(Svidget.array(tags));
@@ -164,6 +166,7 @@ Svidget.DOM = {
 
 	// converts an HTML or SVG DOM node into a pure object literal used to transport
 	transportize: function (ele) {
+		if (ele == null) return null;
 		return {
 			name: ele.localName,
 			namespace: ele.namespaceURI,
@@ -202,6 +205,7 @@ Svidget.DOM = {
 	},
 
 	isDOMNode: function (source) {
+		if (source == null) return null;
 		return (source.namespaceURI && source.localName && source.nodeType && source.value && (source.nodeType == 1 || source.nodeType == 2)); //!source.attributes || 
 	},
 
@@ -260,6 +264,8 @@ Svidget.DOM = {
 	},
 
 	isElement: function (ele) {
+		// todo: fix this, won't work in node
+		if (!HTMLElement) return undefined; //unknown
 		return ele instanceof HTMLElement;
 	},
 
@@ -332,11 +338,11 @@ Svidget.DOM = {
 	off: function (obj, type, callback, capture) {
 		capture = !!capture; // normalize to bool (default == false)
 		var detached = false;
-		if (obj.addEventListener) {
+		if (obj.removeEventListener) {
 			obj.removeEventListener(type, callback, false);
 			detached = true;
 		}
-		else if (document.attachEvent) {
+		else if (document.detachEvent) {
 			document.detachEvent("on" + type, callback);
 			detached = true;
 		}

@@ -40,3 +40,5 @@
 - added action.bindingFunc as public readonly property
 - minor fixes and code cleanup
 
+0.2.3
+- reorganized code for CommonJS-like/Node.js/io.js environments, consumers now inject their own DOM

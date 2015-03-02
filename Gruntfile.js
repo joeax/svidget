@@ -100,6 +100,11 @@
 		return false;
 	}
 	
+	function getClosureWrapArray() {
+		var closure = grunt.file.read("misc/closure.js");
+		return closure.split("//BODY//");
+	}
+	
 	var config = {
 		pkg: grunt.file.readJSON('package.json'),
 		concat: {
@@ -114,7 +119,7 @@
 				src: ['dist/header.js', 'dist/svidget.js'],
 				dest: 'dist/svidget.js'
 			}
-	/*,
+			/*,
 			page: {
 				src: sourceFiles,
 				dest: 'dist/kinetic-v<%= pkg.version %>-beta.js'
@@ -133,7 +138,7 @@
 				src: ['dist/svidget-full.js'],
 				dest: '',
 				options: {
-					wrapper: [';(function () {\n', '\n}).call(this);']
+					wrapper: getClosureWrapArray() //[';(function () {\n', '\n}).call(this);']
 				}
 			}
 		},
@@ -221,8 +226,8 @@
 	// X get rid of file headers
 	// x inject header, then wrap rest of files in closure (try to use uglify for header banner)
 	// X full version comments: double slash (//), jsdoc (/**) stay, /* */ gets deleted
-	// - fix line endings in full version of file
-	// - replace version, year and date in header
+	// X fix line endings in full version of file
+	// X replace version, year and date in header
 	
 	// configure
 	grunt.initConfig(config);

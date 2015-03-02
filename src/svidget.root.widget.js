@@ -413,7 +413,7 @@ Svidget.Root.WidgetPrototype = {
 	// Params
 
 	signalParamAdded: function (param) {
-		if (!this.connected()) return; // no signaling if not connected  
+		if (!this.connected()) return; // no signaling if not connected
 		Svidget.log("widget: signalParamAdded {id: " + this.current().id() + "}");
 		var transport = param.toTransport();
 		this.comm().signalParent("paramadded", transport, this.current().id());
