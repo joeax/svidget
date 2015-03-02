@@ -12,6 +12,10 @@ Svidget is not another data visualization framework like [D3](https://github.com
 ###Download
 Download the latest stable builds from the `dist` folder. The current version is **0.2.2**.
 
+###Bower
+Install from Bower:
+
+    bower install svidget
 
 ###Using
 To get started, consider this simple star SVG file.
