@@ -7,15 +7,20 @@ Svidget is not another data visualization framework like [D3](https://github.com
 
 <small>\* Just kidding</small>
 
-> Svidget is currently in beta, with version 0.3.0 currently in alpha. Once the unit tests are complete 0.3.0 will be released. For now, version 0.2.3 is functionally complete and stable. For more information and to view some live demos visit the [Svidget.js Website](http://www.svidget.com).
+> Version 0.3.0 is currently in alpha. Once the unit tests are complete 0.3.0 will be released. I am almost done rewriting all the unit tests, and have fixed a lot of small issues, made performance improvements, and have opened up much of the internals like type conversion as public APIs. In the mean time please open any issues you see. **Visit the [Svidget.js Website](http://www.svidget.com)** for some really cool demos, the developer guide, and the API documentation.
+
 
 ###Download
-Download the latest stable builds from the `dist` folder. The current stable version is **0.2.3**, with an 0.3.0 version in alpha.
+Download the latest stable builds from the `dist` folder. The current stable version is **0.2.3**.
 
-###Bower
-Install from Bower:
+###Install
+Bower
 
     bower install svidget
+
+npm
+
+    npm install svidget
 
 ###Using
 To get started, consider this simple star SVG file.
