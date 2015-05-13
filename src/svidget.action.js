@@ -35,45 +35,21 @@ Svidget.Action = function (name, options, parent) {
 	parent = parent instanceof Svidget.Widget ? parent : null; // parent can only be a Widget
 
 	var that = this;
+	var c = Svidget.Conversion;
 	// private fields
 	var privates = new (function () {
-		this.writable = ["binding", "enabled", "external", "description"];
+		this.writable = ["binding", "bindingFunc", "enabled", "external", "description"];
 		this.params = new Svidget.ActionParamCollection([], that);
-		this.name = name;
-		this.description = options.description;
-		this.enabled = options.enabled !== false;
-		this.binding = options.binding || null;
-		this.external = options.external !== false;
+		this.name = c.toString(name);
+		this.description = c.toString(options.description);
+		this.enabled = options.enabled != null ? c.toBool(options.enabled) : true;
+		this.binding = resolveBinding(options.binding);
+		this.external = options.external != null ? c.toBool(options.external) : true;
 		this.widget = parent;
 		this.bindingFunc = null;
 	})();
 	// private accessors
 	this.setup(privates);
-
-	// todo: move to core or util
-	//this.buildBindingFunc = function (bind) {
-	//	if (typeof bind === "function") {
-	//		return bind;
-	//	}
-	//	else if (bind != null) {
-	//		bind = bind + ""; //coerce to string
-	//		var func = Svidget.root[bind];
-	//		if (func == null) return null;
-	//		if (typeof func === "function") return func;
-	//		// bind is an expression, so just wrap it in a function
-	//		if (bind.substr(0, 7) != "return ")
-	//			return new Function("return " + bind);
-	//		else 
-	//			return new Function(bind);
-	//		/*//try {
-	//		//	return eval(options.binding);
-	//		//}
-	//		//catch (ex) {
-	//		//	return undefined;
-	//		//}*/
-	//	}
-	//	return null;
-	//}
 
 	// create bindingFunc from binding
 	// binding can be string or function
@@ -84,6 +60,26 @@ Svidget.Action = function (name, options, parent) {
 
 	// add/remove event handlers for params
 	this.wireCollectionAddRemoveHandlers(privates.params, that.paramAdded, that.paramRemoved);
+	
+	// load the params into the ActionParamCollection instance
+	loadParams(options.params);
+	
+	function resolveBinding(binding) {
+		if (binding == null) return null;
+		if (typeof binding !== "function") binding = c.toString(binding);
+		return binding;
+	}
+
+	function loadParams(params) {
+		if (params == null || !Svidget.isArray(params)) return;
+		for (var i = 0; i < params.length; i++) {
+			var p = params[i];
+			// note: failures to add will be skipped/ignored
+			if (p.name != null) {
+				that.addParam(p.name, p);
+			}
+		}
+	}
 }
 
 Svidget.Action.prototype = {
@@ -98,7 +94,8 @@ Svidget.Action.prototype = {
 	/*
 	// Note: name is immutable after creation
 	*/
-	name: function () {
+	name: function (val) {
+		if (val !== undefined) return false; // they are trying to set, it should fail
 		var res = this.getPrivate("name");
 		return res;
 	},
@@ -108,6 +105,7 @@ Svidget.Action.prototype = {
 	 * @method
 	 * @returns {boolean}
 	*/
+	// OBSOLETE: It's always attached because we don't expose the constructor directly
 	attached: function () {
 		var widget = this.getset("widget");
 		return this.widget != null && this.widget instanceof Svidget.Widget;
@@ -120,12 +118,14 @@ Svidget.Action.prototype = {
 	 * @returns {boolean} - The enabled state when nothing is passed, or true/false if succeeded or failed when setting.
 	*/
 	enabled: function (val) {
-		var res = this.getset("enabled", val);
+		if (val === null) val = true;
+		var res = this.getset("enabled", val, "bool");
 		// if undefined its a get so return value, if res is false then set failed
 		if (val === undefined || !!!res) return res;
 		// fire "changed" event
+		val = this.getset("enabled"); // get converted value
 		this.trigger("change", { property: "enabled", value: val });
-
+		// set was successful
 		return true;
 	},
 
@@ -136,12 +136,13 @@ Svidget.Action.prototype = {
 	 * @returns {string} - The value for a get, or true/false if succeeded or failed for a set.
 	*/
 	description: function (val) {
-		var res = this.getset("description", val);
+		var res = this.getset("description", val, "string");
 		// if undefined its a get so return value, if res is false then set failed
 		if (val === undefined || !!!res) return res;
 		// fire "changed" event
+		val = this.getPrivate("description"); // get converted value
 		this.trigger("change", { property: "description", value: val });
-
+		// set was successful
 		return true;
 	},
 
@@ -152,12 +153,14 @@ Svidget.Action.prototype = {
 	 * @returns {boolean} - The value for a get, or true/false if succeeded or failed for a set.
 	*/
 	external: function (val) {
-		var res = this.getset("external", val);
+		if (val === null) val = true;
+		var res = this.getset("external", val, "bool");
 		// if undefined its a get so return value, if res is false then set failed
 		if (val === undefined || !!!res) return res;
 		// fire "changed" event
+		val = this.getPrivate("external"); // get converted value
 		this.trigger("change", { property: "external", value: val });
-
+		// set was successful
 		return true;
 	},
 
@@ -170,7 +173,7 @@ Svidget.Action.prototype = {
 	binding: function (bind) {
 		// bind can be string or function, so check for both, enforce
 		if (bind !== undefined) {
-			if (typeof (bind) !== "function") bind = bind + ""; // coerce to string
+			if (typeof bind !== "function" && bind !== null) bind = bind + ""; // coerce to string
 			// update bindingFunc
 			var func = Svidget.findFunction(bind);
 			this.getset("bindingFunc", func);
@@ -179,8 +182,8 @@ Svidget.Action.prototype = {
 		// if undefined its a get so return value, if res is false then set failed
 		if (bind === undefined || !!!res) return res;
 		// fire "changed" event
-		this.trigger("change", { property: "binding", value: val });
-
+		this.trigger("change", { property: "binding", value: bind });
+		// set was successful
 		return true;
 	},
 
@@ -190,9 +193,7 @@ Svidget.Action.prototype = {
 	 * @returns {Function} - The binding function.
 	*/
 	bindingFunc: function () {
-		// fixed, bindingFunc is set in constructor, no need to re-lookup here
-		//var bind = this.getset("binding");
-		//var func = Svidget.findFunction(bind);
+		// bindingFunc is set in constructor, no need to re-lookup here
 		var func = this.getset("bindingFunc");
 		return func;
 	},
@@ -269,8 +270,8 @@ Svidget.Action.prototype = {
 	 * params(0)
 	 * params("color")
 	 * @method
-	 * @param {(string|number)} [selector] - The selector string or integer.
-	 * @returns {Svidget.ActionParamCollection} - A collection based on the selector, or the entire collection.
+	 * @param {(string|number|function)} [selector] - The param name, index, or search function (with signature function (param) returns boolean).
+	 * @returns {Svidget.Collection} - A collection based on the selector, or the entire collection.
 	*/
 	params: function (selector) {
 		var col = this.getset("params");
@@ -284,7 +285,7 @@ Svidget.Action.prototype = {
 	 * param(0)
 	 * param("color")
 	 * @method
-	 * @param {(string|number)} selector - The index or ID of the param.
+	 * @param {(string|number|function)} selector - The param name, index, or search function (with signature function (param) returns boolean).
 	 * @returns {Svidget.ActionParam} - The ActionParam based on the selector. If selector is invalid, null is returned.
 	*/
 	param: function (selector) {
@@ -292,6 +293,20 @@ Svidget.Action.prototype = {
 		var col = this.getset("params");
 		var item = this.selectFirst(col, selector);
 		return item;
+	},
+	
+	/**
+	 * Creates a new ActionParam but does not add to the Action.
+	 * Examples:
+	 * newParam("backColor")
+	 * newParam("backColor", { description: "Background color."})
+	 * @method
+	 * @param {string} name - The name of the ActionParam.
+	 * @param {object} [options] - The options used to contruct the ActionParam. Example: { enabled: true, description: "A param" }
+	 * @returns {Svidget.ActionParam} - The ActionParam that was added, or null if ActionParam failed to add.
+	*/
+	newParam: function (name, options) {
+		return new Svidget.ActionParam(name, options, this);
 	},
 
 	/**

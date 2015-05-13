@@ -27,7 +27,8 @@ Svidget.ParamPrototype = {
 	/*
 	// Note: name is immutable after creation
 	*/
-	name: function () {
+	name: function (val) {
+		if (val !== undefined) return false; // they are trying to set, it should fail
 		var res = this.getPrivate("name");
 		return res;
 	},
@@ -39,12 +40,13 @@ Svidget.ParamPrototype = {
 	 * @returns {string} - The value for a get, or true/false if succeeded or failed for a set.
 	*/
 	description: function (val) {
-		var res = this.getset("description", val);
+		var res = this.getset("description", val, "string");
 		// if undefined its a get so return value, if res is false then set failed
 		if (val === undefined || !!!res) return res;
 		// fire "changed" event
+		val = this.getPrivate("description"); // get converted value
 		if (this.trigger) this.trigger("change", { property: "description", value: val });
-
+		// set was successful
 		return true;
 	},
 
@@ -55,12 +57,15 @@ Svidget.ParamPrototype = {
 	 * @returns {string} - The value for a get, or true/false if succeeded or failed for a set.
 	*/
 	type: function (val) {
-		var res = this.getset("type", val, this.validateType);
+		if (val === null) val = Svidget.resolveType(null); // rturns default type
+		if (val == "bool") val = "boolean";
+		var res = this.getset("type", val, "string", this.validateType);
 		// if undefined its a get so return value, if res is false then set failed
 		if (val === undefined || !!!res) return res;
 		// fire "changed" event
+		val = this.getPrivate("type"); // get converted value
 		if (this.trigger) this.trigger("change", { property: "type", value: val });
-
+		// set was successful
 		return true;
 	},
 
@@ -71,12 +76,13 @@ Svidget.ParamPrototype = {
 	 * @returns {string} - The value for a get, or true/false if succeeded or failed for a set.
 	*/
 	subtype: function (val) {
-		var res = this.getset("subtype", val, this.validateSubtype);
+		var res = this.getset("subtype", val, "string", this.validateSubtype);
 		// if undefined its a get so return value, if res is false then set failed
 		if (val === undefined || !!!res) return res;
 		// fire "changed" event
+		val = this.getPrivate("subtype"); // get converted value
 		if (this.trigger) this.trigger("change", { property: "subtype", value: val });
-
+		// set was successful
 		return true;
 	},
 
@@ -87,12 +93,13 @@ Svidget.ParamPrototype = {
 	 * @returns {string} - The typedata when nothing is passed, or true/false if succeeded or failed when setting.
 	*/
 	typedata: function (val) {
-		var res = this.getset("typedata", val);
+		var res = this.getset("typedata", val, "string");
 		// if undefined its a get so return value, if res is false then set failed
 		if (val === undefined || !!!res) return res;
 		// fire "changed" event
-		this.trigger("change", { property: "typedata", value: val });
-
+		val = this.getPrivate("typedata"); // get converted value
+		if (this.trigger) this.trigger("change", { property: "typedata", value: val });
+		// set was successful
 		return true;
 	},
 
@@ -103,7 +110,7 @@ Svidget.ParamPrototype = {
 	 * @returns {string} - The value for a get, or true/false if succeeded or failed for a set.
 	*/
 	defvalue: function (val) {
-		var res = this.getset("defvalue", val, this.validateSubtype);
+		var res = this.getset("defvalue", val);
 		// if undefined its a get so return value, if res is false then set failed
 		if (val === undefined || !!!res) return res;
 		// fire "change" event
@@ -114,13 +121,27 @@ Svidget.ParamPrototype = {
 
 	validateType: function (t) {
 		if (!typeof t === "string") return false;
-		return (Svidget.ParamTypes[t] != undefined);
+		return (Svidget.ParamTypes[t] !== undefined);
 	},
 
 	validateSubtype: function (t) {
-		if (!typeof t === "string") return false;
-		return (Svidget.ParamSubTypes[t] != undefined);
+		return true;
+		// as of 0.3.0, no longer enforcing subtype
+		/*
+		//if (!typeof t === "string") return false;
+		//return (Svidget.ParamSubTypes[t] !== undefined);
+		*/
 	},
+
+	_resolveType: function(type, value, defvalue) {
+		// infer the type from the value or defvalue
+		value = value != null ? value : defvalue;
+		if (type == null)
+			type = Svidget.getType(value);
+		else
+			type = Svidget.resolveType(type); // normalize type to a valid type
+		return type;
+	}
 
 };
 

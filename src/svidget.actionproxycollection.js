@@ -26,6 +26,7 @@ Svidget.ActionProxyCollection = function (array, parent) {
 	
 	var that = this;
 	this.parent = parent;
+	this._ctor = Svidget.ActionProxyCollection;
 }
 
 Svidget.ActionProxyCollection.prototype = new Svidget.ObjectCollection;

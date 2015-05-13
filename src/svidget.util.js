@@ -29,6 +29,7 @@ Svidget.Util = {};
 /*
 Adapted from SO answer: http://stackoverflow.com/a/2880929/242407
 */
+// todo: protect from overwriting
 Svidget.Util.queryString = function (duplicates, lastOneWins) {
 	var urlParams = {};
 	if (!window.location) return urlParams;

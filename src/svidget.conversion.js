@@ -32,17 +32,19 @@ Svidget.Conversion.to = function (val, type, subtype, typedata) {
  * @static
  */
 Svidget.Conversion.toString = function (val, subtype, typedata) {
+	if (val == null) return null;
 	if (subtype == Svidget.ParamSubTypes.choice) return Svidget.Conversion.toChoiceString(val, typedata);
 	if (Svidget.isArray(val) || typeof val === "object") return JSON.stringify(val);
 	return val + "";
 }
 
 /**
- * Converts any value to a string.
+ * Converts any value to a string among a choice list.
  * @static
  */
 Svidget.Conversion.toChoiceString = function (val, typedata) {
-	if (!typedata) return null;
+	val = val + "";
+	if (typedata == null) return val;
 	var choices = typedata.split("|");
 	if (choices == null || choices.length == 0) return null;
 	if (choices.indexOf(val) >= 0) return val; // it's in the choice list so return it
@@ -96,9 +98,9 @@ Svidget.Conversion.toObject = function (val) {
 	if (val == null) return val;
 	// if val is valid JSON string, JSON parse and return array
 	if (Svidget.Conversion.isJSONString(val)) {
-		val = Svidget.Conversion.jsonifyString(val); // convert single to double chars or else parser chokes
+		var newval = Svidget.Conversion.jsonifyString(val); // convert single to double chars or else parser chokes
 		try {
-			return JSON.parse(val);
+			return JSON.parse(newval);
 		}
 		catch (ex) {
 			// oops, no JSON, no worries just return original value below
@@ -111,19 +113,19 @@ Svidget.Conversion.toObject = function (val) {
 Svidget.Conversion.isJSONString = function (val) {
 	// note: this doesn't check if its strictly JSON, just does a sanity check before attempting to convert
 	if (!val) return false;
-	val = val.trim();
+	val = (val + "").trim();
 	return (val.length > 0 && Svidget.isString(val) && val.charAt(0) == "{" && val.charAt(val.length - 1) == "}")
 }
 
 Svidget.Conversion.isArrayString = function (val) {
-	if (!val) return false;
-	val = val.trim();
-	return (val.length > 0 && Svidget.isString(val) && val.charAt(0) == "[" && val.charAt(val.length - 1) == "]")
+	if (val == null) return false;
+	val = (val + "").trim();
+	return (val.length > 0 && val.charAt(0) == "[" && val.charAt(val.length - 1) == "]")
 }
 
 Svidget.Conversion.isQuotedString = function (val) {
 	if (!val) return false;
-	val = val.trim();
+	val = (val + "").trim();
 	return (val.length > 0 && Svidget.isString(val) &&
 		((val.charAt(0) == "'" && val.charAt(val.length - 1) == "'") || (val.charAt(0) == "\"" && val.charAt(val.length - 1) == "\"")));
 }
@@ -149,6 +151,7 @@ Svidget.Conversion.parseArray = function (val) {
 // try this if below doesn't work: https://gist.github.com/thejsj/aad9c0392a59a7d87d9c
 Svidget.Conversion.jsonifyString = function (val) {
 	if (val == null || val.indexOf("'") < 0) return val;
+	val = (val + "").trim();
 	var SQ = "'";
 	var DQ = "\"";
 	var BS = "\\";

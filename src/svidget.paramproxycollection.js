@@ -27,6 +27,7 @@ Svidget.ParamProxyCollection = function (array, parent) {
 	
 	var that = this;
 	this.parent = parent;
+	this._ctor = Svidget.ParamProxyCollection;
 }
 
 Svidget.ParamProxyCollection.prototype = new Svidget.ObjectCollection;

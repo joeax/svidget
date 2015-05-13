@@ -160,7 +160,7 @@
 			},
 			min: {
 				options: {
-					banner: '/* Svidget.js v<%= pkg.version %> on <%= grunt.template.today("yyyy-mm-dd") %>, Copyright 2014 Joe Agster http://www.svidget.org MIT License */\r\n',
+					banner: '/* Svidget.js v<%= pkg.version %> on <%= grunt.template.today("yyyy-mm-dd") %>, Copyright <%= grunt.template.today("yyyy") %> Joe Agster http://www.svidget.org MIT License */\r\n',
 					mangle: true,
 					beautify: false,
 					preserveComments: false,
@@ -219,6 +219,19 @@
 		clean: {
 			// clean release folder
 			build: ['dist/svidget-full.js', 'dist/header.js']
+		},
+
+		// TEST
+		mochaTest: {
+			test: {
+				options: {
+					reporter: 'spec',
+					//captureFile: 'results.txt', // Optionally capture the reporter output to a file
+					quiet: false, // Optionally suppress output to standard out (defaults to false)
+					//clearRequireCache: false // Optionally clear the require cache before running tests (defaults to false)
+				},
+				src: ['tests/unittest.js']
+			}
 		}
 	}
 	
@@ -241,10 +254,9 @@
 	grunt.renameTask('replace', 'textreplace'); //rename text-replace's "replace" to "textreplace" so it doesn't conflict with grunt-replace
 	grunt.loadNpmTasks('grunt-replace');
 	grunt.loadNpmTasks('grunt-wrap');
+	grunt.loadNpmTasks('grunt-mocha-test');
 	
-	// Tasks
-	//grunt.registerTask('core', 'Core test', ['concat:core']);
-	grunt.registerTask('all', 'Run all release tasks', [
+	var buildTasks = [
 		'concat:full', 
 		'wrap:full',
 		'uglify:full', 
@@ -256,5 +268,18 @@
 		'copy:full', 
 		'copy:min', 
 		'clean'
-	]);
+	];
+	
+	var testTasks = ['mochaTest'];
+	
+	var allTasks = [].concat(buildTasks, testTasks);
+
+	// grunt all
+	grunt.registerTask('all', 'Run all release tasks', allTasks);
+	// grunt build
+	grunt.registerTask('build', 'Run build tasks', buildTasks);
+	// grunt test
+	grunt.registerTask('test', 'Run test tasks', testTasks);
+	// grunt clean
+	grunt.registerTask('cleanup', 'Run clean tasks', ['clean']);
 }

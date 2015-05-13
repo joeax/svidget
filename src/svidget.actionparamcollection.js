@@ -28,6 +28,7 @@ Svidget.ActionParamCollection = function (array, parent) {
 	
 	var that = this;
 	this.parent = parent;
+	this._ctor = Svidget.ActionParamCollection;
 }
 
 Svidget.ActionParamCollection.prototype = new Svidget.ObjectCollection;

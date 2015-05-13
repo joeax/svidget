@@ -42,3 +42,15 @@
 
 0.2.3
 - reorganized code for CommonJS-like/Node.js/io.js environments, consumers now inject their own DOM
+
+0.3.0
+- major code overhaul for unit testing
+- expose svidget.conversion (maps to Svidget.Conversion static class)
+- expose svidget.Collection (maps to Svidget.Collection class)
+- expose svidget.dom (maps to Svidget.DOM static class)
+- expose svidget.util (maps to Svidget.Util static class)
+- new calls newParam, newAction, and newEvent on Svidget.Widget class
+- Svidget.Param.shortname() is now settable
+- renamed bool type to boolean to closely match JavaScript type names (using typeof)
+- object type is now the default type
+- for widget.addAction(name, options), options can now include params array (i.e. addAction("myaction", {params: [{ name: "p1", type: "string" }]}))

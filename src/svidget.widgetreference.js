@@ -270,7 +270,7 @@ Svidget.WidgetReference.prototype = {
 	 * actions("doSomething")
 	 * @method
 	 * @memberof Svidget.WidgetReference.prototype
-	 * @param {object} [selector] - The selector string or integer.
+	 * @param {(string|number|function)} [selector] - The action name, index, or search function (with signature function (param) returns boolean).
 	 * @returns {Svidget.ActionProxyCollection} - A collection based on the selector, or the entire collection.
 	*/
 	actions: function (selector) {
@@ -286,7 +286,7 @@ Svidget.WidgetReference.prototype = {
 	 * action("doSomething")
 	 * @method
 	 * @memberof Svidget.WidgetReference.prototype
-	 * @param {object} selector - The index or ID of the param.
+	 * @param {(string|number|function)} [selector] - The action name, index, or search function (with signature function (param) returns boolean).
 	 * @returns {Svidget.ActionProxy} - The ActionProxy based on the selector. If selector is invalid, null is returned.
 	*/
 	action: function (selector) {
@@ -304,7 +304,7 @@ Svidget.WidgetReference.prototype = {
 	 * events("somethingHappened")
 	 * @method
 	 * @memberof Svidget.WidgetReference.prototype
-	 * @param {object} [selector] - The selector string or integer.
+	 * @param {(string|number|function)} [selector] - The event name, index, or search function (with signature function (param) returns boolean).
 	 * @returns {Svidget.EventDescProxyCollection} - A collection based on the selector, or the entire collection.
 	*/
 	events: function (selector) {
@@ -320,7 +320,7 @@ Svidget.WidgetReference.prototype = {
 	 * events("somethingHappened")
 	 * @method
 	 * @memberof Svidget.WidgetReference.prototype
-	 * @param {object} selector - The index or ID of the param.
+	 * @param {(string|number|function)} [selector] - The event name, index, or search function (with signature function (param) returns boolean).
 	 * @returns {Svidget.EventDescProxy} - The EventDescProxy based on the selector. If selector is invalid, null is returned.
 	*/
 	event: function (selector) {

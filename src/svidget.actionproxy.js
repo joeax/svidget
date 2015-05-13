@@ -12,7 +12,7 @@ svidget.collection.js
 svidget.objectprototype.js
 svidget.action.js
 svidget.proxy.js
-  
+
 ******************************************/
 
 /**
@@ -78,8 +78,9 @@ Svidget.extend(Svidget.ActionProxy, {
 	 * Examples:
 	 * params(0)
 	 * params("color")
+	 * param(function filter(param) { return true; })
 	 * @method
-	 * @param {(string|number)} [selector] - The selector string or integer.
+	 * @param {(string|number|function)} [selector] - The param name, index, or search function (with signature function (param) returns boolean).
 	 * @returns {Svidget.ActionParamProxyCollection} - A collection based on the selector, or the entire collection.
 	*/
 	params: function (selector) {
@@ -93,8 +94,9 @@ Svidget.extend(Svidget.ActionProxy, {
 	 * Examples:
 	 * param(0)
 	 * param("color")
+	 * param(function firstOne(param) { return true; })
 	 * @method
-	 * @param {(string|number)} selector - The index or ID of the param.
+	 * @param {(string|number|function)} selector - The param name, index, or search function (with signature function (param) returns boolean).
 	 * @returns {Svidget.ActionParam} - The ActionParamProxy based on the selector. If selector is invalid, null is returned.
 	*/
 	param: function (selector) {

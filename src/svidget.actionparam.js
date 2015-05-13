@@ -31,15 +31,16 @@ Svidget.ActionParam = function (name, options, parent) {
 
 	// parent must be Action
 	parent = parent instanceof Svidget.Action ? parent : null; // parent can only be a Action
-
+	var c = Svidget.Conversion;
 	// private fields
 	var privates = new (function () {
 		this.writable = ["type", "subtype", "description", "defvalue"];
 		this.name = name;
-		this.description = options.description;
-		this.type = options.type || "string";
-		this.subtype = options.subtype || null;
+		this.type = resolveType(options.type);
+		this.subtype = c.toString(options.subtype);
+		this.description = c.toString(options.description);
 		this.defvalue = options.defvalue; //todo: convert to type
+		// todo: add coerce to coerce param before calling action method
 		this.parent = parent;
 	})();
 	// private accessors
@@ -47,6 +48,10 @@ Svidget.ActionParam = function (name, options, parent) {
 
 	// wire up event bubble parent
 	this.registerBubbleCallback(Svidget.ActionParam.eventTypes, parent, parent.paramBubble);
+
+	function resolveType(type) {
+		return Svidget.resolveType(type)
+	}
 }
 
 Svidget.ActionParam.prototype = {
@@ -56,7 +61,8 @@ Svidget.ActionParam.prototype = {
 			name: this.name(),
 			type: this.type(),
 			subtype: this.subtype(),
-			description: this.description()
+			description: this.description(),
+			defvalue: this.defvalue()
 		};
 		return transport;
 	},

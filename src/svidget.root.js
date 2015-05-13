@@ -14,16 +14,23 @@ Svidget.Core
  * @constructor
  * @mixes ObjectPrototype
  * @memberof Svidget
- * @param {object} root - The root global object in scope (i.e. window).
+ * @param {object} window - The window object in browser, or mock window object in server/node environment
+ * @param {object} options - Options to simulate the environment (usually in node).
  */
 /*
 // Svidget is an object var not a class var, so instantiate with ()
 // We declare it this way so that we can maintain private members via var
 // REMARKS: this should be instantiated last after all ofther lib scripts loaded
 */
-Svidget.Root = function (root) {
+Svidget.Root = function (w, options) {
 	this.__type = "Svidget.Root";
 	var that = this;
+	
+	// update "window" - for node environments
+	if (w != null) {
+		window = w;
+		document = w.document || {};
+	}
 
 	// private fields
 	var privates = new (function () {
@@ -37,6 +44,7 @@ Svidget.Root = function (root) {
 		this.connected = false;
 		// Page:
 		this.widgets = null; // WidgetReferenceCollection
+		this.options = options || {};
 	})();
 	// private accessors
 	this.setup(privates);
@@ -50,10 +58,19 @@ Svidget.Root = function (root) {
 	this.setCurrent = function (widget) {
 		privates.current = widget;
 	}
-
+	
 	// invoke init
 	// todo: convert to private methods
 	this._init();
+
+	// API Extensions
+	Object.defineProperty(this, "conversion", Svidget.readOnlyProperty(Svidget.Conversion));
+	Object.defineProperty(this, "Collection", Svidget.readOnlyProperty(Svidget.Collection));
+	Object.defineProperty(this, "util", Svidget.readOnlyProperty(Svidget.Util));
+	
+	// set this singleton instance
+	Svidget.root = this;
+
 };
 
 Svidget.Root.prototype = {
@@ -114,6 +131,10 @@ Svidget.Root.prototype = {
 		if (localName == "svg" && namespaceUri == Svidget.Namespaces.svg) return Svidget.DocType.svg;
 		return Svidget.DocType.html;
 	},
+	
+	getOption: function (name) {
+		return this.options()[name];
+	},
 
 	/**
 	 * Determines if the framework is instantiated in a widget file.
@@ -122,6 +143,7 @@ Svidget.Root.prototype = {
 	 * @returns {boolean}
 	*/
 	isWidget: function () {
+		if (this.getOption("mode") == Svidget.DocType.svg) return true; // for debugging
 		this.docType = this.getDocType();
 		return this.docType == Svidget.DocType.svg;
 	},
@@ -312,6 +334,10 @@ Svidget.Root.prototype = {
 		// if undefined its a get so return value, if res is false then set failed
 		if (val === undefined || !!!res) return res;
 		return true;
+	},
+
+	options: function () {
+		return this.getset("options");
 	}
 
 }

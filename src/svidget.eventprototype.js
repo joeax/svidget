@@ -37,9 +37,12 @@ Svidget.EventPrototype.prototype = {
 	*/
 	on: function (type, data, name, handler) {
 		// resolve handler from whether name, data passed
-		handler = handler || (Svidget.isFunction(name) ? name : (Svidget.isFunction(data) ? data : null));
-		data = (arguments.length > 2) ? data : null;
-		name = (name !== undefined && handler !== name) ? name : null;
+		var argsCount = Svidget.isFunction(handler) ? 4 : Svidget.isFunction(name) ? 3 : Svidget.isFunction(data) ? 2 : 1;
+		//handler = handler || (Svidget.isFunction(name) ? name : (Svidget.isFunction(data) ? data : null));
+		handler = (argsCount == 4) ? handler : (argsCount == 3) ? name : (argsCount == 2) ? data : null;
+		data = (argsCount > 2) ? data : null;
+		name = (argsCount > 3) ? name : null;
+		if (!handler) return false;
 		return this.addHandler(type, handler, name, data);
 	},
 

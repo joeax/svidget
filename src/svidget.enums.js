@@ -57,8 +57,10 @@ Svidget.ParamTypes = {
 	object: 0,
 	string: 1,
 	number: 2,
-	bool: 3,
-	array: 4
+	boolean: 3,
+	bool: 3, // deprecate
+	array: 4,
+	'function': 5, // reserved for future use
 };
 
 /**

@@ -27,6 +27,7 @@ Svidget.ParamCollection = function (array, parent) {
 	
 	var that = this;
 	this.parent = parent;
+	this._ctor = Svidget.ParamCollection;
 }
 
 Svidget.ParamCollection.prototype = new Svidget.ObjectCollection;

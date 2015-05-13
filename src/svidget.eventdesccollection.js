@@ -27,6 +27,7 @@ Svidget.EventDescCollection = function (array, parent) {
 	
 	var that = this;
 	this.parent = parent;
+	this._ctor = Svidget.EventDescCollection;
 }
 
 Svidget.EventDescCollection.prototype = new Svidget.ObjectCollection;

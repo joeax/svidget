@@ -17,7 +17,7 @@ Svidget.ParamPrototype
  * @constructor
  * @mixes ObjectPrototype
  * @mixes ParamPrototype
- * @augments EventPrototype  
+ * @augments EventPrototype
  * @memberof Svidget
  * @param {string} name - The name of the param.
  * @param {object} value - The value for the param.
@@ -27,27 +27,27 @@ Svidget.ParamPrototype
 // example usage: widget1.param("backgroundColor").value();
 Svidget.Param = function (name, value, options, parent) {
 	this.__type = "Svidget.Param";
-	// validate:
-	// name is not null
+	// todo: if name is not null, generate
+	//if (name == null) 
 	options = options || {};
 	parent = parent instanceof Svidget.Widget ? parent : null; // parent can only be a Widget
-
+	var c = Svidget.Conversion;
 	// private fields
 	var privates = new (function () {
-		this.writable = ["binding", "enabled", "type", "subtype", "value", "description", "defvalue", "typedata", "coerce"];
-		this.name = name;
-		this.shortname = options.shortname;
-		this.description = options.description;
-		this.enabled = options.enabled !== false;
-		this.type = options.type || "string";
-		this.subtype = options.subtype || null;
-		this.typedata = options.typedata || null;
-		this.value = value;
-		this.defvalue = options.defvalue; //todo: convert to type
-		this.sanitizer = options.sanitizer || null;
-		this.coerce = !!options.coerce; // todo: unit test
+		this.writable = ["shortname", "binding", "enabled", "type", "subtype", "value", "description", "defvalue", "typedata", "coerce"];
+		this.name = c.toString(name);
+		this.shortname = c.toString(options.shortname);
+		this.description = c.toString(options.description);
+		this.enabled = options.enabled != null ? c.toBool(options.enabled) : true;
+		this.type = resolveType(options.type, value, options.defvalue); // infer type from value/defvalue if type is null/undefined
+		this.subtype = c.toString(options.subtype); // resolveSubtype(this.type, options.subtype);
+		this.typedata = c.toString(options.typedata);
+		this.coerce = c.toBool(options.coerce); // default is false
+		this.value = this.coerce ? resolveValue(value, this.type, this.subtype, this.typedata) : value;
+		this.defvalue = options.defvalue; // note: only coerced to type when used as a value
+		this.sanitizer = (!Svidget.isFunction(options.sanitizer) ? c.toString(options.sanitizer) : options.sanitizer) || null;
 		this.widget = parent;
-		this.binding = options.binding || null;
+		this.binding = c.toString(options.binding);
 		this.bindingQuery = null;
 	})();
 	// private accessors
@@ -58,33 +58,55 @@ Svidget.Param = function (name, value, options, parent) {
 	// create sanitizerFunc from sanitizer
 	// sanitizer can be string or function
 	privates.sanitizerFunc = Svidget.findFunction(privates.sanitizer);
-
+	
 	this.valuePopulated = false; // flipped to true once a value has been assigned or the default value is applied
-
-	//this.isProxy;
-	// maybe we do need a separate ParameterProxy class
 
 	// wire up event bubble parent
 	this.registerBubbleCallback(Svidget.Param.eventTypes, parent, parent.paramBubble);
+
+	function resolveType(type, value, defvalue) {
+		// infer the type from the value or defvalue
+		value = value != null ? value : defvalue;
+		if (type == null)
+			type = Svidget.getType(value);
+		else
+			type = Svidget.resolveType(type); // normalize type to a valid type
+		return type;
+	}
+
+	/*function resolveSubtype(type, subtype) {
+		return Svidget.resolveSubtype(type, subtype);
+	}*/
+
+	function resolveValue(val, type, subtype, typedata) {
+		return Svidget.convert(val, type, subtype, typedata);
+	}
 }
 
 Svidget.Param.prototype = {
 
 	/**
-	 * Gets the shortname value. This is used for params passed from the query string.
+	 * Gets or sets the shortname value. This is used for params passed from the query string.
 	 * @method
 	 * @param {boolean} [val] - Sets the enabled state when specified.
 	 * @returns {boolean} - The enabled state when nothing is passed, or true/false if succeeded or failed when setting.
 	*/
-	shortname: function () {
-		var res = this.getPrivate("shortname");
-		return res;
+	shortname: function (val) {
+		var res = this.getset("shortname", val, "string");
+		// if undefined its a get so return value, if res is false then set failed
+		if (val === undefined || !!!res) return res;
+		// fire "changed" event
+		val = this.getPrivate("shortname"); // get converted value
+		this.trigger("change", { property: "shortname", value: val });
+		// set was successful
+		return true;
 	},
 
 	// public
 	// attached is a state property
 	// gets whether the param is attached to the widget
 	// todo: do we need for action and event too?
+	// OBSOLETE
 	attached: function () {
 		var widget = this.getset("widget");
 		return this.widget != null && this.widget instanceof Svidget.Widget;
@@ -97,12 +119,14 @@ Svidget.Param.prototype = {
 	 * @returns {boolean} - The enabled state when nothing is passed, or true/false if succeeded or failed when setting.
 	*/
 	enabled: function (val) {
-		var res = this.getset("enabled", val);
+		if (val === null) val = true;
+		var res = this.getset("enabled", val, "bool");
 		// if undefined its a get so return value, if res is false then set failed
 		if (val === undefined || !!!res) return res;
 		// fire "changed" event
+		val = this.getset("enabled"); // get converted value
 		this.trigger("change", { property: "enabled", value: val });
-
+		// set was successful
 		return true;
 	},
 
@@ -113,11 +137,11 @@ Svidget.Param.prototype = {
 	 * @returns {boolean} - The enabled state when nothing is passed, or true/false if succeeded or failed when setting.
 	*/
 	value: function (val) {
-		var res = this.getset("value", val, this.validateValue);
+		if (!this.enabled() && val !== undefined) return false;
+		var res = this.getset("value", val, null, this.validateValue);
 		// if undefined its a get so return value, if res is false then set failed
 		if (val === undefined || !!!res) return res;
 		// check enabled
-		if (!this.enabled()) return false;
 		var finalVal = val;
 		// coerce val if coerce === true
 		if (this.getset("coerce") === true) {
@@ -153,14 +177,24 @@ Svidget.Param.prototype = {
 	 * @returns {boolean} - The enabled state when nothing is passed, or true/false if succeeded or failed when setting.
 	*/
 	coerce: function (val) {
-		var res = this.getset("coerce", val);
+		var res = this.getset("coerce", val, "bool");
 		// if undefined its a get so return value, if res is false then set failed
 		if (val === undefined || !!!res) return res;
 		// fire "changed" event
+		val = this.getset("coerce"); // get converted value
 		this.trigger("change", { property: "coerce", value: val });
-
+		// set was successful
 		return true;
 	},
+	
+	/**
+	 * Coerces the value currently set on the param. Call this after changing the type to change the type of the value.
+	 * @method
+	*/
+	//coerceValue: function () {
+	//	// just set the value to itself, it will coerce and also fire events
+	//	this.value(this.value());
+	//},
 
 	/**
 	 * Gets or sets the param binding. This is a CSS+Attributes selector.
@@ -169,15 +203,16 @@ Svidget.Param.prototype = {
 	 * @returns {boolean} - The enabled state when nothing is passed, or true/false if succeeded or failed when setting.
 	*/
 	binding: function (bind) {
-		bind = bind !== undefined ? bind + "" : undefined; // coerce to string
-		var res = this.getset("binding", bind);
+		//bind = bind !== undefined ? bind + "" : undefined; // coerce to string
+		var res = this.getset("binding", bind, "string");
 		// if undefined its a get so return value, if res is false then set failed
 		if (bind === undefined || !!!res) return res;
-		// todo: construct bindingQuery object
+		// construct bindingQuery object
+		bind = this.getset("binding"); // get converted value
 		this.getset("bindingQuery", Svidget.DOM.select(bind));
 		// fire "changed" event
 		this.trigger("change", { property: "binding", value: bind });
-
+		// set was successful
 		return true;
 	},
 
@@ -239,6 +274,7 @@ Svidget.Param.prototype = {
 		if (bind == null) return;
 		bind.setValue(val);
 	},
+	
 
 	/* REGION Events */
 
@@ -301,6 +337,7 @@ Svidget.Param.prototype = {
 	offdeclaredset: function () {
 		return this.offset(Svidget.declaredHandlerName);
 	},
+	
 
 	/* REGION Misc */
 
@@ -310,12 +347,16 @@ Svidget.Param.prototype = {
 	 * @returns {boolean} - A generic serialized object representing the Param object.
 	*/
 	toTransport: function () {
+		// todo: use allProxyProperties and automate this
 		var transport = {
 			name: this.name(),
 			shortname: this.shortname(),
 			enabled: this.enabled(),
 			type: this.type(),
 			subtype: this.subtype(),
+			typedata: this.typedata(),
+			coerce: this.coerce(),
+			defvalue: this.defvalue(),
 			value: this.value(),
 			// binding: this.binding() // not accessible by proxy
 		};
@@ -330,7 +371,7 @@ Svidget.Param.prototype = {
 	 * @returns {string}
 	*/
 	toString: function () {
-		return "[Svidget.Param { name: \"" + this.name + "\" }]";
+		return "[Svidget.Param { name: \"" + this.name() + "\" }]";
 	}
 
 	// todo: reactive version valueR returns function that always returns its live value

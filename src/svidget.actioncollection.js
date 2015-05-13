@@ -27,6 +27,7 @@ Svidget.ActionCollection = function (array, parent) {
 	
 	var that = this;
 	this.parent = parent;
+	this._ctor = Svidget.ActionCollection;
 }
 
 Svidget.ActionCollection.prototype = new Svidget.ObjectCollection;

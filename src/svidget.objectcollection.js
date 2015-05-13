@@ -23,6 +23,7 @@ Svidget.ObjectCollection = function (array, type) {
 	// todo: filter input array by type specified
 	Svidget.Collection.apply(this, [array]);
 	this.__type = "Svidget.ObjectCollection";
+	this._ctor = Svidget.ObjectCollection;
 
 	// private fields
 	var privates = new (function () {
@@ -62,7 +63,8 @@ Svidget.extend(Svidget.ObjectCollection, {
 	getByIndex: function (index) {
 		if (index == null || isNaN(index)) return null;
 		index = parseInt(index);
-		return this[index];
+		var res = this[index];
+		return res == null ? null : res; // return null if not found
 	},
 
 	/**
@@ -134,18 +136,20 @@ Svidget.extend(Svidget.ObjectCollection, {
 		// override me
 		return null;
 	},
-
-//		addCreate: function (name, value, options) {
-//			// create param
-//			// call addObject
-//			if (name == null || !typeof name === "string") return false;
-//			// ensure no other parameter exists in the collection by that name
-//			if (this.getByName(name) != null) return false;
-//			// create obj
-//			var obj = new Svidget.Param(name, value, options);
-//			this.push(obj);
-//			return true;
-//		},
+	
+	/*
+		addCreate: function (name, value, options) {
+			// create param
+			// call addObject
+			if (name == null || !typeof name === "string") return false;
+			// ensure no other parameter exists in the collection by that name
+			if (this.getByName(name) != null) return false;
+			// create obj
+			var obj = new Svidget.Param(name, value, options);
+			this.push(obj);
+			return true;
+		},
+*/
 
 	/**
 	 * Removes an item from the collection. Only removes the first instance of the item found.
@@ -154,7 +158,7 @@ Svidget.extend(Svidget.ObjectCollection, {
 	 * @returns {boolean} - True if remove succeeds.
 	*/
 	remove: function (name) {
-		var item = this.getByName(name)
+		var item = this.getByName(name);
 		if (item == null) return false;
 		var success = this.base_remove(item);
 		if (!success) return false;
@@ -172,7 +176,9 @@ Svidget.extend(Svidget.ObjectCollection, {
 	wrap: function (item) {
 		var items = [item];
 		if (item == null || !item instanceof this.type()) items = [];
-		var col = new this.constructor(items, this.parent);
+		//var col = new this.constructor(items, this.parent);
+		// 0.3.0: wrap as a plain jane collection
+		var col = new Svidget.Collection(items); //, this.parent);
 		return col;
 	},
 

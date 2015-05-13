@@ -141,7 +141,7 @@ Svidget.Widget.prototype = {
 	 * params("color")
 	 * @method
 	 * @memberof Svidget.Widget.prototype
-	 * @param {object} [selector] - The selector string or integer.
+	 * @param {(string|number|function)} [selector] - The param name, index, or search function (with signature function (param) returns boolean).
 	 * @returns {Svidget.ParamCollection} - A collection based on the selector, or the entire collection.
 	*/
 	params: function (selector) {
@@ -157,7 +157,7 @@ Svidget.Widget.prototype = {
 	 * param("color")
 	 * @method
 	 * @memberof Svidget.Widget.prototype
-	 * @param {object} selector - The index or ID of the param.
+	 * @param {(string|number|function)} [selector] - The param name, index, or search function (with signature function (param) returns boolean).
 	 * @returns {Svidget.Param} - The Param based on the selector. If selector is invalid, null is returned.
 	*/
 	param: function (selector) {
@@ -167,6 +167,22 @@ Svidget.Widget.prototype = {
 		return item;
 	},
 
+	/**
+	 * Creates a new Param but does not add to the widget.
+	 * Examples:
+	 * addParam("backColor", "#ffee54", { description: "Background color."})
+	 * addParam("color")
+	 * @method
+	 * @memberof Svidget.Widget.prototype
+	 * @param {string} name - The name of the Param to add.
+	 * @param {object} value - The value of the Param.
+	 * @param {object} [options] - The options used to contruct the Param. Example: { enabled: true, description: "A param" }
+	 * @returns {Svidget.Param} - The Param that was added, or null if Param failed to add.
+	*/
+	newParam: function (name, value, options) {
+		return new Svidget.Param(name, value, options, this);
+	},
+	
 	/**
 	 * Adds a Param to the widget. If a duplicate name is supplied the Param will fail to add.
 	 * Examples:
@@ -208,7 +224,7 @@ Svidget.Widget.prototype = {
 		// event.value = param
 		this.trigger("paramadd", param);
 		// signal parent
-		svidget.signalParamAdded(param);
+		Svidget.root.signalParamAdded(param);
 	},
 
 	// internal
@@ -220,7 +236,7 @@ Svidget.Widget.prototype = {
 		// event.value = param.name
 		this.trigger("paramremove", param.name());
 		// signal parent
-		svidget.signalParamRemoved(param.name());
+		Svidget.root.signalParamRemoved(param.name());
 	},
 
 	// internal
@@ -235,7 +251,7 @@ Svidget.Widget.prototype = {
 	paramChanged: function (param, eventValue) {
 		this.trigger("paramchange", eventValue, param);
 		// signal parent
-		svidget.signalParamChanged(param, eventValue);
+		Svidget.root.signalParamChanged(param, eventValue);
 	},
 
 	// private
@@ -244,7 +260,7 @@ Svidget.Widget.prototype = {
 		this.trigger("paramset", eventValue, param);
 		this.trigger("paramvaluechange", eventValue, param);
 		// signal parent
-		svidget.signalParamSet(param, eventValue);
+		Svidget.root.signalParamSet(param, eventValue);
 	},
 
 	// REGION: Actions
@@ -257,7 +273,7 @@ Svidget.Widget.prototype = {
 	 * actions("doSomething")
 	 * @method
 	 * @memberof Svidget.Widget.prototype
-	 * @param {object} [selector] - 
+	 * @param {(string|number|function)} [selector] - The action name, index, or search function (with signature function (param) returns boolean).
 	 * @returns {Svidget.ActionCollection} - A collection based on the selector, or the entire collection.
 	*/
 	actions: function (selector) {
@@ -273,7 +289,7 @@ Svidget.Widget.prototype = {
 	 * action("doSomething")
 	 * @method
 	 * @memberof Svidget.Widget.prototype
-	 * @param {object} selector - The index or ID of the action.
+	 * @param {(string|number|function)} selector - The action name, index, or search function (with signature function (param) returns boolean).
 	 * @returns {Svidget.Action} - The action based on the selector. If selector is invalid, null is returned.
 	*/
 	action: function (selector) {
@@ -281,6 +297,20 @@ Svidget.Widget.prototype = {
 		var col = this.getset("actions");
 		var item = this.selectFirst(col, selector);
 		return item;
+	},
+	
+	/**
+	 * Creates a new Action but does not add to the widget.
+	 * Examples:
+	 * addAction("doIt", { binding: function (s) { do_something(s) }, description: "Background color."})
+	 * @method
+	 * @memberof Svidget.Widget.prototype
+	 * @param {string} name - The name of the param to add.
+	 * @param {object} [options] - The options used to contruct the Action. Example: { enabled: true, description: "An action" }
+	 * @returns {Svidget.Action} - The Action that was added, or null if Action failed to add.
+	*/
+	newAction: function (name, options) {
+		return new Svidget.Action(name, options, this);
 	},
 
 	/**
@@ -331,7 +361,7 @@ Svidget.Widget.prototype = {
 		// event.value = action
 		this.trigger("actionadd", action);
 		// signal parent
-		svidget.signalActionAdded(action);
+		Svidget.root.signalActionAdded(action);
 	},
 
 	// private
@@ -342,7 +372,7 @@ Svidget.Widget.prototype = {
 		// event.value = action.name
 		this.trigger("actionremove", action.name());
 		// signal parent
-		svidget.signalActionRemoved(action.name());
+		Svidget.root.signalActionRemoved(action.name());
 	},
 
 	// private
@@ -361,7 +391,7 @@ Svidget.Widget.prototype = {
 	actionInvoked: function (action, returnData) {
 		this.trigger("actioninvoke", returnData, action);
 		// signal parent
-		svidget.signalActionInvoked(action, returnData);
+		Svidget.root.signalActionInvoked(action, returnData);
 	},
 
 	// private
@@ -369,29 +399,30 @@ Svidget.Widget.prototype = {
 	actionChanged: function (action, eventValue) {
 		this.trigger("actionchange", eventValue, action);
 		// signal parent
-		svidget.signalActionChanged(action, eventValue);
+		Svidget.root.signalActionChanged(action, eventValue);
 	},
 
 	// private
 	actionParamChanged: function (action, actionParam, eventValue) {
 		this.trigger("actionparamchange", eventValue, actionParam);
 		// signal parent
-		svidget.signalActionParamChanged(actionParam, action, eventValue);
+		Svidget.root.signalActionParamChanged(actionParam, action, eventValue);
 	},
 
 	// private
 	actionParamAdded: function (action, actionParam) {
 		this.trigger("actionparamadd", actionParam, action);
 		// signal parent
-		svidget.signalActionParamAdded(actionParam, action.name());
+		Svidget.root.signalActionParamAdded(actionParam, action.name());
 	},
 
 	// private
 	actionParamRemoved: function (action, actionParamName) {
 		this.trigger("actionparamremove", actionParamName, action);
 		// signal parent
-		svidget.signalActionParamRemoved(actionParamName, action.name());
+		Svidget.root.signalActionParamRemoved(actionParamName, action.name());
 	},
+	
 
 	// REGION: Events 
 
@@ -403,7 +434,7 @@ Svidget.Widget.prototype = {
 	 * events("somethingHappened")
 	 * @method
 	 * @memberof Svidget.Widget.prototype
-	 * @param {object} [selector] - 
+	 * @param {(string|number|function)} selector - The event name, index, or search function (with signature function (param) returns boolean).
 	 * @returns {Svidget.EventDescCollection} - A collection based on the selector, or the entire collection.
 	*/
 	events: function (selector) {
@@ -419,13 +450,27 @@ Svidget.Widget.prototype = {
 	 * event("somethingHappened")
 	 * @method
 	 * @memberof Svidget.Widget.prototype
-	 * @param {object} selector - The index or ID of the event.
+	 * @param {(string|number|function)} selector - The event name, index, or search function (with signature function (param) returns boolean).
 	 * @returns {Svidget.EventDesc} - The event based on the selector. If selector is invalid, null is returned.
 	*/
 	event: function (selector) {
 		var col = this.getset("events");
 		var item = this.selectFirst(col, selector);
 		return item;
+	},
+	
+	/**
+	 * Creates a new EventDesc but does not add to the widget.
+	 * Examples:
+	 * addEvent("somethingHappened", { description: "An event for that." })
+	 * @method
+	 * @memberof Svidget.Widget.prototype
+	 * @param {string} name - The name of the EventDesc to add.
+	 * @param {object} [options] - The options used to contruct the EventDesc. Example: { enabled: true, description: "An event" }
+	 * @returns {Svidget.Action} - The EventDesc that was added, or null if EventDesc failed to add.
+	*/
+	newEvent: function (name, options) {
+		return new Svidget.EventDesc(name, options, this);
 	},
 
 	/**
@@ -466,7 +511,7 @@ Svidget.Widget.prototype = {
 		// event.value = event
 		this.trigger("eventadd", eventDesc);
 		// signal parent
-		svidget.signalEventAdded(eventDesc);
+		Svidget.root.signalEventAdded(eventDesc);
 	},
 
 	// private
@@ -477,7 +522,7 @@ Svidget.Widget.prototype = {
 		// event.value = event name
 		this.trigger("eventremove", eventDesc.name());
 		// signal parent
-		svidget.signalEventRemoved(eventDesc.name());
+		Svidget.root.signalEventRemoved(eventDesc.name());
 	},
 
 	// internal, called from eventdesc.EventPrototype
@@ -491,14 +536,14 @@ Svidget.Widget.prototype = {
 		Svidget.log('widget: event trigger: ' + eventDesc.name());
 		this.trigger("eventtrigger", event.value, eventDesc);
 		// FYI: event.target == eventDesc
-		svidget.signalEventTriggered(event.target, event.value);
+		Svidget.root.signalEventTriggered(event.target, event.value);
 	},
 
 	// private
 	eventChanged: function (eventDesc, eventValue) {
 		this.trigger("eventchange", eventValue, eventDesc);
 		// signal parent
-		svidget.signalEventChanged(eventDesc, eventValue);
+		Svidget.root.signalEventChanged(eventDesc, eventValue);
 	},
 
 	/*

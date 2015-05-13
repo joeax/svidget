@@ -25,13 +25,20 @@ Svidget.ObjectPrototype = {
 	},
 
 	// protected
-	getset: function (prop, val, validator) {
+	// as of 0.3.0: type argument converts val to type
+	getset: function (prop, val, type, validator) {
 		// ** get mode
 		var curProp = this.getPrivate(prop);
 		if (val === undefined) return curProp;
 		// ** set mode
-		if (validator && !validator(val)) return false; // throw error?
-		var oldProp = curProp;
+		// first, convert if needed
+		if (type != null) val = Svidget.convert(val, type);
+		// if value is current value then do nothing
+		if (val === curProp) return false;
+		// then, validate
+		if (validator && !validator.call(this, val)) return false; // throw error?
+		//var oldProp = curProp;
+		// finally, commit the value
 		var success = this.setPrivate(prop, val);
 
 		return success;
@@ -44,6 +51,9 @@ Svidget.ObjectPrototype = {
 			selector = parseInt(selector); // coerce to integer
 			return col.wrap(col.getByIndex(selector));
 		}
+		else if (typeof selector === "function") {
+			return col.where(selector);
+		}
 		if (selector !== undefined) return col.wrap(col.getByName(selector + ""));
 		// todo: should we clone collection?
 		return col;
@@ -55,6 +65,9 @@ Svidget.ObjectPrototype = {
 		if (typeof selector === "number") {
 			selector = parseInt(selector); // coerce to integer
 			return col.getByIndex(selector);
+		}
+		else if (typeof selector === "function") {
+			return col.first(selector);
 		}
 		if (selector !== undefined) return col.getByName(selector + "");
 		return col.first();

@@ -3,18 +3,12 @@ svidget.core.js
 
 Contains the core framework elements.
 
- * todo: move browser support and prerequisites to main library header
-Browser Support:
-IE9+, FF?+, Chrome?+
-
-Prerequisites:
-
 Dependencies:
 (none)
 
 ******************************************/
 
-var VERSION = "0.2.3";
+var VERSION = "0.3.0";
 
 /* Global Namespace */
 
@@ -28,15 +22,18 @@ var Svidget = {};
 // note: global declared by closure
 var window = global;
 var document = window.document || {};
-
+//var root = null;
 
 /* REGION Common Properties */
 
-Svidget.root = window; // In server side environments may be global or jsdom-like window
-Svidget.document = document; // In server side environments may be global.document or jsdom-like document
+Svidget.root = null; // set in Svidget.Root, this is the singleton instance to the global "svidget" object.
+Svidget.global = global; // In server side environments will === global, in browser === window
+//Svidget.window = null; // In server side environments will be mock window or jsdom-like window
+//Svidget.document = null; // In server side environments will be window.document or jsdom-like document
 Svidget.version = VERSION;
 Svidget.declaredHandlerName = "_declared";
 Svidget.emptyArray = [];
+Svidget.defaultType = "object";
 
 
 /* REGION Special Shortcut Methods */
@@ -84,6 +81,32 @@ Svidget.convert = function (val, type, subtype, typedata) {
 	return Svidget.Conversion.to(val, type, subtype, typedata);
 }
 
+Svidget.getType = function (val) {
+	if (val == null) return Svidget.defaultType; // object is the default type (as of 0.3.0, formerly "string")
+	if (Svidget.isArray(val)) return "array";
+	var type = typeof val;
+	// if (type === "boolean") return "bool"; // as of 0.3.0 using "boolean" not "bool"
+	if (type === "string" || type === "number" || type === "boolean") return type;
+	return "object";
+}
+
+// Given a type, determines if it is valid and if not returns the default type.
+Svidget.resolveType = function (type) {
+	type = Svidget.Conversion.toString(type);
+	if (Svidget.ParamTypes[type] === undefined) return Svidget.defaultType;
+	if (type === "bool") return "boolean";
+	return type;
+}
+
+// Given a subtype, determines if it is valid and if not returns null.
+Svidget.resolveSubtype = function (type, subtype) {
+	type = Svidget.resolveType(type);
+	if (Svidget.ParamSubTypes[subtype] === undefined) return null; //subtype is not valid, so return null
+	if (type == "string" && (subtype == "color" || subtype == "regex" || subtype == "color")) return subtype;
+	if (type == "number" && (subtype == "integer")) return subtype;
+	return null;
+}
+
 /*
 // SUMMARY
 // Extends a class with members in the prototype object.
@@ -117,10 +140,13 @@ Svidget.findFunction = function (funcNameOrInstance, scope) {
 	if (typeof funcNameOrInstance === "function") {
 		return funcNameOrInstance;
 	}
-	if (scope == null) scope = Svidget.root; // global scope
+	if (scope == null) scope = window; // global scope
 	if (funcNameOrInstance != null) {
 		var bind = funcNameOrInstance + ""; //coerce to string
 		var func = scope[bind];
+		if (func == null && scope !== global) {
+			func = global[bind];
+		}
 		if (func == null) return null;
 		if (typeof func === "function") return func;
 		// bind is an expression, so just wrap it in a function
