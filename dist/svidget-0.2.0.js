@@ -1,6 +1,6 @@
 /*** * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  * Svidget.js v0.2.0
- * Release Date: 2015-02-05
+ * Release Date: 2015-02-11
  * 
  * A framework for creating complex widgets using SVG.
  * 
@@ -4752,6 +4752,7 @@
         // overrides
         handlePropertyChange: function(name, val) {
             if (name == "value") {
+                this.parent().updateParamValue(name, val);
                 svidget.signalPropertyChange(this.parent(), this, "param", name, val);
             }
         },
@@ -4864,7 +4865,7 @@
         var that = this;
         // privates
         var privates = new function() {
-            this.writable = [ "enabled", "started", "populated" ];
+            this.writable = [ "enabled", "started", "populated", "paramValues" ];
             this.params = new Svidget.ParamProxyCollection([], that);
             this.actions = new Svidget.ActionProxyCollection([], that);
             this.events = new Svidget.EventDescProxyCollection([], that);
@@ -5147,6 +5148,12 @@
                 p.refreshProperties(options);
                 return p;
             }
+        },
+        updateParamValue: function(name, value) {
+            var val = this.getset("paramValues");
+            val = val || {};
+            val[name] = value;
+            this.getset("paramValues", val);
         },
         // internal
         // handle param added
@@ -5596,8 +5603,8 @@
             if (options.width) objEle.setAttribute("width", options.width);
             if (options.height) objEle.setAttribute("height", options.height);
             // yes, if these values are false we dont want to write them out
-            if (options.standalone) objEle.setAttribute("data-standalone", options.standalone);
-            if (options.crossdomain) objEle.setAttribute("data-crossdomain", options.crossdomain);
+            if (options.connected !== undefined) objEle.setAttribute("data-connected", options.connected);
+            if (options.crossdomain !== undefined) objEle.setAttribute("data-crossdomain", options.crossdomain);
             // params
             for (var key in paramObj) {
                 var paramEle = document.createElement("param");

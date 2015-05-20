@@ -28,15 +28,17 @@ Svidget.EventDesc = function (name, options, parent) {
 	parent = parent instanceof Svidget.Widget ? parent : null; // parent can only be a Widget
 
 	var that = this;
+	var c = Svidget.Conversion;
 	// private fields
 	var privates = new (function () {
 		this.writable = ["description", "enabled", "external"];
-		this.name = name;
-		this.description = options.description;
-		this.external = options.external !== false;
-		this.enabled = options.enabled !== false;
+		this.name = c.toString(name);
+		this.description = c.toString(options.description);
+		this.external = options.external != null ? c.toBool(options.external) : true;
+		this.enabled = options.enabled != null ? c.toBool(options.enabled) : true;
 		this.eventName = "trigger"; // this is the internal name we use for the event
 		this.eventContainer = new Svidget.EventContainer([this.eventName], that);
+		this.parent = parent;
 	})();
 	// private accessors
 	this.setup(privates);
@@ -55,7 +57,8 @@ Svidget.EventDesc.prototype = {
 	/*
 	// Note: name is immutable after creation
 	*/
-	name: function () {
+	name: function (val) {
+		if (val !== undefined) return false; // they are trying to set, it should fail
 		var res = this.getPrivate("name");
 		return res;
 	},
@@ -66,8 +69,18 @@ Svidget.EventDesc.prototype = {
 	 * @returns {boolean}
 	*/
 	attached: function () {
-		var widget = this.getset("widget");
-		return this.widget != null && this.widget instanceof Svidget.Widget;
+		var parent = this.parent();
+		return this.parent != null && this.parent instanceof Svidget.Widget;
+	},
+	
+	/**
+	 * Gets the parent widget.
+	 * @method
+	 * @returns {Svidget.Widget}
+	*/
+	parent: function () {
+		var res = this.getPrivate("parent");
+		return res;
 	},
 
 	/**
@@ -77,12 +90,14 @@ Svidget.EventDesc.prototype = {
 	 * @returns {boolean} - The enabled state when nothing is passed, or true/false if succeeded or failed when setting.
 	*/
 	enabled: function (val) {
-		var res = this.getset("enabled", val);
+		if (val === null) val = true;
+		var res = this.getset("enabled", val, "bool");
 		// if undefined its a get so return value, if res is false then set failed
 		if (val === undefined || !!!res) return res;
 		// fire "changed" event
+		val = this.getset("enabled"); // get converted value
 		this.trigger("change", { property: "enabled", value: val });
-
+		// set was successful
 		return true;
 	},
 
@@ -93,12 +108,13 @@ Svidget.EventDesc.prototype = {
 	 * @returns {string} - The value for a get, or true/false if succeeded or failed for a set.
 	*/
 	description: function (val) {
-		var res = this.getset("description", val);
+		var res = this.getset("description", val, "string");
 		// if undefined its a get so return value, if res is false then set failed
 		if (val === undefined || !!!res) return res;
 		// fire "changed" event
+		val = this.getPrivate("description"); // get converted value
 		this.trigger("change", { property: "description", value: val });
-
+		// set was successful
 		return true;
 	},
 
@@ -109,12 +125,14 @@ Svidget.EventDesc.prototype = {
 	 * @returns {boolean} - The value for a get, or true/false if succeeded or failed for a set.
 	*/
 	external: function (val) {
-		var res = this.getset("external", val);
+		if (val === null) val = true;
+		var res = this.getset("external", val, "bool");
 		// if undefined its a get so return value, if res is false then set failed
 		if (val === undefined || !!!res) return res;
 		// fire "changed" event
-		this.trigger("change", { property: "public", value: val });
-
+		val = this.getPrivate("external"); // get converted value
+		this.trigger("change", { property: "external", value: val });
+		// set was successful
 		return true;
 	},
 
@@ -273,7 +291,7 @@ Svidget.EventDesc.prototype = {
 	* @returns {string}
 	*/
 	toString: function () {
-		return "[Svidget.EventDesc { name: \"" + this.name + "\" }]";
+		return "[Svidget.EventDesc { name: \"" + this.name() + "\" }]";
 	}
 
 }

@@ -92,6 +92,16 @@ Svidget.Proxy.prototype = {
 		var res = this.getPrivate("parent");
 		return res;
 	},
+	
+	/**
+	 * Gets whether the proxy object is attached to its parent.
+	 * @method
+	 * @returns {boolean}
+	*/
+	attached: function () {
+		var parent = this.parent();
+		return parent != null;
+	},
 
 	propertyChangeFuncs: function () {
 		return this.getPrivate("propertyChangeFuncs");

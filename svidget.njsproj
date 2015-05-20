@@ -105,8 +105,10 @@
     <Compile Include="tests\unitrunner.js" />
     <Compile Include="tests\unittest.js" />
     <Compile Include="tests\unit\global.test.js" />
+    <Compile Include="tests\unit\svidget.eventdesc.test.js" />
     <Compile Include="tests\unit\svidget.conversion.test.js" />
     <Compile Include="tests\unit\svidget.action.test.js" />
+    <Compile Include="tests\unit\svidget.actionparam.test.js" />
     <Compile Include="tests\unit\svidget.widget.test.js" />
     <Compile Include="tests\unit\svidget.param.test.js" />
     <Content Include=".gitignore" />

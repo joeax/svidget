@@ -45,7 +45,7 @@ Svidget.Action = function (name, options, parent) {
 		this.enabled = options.enabled != null ? c.toBool(options.enabled) : true;
 		this.binding = resolveBinding(options.binding);
 		this.external = options.external != null ? c.toBool(options.external) : true;
-		this.widget = parent;
+		this.parent = parent;
 		this.bindingFunc = null;
 	})();
 	// private accessors
@@ -101,14 +101,23 @@ Svidget.Action.prototype = {
 	},
 
 	/**
+	 * Gets the parent widget.
+	 * @method
+	 * @returns {Svidget.Widget}
+	*/
+	parent: function () {
+		var res = this.getPrivate("parent");
+		return res;
+	},
+	
+	/**
 	 * Gets whether the action is attached to the widget.
 	 * @method
 	 * @returns {boolean}
 	*/
-	// OBSOLETE: It's always attached because we don't expose the constructor directly
 	attached: function () {
-		var widget = this.getset("widget");
-		return this.widget != null && this.widget instanceof Svidget.Widget;
+		var widget = this.parent();
+		return widget != null && widget instanceof Svidget.Widget;
 	},
 
 	/**

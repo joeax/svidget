@@ -7,7 +7,7 @@
 var test = require('unit.js');
 
 // Instantiate svidget root object
-var window = { name: "window", document: {} };
+var window = { name: "window", document: {}, _from: "svidget.conversion.test" };
 var svidget = require('../../dist/svidget')(window);
 
 describe('Svidget.Conversion Test', function () {

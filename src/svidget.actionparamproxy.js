@@ -52,7 +52,7 @@ Svidget.extend(Svidget.ActionParamProxy, {
 	 * @returns {string}
 	*/
 	toString: function () {
-		return "[Svidget.ActionParamProxy { name: \"" + this.name + "\" }]";
+		return "[Svidget.ActionParamProxy { name: \"" + this.name() + "\" }]";
 	}
 
 }, true);

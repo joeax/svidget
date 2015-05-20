@@ -46,7 +46,7 @@ Svidget.Param = function (name, value, options, parent) {
 		this.value = this.coerce ? resolveValue(value, this.type, this.subtype, this.typedata) : value;
 		this.defvalue = options.defvalue; // note: only coerced to type when used as a value
 		this.sanitizer = (!Svidget.isFunction(options.sanitizer) ? c.toString(options.sanitizer) : options.sanitizer) || null;
-		this.widget = parent;
+		this.parent = parent;
 		this.binding = c.toString(options.binding);
 		this.bindingQuery = null;
 	})();
@@ -84,12 +84,32 @@ Svidget.Param = function (name, value, options, parent) {
 }
 
 Svidget.Param.prototype = {
+	
+	/**
+	 * Gets whether the param is attached to the widget.
+	 * @method
+	 * @returns {boolean}
+	*/
+	attached: function () {
+		var parent = this.parent();
+		return this.parent != null && this.parent instanceof Svidget.Widget;
+	},
+	
+	/**
+	 * Gets the parent widget.
+	 * @method
+	 * @returns {Svidget.Widget}
+	*/
+	parent: function () {
+		var res = this.getPrivate("parent");
+		return res;
+	},
 
 	/**
 	 * Gets or sets the shortname value. This is used for params passed from the query string.
 	 * @method
-	 * @param {boolean} [val] - Sets the enabled state when specified.
-	 * @returns {boolean} - The enabled state when nothing is passed, or true/false if succeeded or failed when setting.
+	 * @param {boolean} [val] - Sets the shortname when specified.
+	 * @returns {boolean} - The shortname when nothing is passed, or true/false if succeeded or failed when setting.
 	*/
 	shortname: function (val) {
 		var res = this.getset("shortname", val, "string");
@@ -100,16 +120,6 @@ Svidget.Param.prototype = {
 		this.trigger("change", { property: "shortname", value: val });
 		// set was successful
 		return true;
-	},
-
-	// public
-	// attached is a state property
-	// gets whether the param is attached to the widget
-	// todo: do we need for action and event too?
-	// OBSOLETE
-	attached: function () {
-		var widget = this.getset("widget");
-		return this.widget != null && this.widget instanceof Svidget.Widget;
 	},
 
 	/**
@@ -387,16 +397,3 @@ Svidget.Param.writableProxyProperties = ["value"];
 Svidget.extend(Svidget.Param, Svidget.ObjectPrototype);
 Svidget.extend(Svidget.Param, Svidget.ParamPrototype);
 Svidget.extend(Svidget.Param, new Svidget.EventPrototype(Svidget.Param.eventTypes));
-
-
-
-
-/*
-
-
-widget1.param("backgroundColor").value();
-
-widget1.params["backgroundColor"].value();
-
-
-*/

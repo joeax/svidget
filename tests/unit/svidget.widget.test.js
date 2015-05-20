@@ -6,7 +6,7 @@
 var test = require('unit.js');
 
 // Instantiate svidget root object - Widget mode
-var window = { name: "window", document: {} }; // mode 1 == widget mode
+var window = { name: "window", document: {}, _from: "svidget.widget.test" }; // mode 1 == widget mode
 var opts = { mode: 1 }; // force widget mode
 var svidget = require('../../dist/svidget')(window, opts);
 

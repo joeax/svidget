@@ -6,7 +6,7 @@
 var test = require('unit.js');
 
 // Instantiate svidget root object - Widget mode
-var window = { name: "window", document: {} }; // mode 1 == widget mode
+var window = { name: "window", document: {}, _from: "svidget.action.test" }; // mode 1 == widget mode
 var opts = { mode: 1 }; // force widget mode
 var svidget = require('../../dist/svidget')(window, opts);
 
@@ -42,6 +42,7 @@ describe('Svidget.Action tests', function () {
 		test.value(action1.enabled()).is(true);
 		test.value(action1.external()).is(true);
 		test.value(action1.binding()).isFunction();
+		test.value(action1.parent()).isIdenticalTo(widget);
 	});
 	
 	describe('Svidget.Action.binding() property', function () {
@@ -359,6 +360,35 @@ describe('Svidget.Action tests', function () {
 			action1.binding("foobar");
 			assertInvoke(action1, function () { return action1.invoke(3, 6); }, false);
 		});
+		
+		it('should not invoke when action is not enabled', function () {
+			var action1 = widget.newAction("action1", { binding: add });
+			var triggered = false;
+			action1.oninvoke(function (e) {
+				triggered = true;
+			});
+			action1.trigger();
+			test.bool(triggered).isFalse();
+		});
+		
+		it('should apply param defvalue when params are not supplied or undefined, but not null', function () {
+			var addParams = [{ name: "a", type: "number", defvalue: 2 }, { name: "b", type: "number", defvalue: 7 }];
+			var action1 = widget.newAction("action1", { binding: add, params: addParams });
+			var returnVal;
+			action1.oninvoke(function (e) {
+				returnVal = e.value.returnValue;
+			});
+			action1.invoke();
+			test.value(returnVal).is(9); // 2 + 7
+			action1.invoke(undefined, undefined);
+			test.value(returnVal).is(9); // 2 + 7
+			action1.invoke(3, undefined);
+			test.value(returnVal).is(10); // 3 + 7
+			action1.invoke(undefined, 11);
+			test.value(returnVal).is(13); // 2 + 11
+			action1.invoke(null, 3);
+			test.value(returnVal).is(3);
+		});
 
 		function add(a, b) {
 			return a + b;
@@ -390,7 +420,7 @@ describe('Svidget.Action tests', function () {
 			test.bool(transport.external).isFalse();
 			test.value(transport.description).is("Hello, description.");
 			test.value(transport.params).isArray();
-			test.array(transport.params).is([{ name: "param1", type: "number", subtype: null, description: null, defvalue: 1 }]);
+			test.array(transport.params).is([{ name: "param1", type: "number", subtype: null, typedata: null, description: null, defvalue: 1 }]);
 		});
 
 	});
