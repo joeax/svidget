@@ -143,9 +143,19 @@ Install the Grunt CLI:
 
     npm install -g grunt-cli
 
-Run this grunt command:
+Run this grunt command to build:
+
+    grunt build
+
+Run this grunt command to run unit tests:
+
+    grunt test
+
+Run this grunt command to build and run unit tests:
 
     grunt all
+
+The unit tests use the [Mocha](http://mochajs.org/) framework and [Unit.js](http://unitjs.com/) assertion library,
 
 
 ###Contribute
