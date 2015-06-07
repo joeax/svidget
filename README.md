@@ -7,13 +7,13 @@ Svidget is not another data visualization framework like [D3](https://github.com
 
 <small>\* Just kidding</small>
 
-> Version 0.3.0 is currently in alpha. Once the unit tests are complete 0.3.0 will be released. I am almost done rewriting all the unit tests, and have fixed a lot of small issues, made performance improvements, and have opened up much of the internals like type conversion as public APIs. In the mean time please open any issues you see. 
+> Version 0.3.0 is released. See release notes for details. I finished most of the unit tests, fixed a lot of small issues, made performance improvements, and have opened up much of the internals like type conversion as public APIs. 
 
 **Visit the [Svidget.js Website](http://www.svidget.com)** for some really cool demos, the developer guide, and the API documentation.
 
 
 ###Download
-Download the latest stable builds from the `dist` folder. The current stable version is **0.2.3**.
+Download the latest stable builds from the `dist` folder. The current stable version is **0.3.0**.
 
 ###Install
 Bower
@@ -161,9 +161,9 @@ The unit tests use the [Mocha](http://mochajs.org/) framework and [Unit.js](http
 ###Contribute
 If you find Svidget fascinating and want to contribute, that's great! Please follow these guidelines:
 
-- Please respect the coding conventions in place. Put a comment as to what you changed. Don't worry, comments get stripped out during the build. 
-- Please do some basic testing of your code, including testing every button on the kitchen sink page. (unit tests coming soon)
-
+- Please respect the coding conventions in place. Please put a comment as to what you changed. 
+- Please do some basic testing of your code, like testing against the spinning star demo widget. 
+- Run the unit tests. Add some unit tests of your own if necessary.
 
 ###License
 Licensed under [MIT](http://opensource.org/licenses/MIT).
