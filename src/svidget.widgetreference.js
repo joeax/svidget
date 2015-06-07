@@ -116,7 +116,7 @@ Svidget.WidgetReference.prototype = {
 	 * @returns {boolean} - The enabled state.
 	*/
 	/*
-	// should this be settable from the page?
+	// todo: make settable from the page
 	*/
 	enabled: function () {
 		var enabled = this.getset("enabled");

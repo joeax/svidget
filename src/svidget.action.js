@@ -346,6 +346,19 @@ Svidget.Action.prototype = {
 	removeParam: function (name) {
 		return this.params().remove(name);
 	},
+	
+	/**
+	 * Removes all ActionParams from the widget. 
+	 * Examples:
+	 * removeAllParams()
+	 * @method
+	 * @memberof Svidget.Widget.prototype
+	 * @returns {Boolean} - True if all the ActionParams were successfully removed, false otherwise.
+	*/
+	removeAllParams: function () {
+		return this.params().clear();
+	},
+
 
 	paramBubble: function (type, event, param) {
 		if (type == "change") this.paramChanged(param, event.value);

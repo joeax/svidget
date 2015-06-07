@@ -219,6 +219,16 @@ Svidget.extend(Svidget.Collection, {
 		}
 		return removed;
 	},
+	
+	/**
+	 * Clears all items in the collection.
+	 * @method
+	 * @returns {boolean} - True after collection cleared.
+	*/
+	clear: function () {
+		this.splice(0, this.length);
+		return true;
+	},
 
 	/**
 	 * Removes an item from the collection based on the specified predicate function.
@@ -233,7 +243,7 @@ Svidget.extend(Svidget.Collection, {
 			if (predicate(this[i])) result.push(this[i]);
 		}
 		for (var i = 0; i < result.length; i++) {
-			removed = this.remove(result) || removed;
+			removed = this.remove(result[i]) || removed;
 		}
 		return removed;
 	},

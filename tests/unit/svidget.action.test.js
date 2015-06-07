@@ -314,6 +314,7 @@ describe('Svidget.Action tests', function () {
 			var resInvalid = action1.addParam(ap1);
 			test.value(resInvalid).isNull();
 		});
+
 	});
 	
 	describe('Svidget.Action.removeParam() method', function () {
@@ -342,6 +343,7 @@ describe('Svidget.Action tests', function () {
 			test.bool(success).isFalse();
 			test.value(action1.params().length).is(2);
 		});
+
 	});
 	
 	describe('Svidget.Action.invoke() method', function () {

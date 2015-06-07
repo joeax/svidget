@@ -103,6 +103,73 @@ Svidget.Widget.prototype = {
 //		this.loaded = true;
 //	},*/
 
+	// REGION: Properties
+
+	/**
+	 * Gets the widget ID. 
+	 * @method
+	 * @memberof Svidget.Widget.prototype
+	 * @returns {string} - The widget ID as a string.
+	*/
+	id: function () {
+		return this.getset("id");
+	},
+	
+	/**
+	 * Gets or sets whether the widget is enabled. 
+	 * @method
+	 * @memberof Svidget.Widget.prototype
+	 * @param {Boolean} [val] - Sets the enabled state when specified.
+	 * @returns {Boolean} - The enabled state, when nothing is passed, or true/false based on if setting is succeeded or failed.
+	*/
+	enabled: function (val) {
+		if (val === null) val = true;
+		var res = this.getset("enabled", val, "bool");
+		// if undefined its a get so return value, if res is false then set failed
+		if (val === undefined || !!!res) return res;
+		// fire "changed" event
+		val = this.getset("enabled"); // get converted value
+		this.trigger("change", { property: "enabled", value: val });
+		// set was successful
+		return true;
+	},
+	
+	/**
+	 * Gets whether the widget is connected to a parent page. 
+	 * If true, it means the page initialized the widget and is listening for events.
+	 * If false, it means the widget was loaded independently and/or outside of of the control of the framework (standalone mode).
+	 * @method
+	 * @memberof Svidget.Widget.prototype
+	 * @returns {Boolean} - Whether the widget is connected
+	*/
+	connected: function () {
+		return this.getset("connected");
+	},
+	
+	/**
+	 * Gets whether the widget has started. This is true once the DOM is loaded.
+	 * @method
+	 * @memberof Svidget.Widget.prototype
+	 * @returns {boolean} - Whether the widget is started.
+	*/
+	started: function () {
+		var val = this.getset("started");
+		return val;
+	},
+	
+	/**
+	 * Gets whether the widget has had his params populated from the page. 
+	 * @method
+	 * @memberof Svidget.Widget.prototype
+	 * @returns {boolean} - Whether the widget had his params populated from the page.
+	*/
+	populatedFromPage: function () {
+		return this.getset("populatedFromPage");
+	},
+	
+	// REGION
+	// Public Methods
+	
 	start: function () {
 		// if DOM not ready then readyConnected(0 will be called when ready()
 		//if (this.loaded) this.readyConnected();
@@ -213,6 +280,18 @@ Svidget.Widget.prototype = {
 	*/
 	removeParam: function (name) {
 		return this.params().remove(name);
+	},
+	
+	/**
+	 * Removes all Params from the widget. 
+	 * Examples:
+	 * removeAllParams()
+	 * @method
+	 * @memberof Svidget.Widget.prototype
+	 * @returns {Boolean} - True if all the Params were successfully removed, false otherwise.
+	*/
+	removeAllParams: function () {
+		return this.params().clear();
 	},
 
 	// internal
@@ -351,6 +430,18 @@ Svidget.Widget.prototype = {
 	*/
 	removeAction: function (name) {
 		return this.actions().remove(name);
+	},
+	
+	/**
+	 * Removes all Actions from the widget. 
+	 * Examples:
+	 * removeAllActions()
+	 * @method
+	 * @memberof Svidget.Widget.prototype
+	 * @returns {Boolean} - True if all the Actions were successfully removed, false otherwise.
+	*/
+	removeAllActions: function () {
+		return this.actions().clear();
 	},
 
 	// private
@@ -502,6 +593,18 @@ Svidget.Widget.prototype = {
 	removeEvent: function (name) {
 		return this.events().remove(name);
 	},
+	
+	/**
+	 * Removes all Events from the widget. 
+	 * Examples:
+	 * removeAllEvents()
+	 * @method
+	 * @memberof Svidget.Widget.prototype
+	 * @returns {Boolean} - True if all the Events were successfully removed, false otherwise.
+	*/
+	removeAllEvents: function () {
+		return this.events().clear();
+	},
 
 	// private
 	// handle event added
@@ -555,68 +658,7 @@ Svidget.Widget.prototype = {
 	//},
 	*/
 
-	// REGION: Properties
-
-	/**
-	 * Gets the widget ID. 
-	 * @method
-	 * @memberof Svidget.Widget.prototype
-	 * @returns {string} - The widget ID as a string.
-	*/
-	id: function () {
-		return this.getset("id");
-	},
-
-	/**
-	 * Gets or sets whether the widget is enabled. 
-	 * @method
-	 * @memberof Svidget.Widget.prototype
-	 * @param {Boolean} [val] - Sets the enabled state when specified.
-	 * @returns {Boolean} - The enabled state, when nothing is passed, or true/false based on if setting is succeeded or failed.
-	*/
-	enabled: function (val) {
-		var res = this.getset("enabled", val);
-		// if undefined its a get so return value, if res is false then set failed
-		if (val === undefined || !!!res) return res;
-		// fire "changed" event
-		if (this.trigger) this.trigger("change", { property: "enabled", value: val });
-
-		return true;
-	},
-
-	/**
-	 * Gets whether the widget is connected to a parent page. 
-	 * If true, it means the page initialized the widget and is listening for events.
-	 * If false, it means the widget was loaded independently and/or outside of of the control of the framework (standalone mode).
-	 * @method
-	 * @memberof Svidget.Widget.prototype
-	 * @returns {Boolean} - Whether the widget is connected
-	*/
-	connected: function () {
-		return this.getset("connected");
-	},
-
-	/**
-	 * Gets whether the widget has started. This is true once the DOM is loaded.
-	 * @method
-	 * @memberof Svidget.Widget.prototype
-	 * @returns {boolean} - Whether the widget is started.
-	*/
-	started: function () {
-		var val = this.getset("started");
-		return val;
-	},
-
-	/**
-	 * Gets whether the widget has had his params populated from the page. 
-	 * @method
-	 * @memberof Svidget.Widget.prototype
-	 * @returns {boolean} - Whether the widget had his params populated from the page.
-	*/
-	populatedFromPage: function () {
-		return this.getset("populatedFromPage");
-	},
-
+	
 
 	// REGION: Communication
 
@@ -657,6 +699,36 @@ Svidget.Widget.prototype = {
 		var col = this.events();
 		var evs = col.select(function (e) { return e.toTransport(); }).toArray();
 		return evs;
+	},
+	
+	/**
+	* Adds an event handler for the "change" event. 
+	 * @method
+	 * @param {object} [data] - Arbirary data to initialize Event object with when event is triggered.
+	 * @param {string} [name] - The name of the handler. Useful when removing the handler for the event.
+	 * @param {Function} handler - The event handler.
+	 * @returns {boolean} - True if the event handler was successfully added.
+	*/
+	onchange: function (data, name, handler) {
+		return this.on("change", data, name, handler);
+	},
+	
+	ondeclaredchange: function (handler) {
+		return this.onchange(null, Svidget.declaredHandlerName, handler);
+	},
+	
+	/**
+	* Removes an event handler for the "change" event. 
+	* @method
+	* @param {(Function|string)} handlerOrName - The handler function and/or the handler name used when calling on().
+	* @returns {boolean} - True if the event handler was successfully removed.
+	*/
+	offchange: function (handlerOrName) {
+		this.off("change", handlerOrName);
+	},
+	
+	offdeclaredchange: function () {
+		return this.offchange(Svidget.declaredHandlerName);
 	},
 
 	/**
@@ -866,15 +938,81 @@ Svidget.Widget.prototype = {
 	offactioninvoke: function (handlerOrName) {
 		return this.off("actioninvoke", handlerOrName);
 	},
+	
+	/**
+	* Adds an event handler for the "actionparamadd" event. 
+	 * @method
+	 * @param {object} [data] - Arbirary data to initialize Event object with when event is triggered.
+	 * @param {string} [name] - The name of the handler. Useful when removing the handler for the event.
+	 * @param {Function} handler - The event handler.
+	 * @returns {boolean} - True if the event handler was successfully added.
+	*/
+	onactionparamadd: function (data, name, handler) {
+		return this.on("actionparamadd", data, name, handler);
+	},
+	
+	/**
+	* Removes an event handler for the "actionparamadd" event. 
+	* @method
+	* @param {(Function|string)} handlerOrName - The handler function and/or the handler name used when calling on().
+	* @returns {boolean} - True if the event handler was successfully removed.
+	*/
+	offactionparamadd: function (handlerOrName) {
+		return this.off("actionparamadd", handlerOrName);
+	},
+	
+	/**
+	* Adds an event handler for the "actionparamremove" event. 
+	 * @method
+	 * @param {object} [data] - Arbirary data to initialize Event object with when event is triggered.
+	 * @param {string} [name] - The name of the handler. Useful when removing the handler for the event.
+	 * @param {Function} handler - The event handler.
+	 * @returns {boolean} - True if the event handler was successfully added.
+	*/
+	onactionparamremove: function (data, name, handler) {
+		return this.on("actionparamremove", data, name, handler);
+	},
+	
+	/**
+	* Removes an event handler for the "actionparamremove" event. 
+	* @method
+	* @param {(Function|string)} handlerOrName - The handler function and/or the handler name used when calling on().
+	* @returns {boolean} - True if the event handler was successfully removed.
+	*/
+	offactionparamremove: function (handlerOrName) {
+		return this.off("actionparamremove", handlerOrName);
+	},
+	
+	/**
+	* Adds an event handler for the "actionparamchange" event. 
+	* @method
+	* @param {object} [data] - Arbirary data to initialize Event object with when event is triggered.
+	* @param {string} [name] - The name of the handler. Useful when removing the handler for the event.
+	* @param {Function} handler - The event handler.
+	* @returns {boolean} - True if the event handler was successfully added.
+	*/
+	onactionparamchange: function (data, name, handler) {
+		return this.on("actionparamchange", data, name, handler);
+	},
+	
+	/**
+	* Removes an event handler for the "actionparamchange" event. 
+	* @method
+	* @param {(Function|string)} handlerOrName - The handler function and/or the handler name used when calling on().
+	* @returns {boolean} - True if the event handler was successfully removed.
+	*/
+	offactionparamchange: function (handlerOrName) {
+		return this.off("actionparamchange", handlerOrName);
+	},
 
 	/**
-* Adds an event handler for the "eventadd" event. 
-* @method
-* @event {object} [data] - Arbirary data to initialize Event object with when event is triggered.
-* @event {string} [name] - The name of the handler. Useful when removing the handler for the event.
-* @event {Function} handler - The event handler.
-* @returns {boolean} - True if the event handler was successfully added.
-*/
+	* Adds an event handler for the "eventadd" event. 
+	* @method
+	* @event {object} [data] - Arbirary data to initialize Event object with when event is triggered.
+	* @event {string} [name] - The name of the handler. Useful when removing the handler for the event.
+	* @event {Function} handler - The event handler.
+	* @returns {boolean} - True if the event handler was successfully added.
+	*/
 	oneventadd: function (data, name, handler) {
 		return this.on("eventadd", data, name, handler);
 	},
@@ -1006,7 +1144,7 @@ Svidget.Widget.prototype = {
 
 };
 
-Svidget.Widget.eventTypes = ["change", "pagepopulate", "paramvaluechange", "paramchange", "paramadd", "paramremove", "actioninvoke", "actionchange", "actionadd", "actionremove", "eventtrigger", "eventadd", "eventremove"];
+Svidget.Widget.eventTypes = ["change", "pagepopulate", "paramvaluechange", "paramset", "paramchange", "paramadd", "paramremove", "actioninvoke", "actionchange", "actionadd", "actionremove", "eventtrigger", "eventchange", "eventadd", "eventremove"];
 
 
 Svidget.extend(Svidget.Widget, Svidget.ObjectPrototype);
