@@ -7,13 +7,13 @@ Svidget is not another data visualization framework like [D3](https://github.com
 
 <small>\* Just kidding</small>
 
-> Version 0.3.0 is released. See release notes for details. I finished most of the unit tests, fixed a lot of small issues, made performance improvements, and have opened up much of the internals like type conversion as public APIs. 
+> Version 0.3.1 is released. See release notes for details. I finished most of the unit tests, fixed a lot of small issues, made performance improvements, and have opened up much of the internals like type conversion as public APIs. 
 
 **Visit the [Svidget.js Website](http://www.svidget.com)** for some really cool demos, the developer guide, and the API documentation.
 
 
 ###Download
-Download the latest stable builds from the `dist` folder. The current stable version is **0.3.0**.
+Download the latest stable builds from the `dist` folder. The current stable version is **0.3.1**.
 
 ###Install
 Bower
