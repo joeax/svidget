@@ -66,8 +66,9 @@ Svidget.Root = function (w, options) {
 	// API Extensions
 	Object.defineProperty(this, "conversion", Svidget.readOnlyProperty(Svidget.Conversion));
 	Object.defineProperty(this, "Collection", Svidget.readOnlyProperty(Svidget.Collection));
+	Object.defineProperty(this, "dom", Svidget.readOnlyProperty(Svidget.DOM));
 	Object.defineProperty(this, "util", Svidget.readOnlyProperty(Svidget.Util));
-	
+
 	// set this singleton instance
 	Svidget.root = this;
 

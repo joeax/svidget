@@ -302,6 +302,7 @@ Svidget.Root.WidgetPrototype = {
 		}
 
 		this.paramValues = paramValues || {};
+		this.fixSizing();
 		/* if ready() was called first, widget in standalone mode, so switch to connected mode
 		//if (!widget.connected()) this.connect();
 		//this.startConnected(); */
@@ -344,6 +345,15 @@ Svidget.Root.WidgetPrototype = {
 
 	isValidSvidgetElement: function (xele, name) {
 		return xele != null && xele.localName == name && xele.namespaceURI == Svidget.Namespaces.svidget;
+	},
+
+	fixSizing: function () {
+		var root = Svidget.DOM.root();
+		// for iframes with viewBox, we need to ensure SVG content scales with iframe size, so we set width/height to 100%
+		if (root && root.viewBox && root.viewBox.baseVal && (root.viewBox.baseVal.width > 0 && root.viewBox.baseVal.height > 0)) {
+			root.setAttribute("width", "100%");
+			root.setAttribute("height", "100%");
+		}
 	},
 
 	// ***********************************

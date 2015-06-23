@@ -8,7 +8,7 @@ Dependencies:
 
 ******************************************/
 
-var VERSION = "0.3.0";
+var VERSION = "0.3.1";
 
 /* Global Namespace */
 

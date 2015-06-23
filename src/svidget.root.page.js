@@ -255,6 +255,8 @@ Svidget.Root.PagePrototype = {
 			else
 				iframe.setAttribute(a.name(), a.value());
 		});
+		iframe.frameBorder = 0;
+		iframe.seamless = true;
 		return iframe;
 	},
 

@@ -55,3 +55,9 @@
 - object type is now the default type
 - for widget.addAction(name, options), options can now include params array (i.e. addAction("myaction", {params: [{ name: "p1", type: "string" }]}))
 - added various removeAllXYZs where XYZ = Param, Action, Event where there are removeXYZ(name) methods
+
+0.3.1
+- fixed issue with iframe not hiding its border in some browsers
+- fixed exposing svidget.dom
+- fixed issue with SVG not scaling when loaded in an iframe
+
