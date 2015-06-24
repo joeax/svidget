@@ -1,6 +1,6 @@
 {
   "name": "svidget",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "description": "Framework for widgetizing SVG on the web.",
   "author": "Joe Agster",
   "keywords": [

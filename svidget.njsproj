@@ -59,6 +59,8 @@
     <Compile Include="dist\svidget-0.3.0.min.js" />
     <Compile Include="dist\svidget-0.3.1.js" />
     <Compile Include="dist\svidget-0.3.1.min.js" />
+    <Compile Include="dist\svidget-0.3.2.js" />
+    <Compile Include="dist\svidget-0.3.2.min.js" />
     <Compile Include="dist\svidget.js" />
     <Compile Include="dist\svidget.min.js" />
     <Compile Include="misc\closure.js" />

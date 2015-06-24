@@ -1,6 +1,6 @@
 /*** * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
- * Svidget.js v0.3.0
- * Release Date: 2015-05-19
+ * Svidget.js v0.3.2
+ * Release Date: 2015-06-23
  * 
  * A framework for creating complex widgets using SVG.
  * 
@@ -41,7 +41,7 @@
         global.svidget = factory(global);
     }
 })(this, function(global, createOptions) {
-    var VERSION = "0.3.0";
+    var VERSION = "0.3.2";
     /**
  * Namespace for all Svidget library classes.
  * @namspace
@@ -743,6 +743,15 @@
             return removed;
         },
         /**
+	 * Clears all items in the collection.
+	 * @method
+	 * @returns {boolean} - True after collection cleared.
+	*/
+        clear: function() {
+            this.splice(0, this.length);
+            return true;
+        },
+        /**
 	 * Removes an item from the collection based on the specified predicate function.
 	 * @method
 	 * @param {Function} predicate - A function that accepts an item as input and returns true/false.
@@ -755,7 +764,7 @@
                 if (predicate(this[i])) result.push(this[i]);
             }
             for (var i = 0; i < result.length; i++) {
-                removed = this.remove(result) || removed;
+                removed = this.remove(result[i]) || removed;
             }
             return removed;
         },
@@ -1385,9 +1394,9 @@
         },
         clone: function(item) {},
         cloneDetached: function(item) {},
-        isDOMNode: function(source) {
-            if (source == null) return null;
-            return source.namespaceURI && source.localName && source.nodeType && source.value && (source.nodeType == 1 || source.nodeType == 2);
+        isDOMNode: function(node) {
+            if (node == null) return null;
+            return node.namespaceURI != null && node.localName != null && node.nodeType != null && (node.value != null || node.textContent != null) && (node.nodeType == 1 || node.nodeType == 2);
         },
         fromNodeType: function(type) {
             if (type == 1) return "element";
@@ -1504,18 +1513,15 @@
         var privates = new function() {
             this.writable = [ "value" ];
             this.type = null;
+            this.typeCode = null;
             this.name = null;
             this.value = null;
             this.namespace = null;
             this.source = source;
-            this.sourceDOM = isSourceDOM(source);
+            this.sourceDOM = Svidget.DOM.isDOMNode(source);
         }();
         // private accessors
         this.setup(privates);
-        function isSourceDOM(source) {
-            if (source == null) return false;
-            return source.namespaceURI && source.localName && source.nodeType && (source.value || source.textContent) && (source.nodeType == 1 || source.nodeType == 2);
-        }
         function getType(typeCode) {
             if (typeCode == Svidget.NodeType.element) return "element";
             if (typeCode == Svidget.NodeType.attribute) return "attribute";
@@ -1637,8 +1643,8 @@
             // lazy load
             if (this.cachedElements != null && Svidget.isArray(this.cachedElements)) return this.cachedElements;
             var isDOM = this.isAttached();
-            if (!isDOM && (!source.elements || !source.elements.length)) return null;
             var source = this.source();
+            if (!isDOM && (!source.elements || !source.elements.length)) return null;
             var origcol = isDOM ? source.children : source.elements;
             var eles = new Svidget.Collection(Svidget.array(origcol));
             eles = eles.select(function(e) {
@@ -1656,8 +1662,8 @@
             // lazy load
             if (this.cachedAttributes != null && Svidget.isArray(this.cachedAttributes)) return this.cachedAttributes;
             var isDOM = this.isAttached();
-            if (!isDOM && (!source.attributes || !source.attributes.length)) return null;
             var source = this.source();
+            if (!isDOM && (!source.attributes || !source.attributes.length)) return null;
             var origcol = source.attributes;
             var attrs = new Svidget.Collection(Svidget.array(origcol));
             attrs = attrs.select(function(a) {
@@ -1991,6 +1997,7 @@
         // API Extensions
         Object.defineProperty(this, "conversion", Svidget.readOnlyProperty(Svidget.Conversion));
         Object.defineProperty(this, "Collection", Svidget.readOnlyProperty(Svidget.Collection));
+        Object.defineProperty(this, "dom", Svidget.readOnlyProperty(Svidget.DOM));
         Object.defineProperty(this, "util", Svidget.readOnlyProperty(Svidget.Util));
         // set this singleton instance
         Svidget.root = this;
@@ -2554,6 +2561,17 @@
 	*/
         removeParam: function(name) {
             return this.params().remove(name);
+        },
+        /**
+	 * Removes all ActionParams from the widget. 
+	 * Examples:
+	 * removeAllParams()
+	 * @method
+	 * @memberof Svidget.Widget.prototype
+	 * @returns {Boolean} - True if all the ActionParams were successfully removed, false otherwise.
+	*/
+        removeAllParams: function() {
+            return this.params().clear();
         },
         paramBubble: function(type, event, param) {
             if (type == "change") this.paramChanged(param, event.value);
@@ -3645,6 +3663,70 @@
     };
     Svidget.Widget.prototype = {
         _init: function() {},
+        // REGION: Properties
+        /**
+	 * Gets the widget ID. 
+	 * @method
+	 * @memberof Svidget.Widget.prototype
+	 * @returns {string} - The widget ID as a string.
+	*/
+        id: function() {
+            return this.getset("id");
+        },
+        /**
+	 * Gets or sets whether the widget is enabled. 
+	 * @method
+	 * @memberof Svidget.Widget.prototype
+	 * @param {Boolean} [val] - Sets the enabled state when specified.
+	 * @returns {Boolean} - The enabled state, when nothing is passed, or true/false based on if setting is succeeded or failed.
+	*/
+        enabled: function(val) {
+            if (val === null) val = true;
+            var res = this.getset("enabled", val, "bool");
+            // if undefined its a get so return value, if res is false then set failed
+            if (val === undefined || !!!res) return res;
+            // fire "changed" event
+            val = this.getset("enabled");
+            // get converted value
+            this.trigger("change", {
+                property: "enabled",
+                value: val
+            });
+            // set was successful
+            return true;
+        },
+        /**
+	 * Gets whether the widget is connected to a parent page. 
+	 * If true, it means the page initialized the widget and is listening for events.
+	 * If false, it means the widget was loaded independently and/or outside of of the control of the framework (standalone mode).
+	 * @method
+	 * @memberof Svidget.Widget.prototype
+	 * @returns {Boolean} - Whether the widget is connected
+	*/
+        connected: function() {
+            return this.getset("connected");
+        },
+        /**
+	 * Gets whether the widget has started. This is true once the DOM is loaded.
+	 * @method
+	 * @memberof Svidget.Widget.prototype
+	 * @returns {boolean} - Whether the widget is started.
+	*/
+        started: function() {
+            var val = this.getset("started");
+            return val;
+        },
+        /**
+	 * Gets whether the widget has had his params populated from the page. 
+	 * @method
+	 * @memberof Svidget.Widget.prototype
+	 * @returns {boolean} - Whether the widget had his params populated from the page.
+	*/
+        populatedFromPage: function() {
+            return this.getset("populatedFromPage");
+        },
+        // REGION
+        // Public Methods
         start: function() {
             // if DOM not ready then readyConnected(0 will be called when ready()
             //if (this.loaded) this.readyConnected();
@@ -3739,6 +3821,17 @@
 	*/
         removeParam: function(name) {
             return this.params().remove(name);
+        },
+        /**
+	 * Removes all Params from the widget. 
+	 * Examples:
+	 * removeAllParams()
+	 * @method
+	 * @memberof Svidget.Widget.prototype
+	 * @returns {Boolean} - True if all the Params were successfully removed, false otherwise.
+	*/
+        removeAllParams: function() {
+            return this.params().clear();
         },
         // internal
         // handle param added
@@ -3863,6 +3956,17 @@
 	*/
         removeAction: function(name) {
             return this.actions().remove(name);
+        },
+        /**
+	 * Removes all Actions from the widget. 
+	 * Examples:
+	 * removeAllActions()
+	 * @method
+	 * @memberof Svidget.Widget.prototype
+	 * @returns {Boolean} - True if all the Actions were successfully removed, false otherwise.
+	*/
+        removeAllActions: function() {
+            return this.actions().clear();
         },
         // private
         // handle action added
@@ -3996,6 +4100,17 @@
         removeEvent: function(name) {
             return this.events().remove(name);
         },
+        /**
+	 * Removes all Events from the widget. 
+	 * Examples:
+	 * removeAllEvents()
+	 * @method
+	 * @memberof Svidget.Widget.prototype
+	 * @returns {Boolean} - True if all the Events were successfully removed, false otherwise.
+	*/
+        removeAllEvents: function() {
+            return this.events().clear();
+        },
         // private
         // handle event added
         eventAdded: function(eventDesc) {
@@ -4033,64 +4148,6 @@
             this.trigger("eventchange", eventValue, eventDesc);
             // signal parent
             Svidget.root.signalEventChanged(eventDesc, eventValue);
-        },
-        // REGION: Properties
-        /**
-	 * Gets the widget ID. 
-	 * @method
-	 * @memberof Svidget.Widget.prototype
-	 * @returns {string} - The widget ID as a string.
-	*/
-        id: function() {
-            return this.getset("id");
-        },
-        /**
-	 * Gets or sets whether the widget is enabled. 
-	 * @method
-	 * @memberof Svidget.Widget.prototype
-	 * @param {Boolean} [val] - Sets the enabled state when specified.
-	 * @returns {Boolean} - The enabled state, when nothing is passed, or true/false based on if setting is succeeded or failed.
-	*/
-        enabled: function(val) {
-            var res = this.getset("enabled", val);
-            // if undefined its a get so return value, if res is false then set failed
-            if (val === undefined || !!!res) return res;
-            // fire "changed" event
-            if (this.trigger) this.trigger("change", {
-                property: "enabled",
-                value: val
-            });
-            return true;
-        },
-        /**
-	 * Gets whether the widget is connected to a parent page. 
-	 * If true, it means the page initialized the widget and is listening for events.
-	 * If false, it means the widget was loaded independently and/or outside of of the control of the framework (standalone mode).
-	 * @method
-	 * @memberof Svidget.Widget.prototype
-	 * @returns {Boolean} - Whether the widget is connected
-	*/
-        connected: function() {
-            return this.getset("connected");
-        },
-        /**
-	 * Gets whether the widget has started. This is true once the DOM is loaded.
-	 * @method
-	 * @memberof Svidget.Widget.prototype
-	 * @returns {boolean} - Whether the widget is started.
-	*/
-        started: function() {
-            var val = this.getset("started");
-            return val;
-        },
-        /**
-	 * Gets whether the widget has had his params populated from the page. 
-	 * @method
-	 * @memberof Svidget.Widget.prototype
-	 * @returns {boolean} - Whether the widget had his params populated from the page.
-	*/
-        populatedFromPage: function() {
-            return this.getset("populatedFromPage");
         },
         // REGION: Communication
         /**
@@ -4133,6 +4190,32 @@
                 return e.toTransport();
             }).toArray();
             return evs;
+        },
+        /**
+	* Adds an event handler for the "change" event. 
+	 * @method
+	 * @param {object} [data] - Arbirary data to initialize Event object with when event is triggered.
+	 * @param {string} [name] - The name of the handler. Useful when removing the handler for the event.
+	 * @param {Function} handler - The event handler.
+	 * @returns {boolean} - True if the event handler was successfully added.
+	*/
+        onchange: function(data, name, handler) {
+            return this.on("change", data, name, handler);
+        },
+        ondeclaredchange: function(handler) {
+            return this.onchange(null, Svidget.declaredHandlerName, handler);
+        },
+        /**
+	* Removes an event handler for the "change" event. 
+	* @method
+	* @param {(Function|string)} handlerOrName - The handler function and/or the handler name used when calling on().
+	* @returns {boolean} - True if the event handler was successfully removed.
+	*/
+        offchange: function(handlerOrName) {
+            this.off("change", handlerOrName);
+        },
+        offdeclaredchange: function() {
+            return this.offchange(Svidget.declaredHandlerName);
         },
         /**
 	* Adds an event handler for the "paramadd" event. 
@@ -4319,13 +4402,73 @@
             return this.off("actioninvoke", handlerOrName);
         },
         /**
-* Adds an event handler for the "eventadd" event. 
-* @method
-* @event {object} [data] - Arbirary data to initialize Event object with when event is triggered.
-* @event {string} [name] - The name of the handler. Useful when removing the handler for the event.
-* @event {Function} handler - The event handler.
-* @returns {boolean} - True if the event handler was successfully added.
-*/
+	* Adds an event handler for the "actionparamadd" event. 
+	 * @method
+	 * @param {object} [data] - Arbirary data to initialize Event object with when event is triggered.
+	 * @param {string} [name] - The name of the handler. Useful when removing the handler for the event.
+	 * @param {Function} handler - The event handler.
+	 * @returns {boolean} - True if the event handler was successfully added.
+	*/
+        onactionparamadd: function(data, name, handler) {
+            return this.on("actionparamadd", data, name, handler);
+        },
+        /**
+	* Removes an event handler for the "actionparamadd" event. 
+	* @method
+	* @param {(Function|string)} handlerOrName - The handler function and/or the handler name used when calling on().
+	* @returns {boolean} - True if the event handler was successfully removed.
+	*/
+        offactionparamadd: function(handlerOrName) {
+            return this.off("actionparamadd", handlerOrName);
+        },
+        /**
+	* Adds an event handler for the "actionparamremove" event. 
+	 * @method
+	 * @param {object} [data] - Arbirary data to initialize Event object with when event is triggered.
+	 * @param {string} [name] - The name of the handler. Useful when removing the handler for the event.
+	 * @param {Function} handler - The event handler.
+	 * @returns {boolean} - True if the event handler was successfully added.
+	*/
+        onactionparamremove: function(data, name, handler) {
+            return this.on("actionparamremove", data, name, handler);
+        },
+        /**
+	* Removes an event handler for the "actionparamremove" event. 
+	* @method
+	* @param {(Function|string)} handlerOrName - The handler function and/or the handler name used when calling on().
+	* @returns {boolean} - True if the event handler was successfully removed.
+	*/
+        offactionparamremove: function(handlerOrName) {
+            return this.off("actionparamremove", handlerOrName);
+        },
+        /**
+	* Adds an event handler for the "actionparamchange" event. 
+	* @method
+	* @param {object} [data] - Arbirary data to initialize Event object with when event is triggered.
+	* @param {string} [name] - The name of the handler. Useful when removing the handler for the event.
+	* @param {Function} handler - The event handler.
+	* @returns {boolean} - True if the event handler was successfully added.
+	*/
+        onactionparamchange: function(data, name, handler) {
+            return this.on("actionparamchange", data, name, handler);
+        },
+        /**
+	* Removes an event handler for the "actionparamchange" event. 
+	* @method
+	* @param {(Function|string)} handlerOrName - The handler function and/or the handler name used when calling on().
+	* @returns {boolean} - True if the event handler was successfully removed.
+	*/
+        offactionparamchange: function(handlerOrName) {
+            return this.off("actionparamchange", handlerOrName);
+        },
+        /**
+	* Adds an event handler for the "eventadd" event. 
+	* @method
+	* @event {object} [data] - Arbirary data to initialize Event object with when event is triggered.
+	* @event {string} [name] - The name of the handler. Useful when removing the handler for the event.
+	* @event {Function} handler - The event handler.
+	* @returns {boolean} - True if the event handler was successfully added.
+	*/
         oneventadd: function(data, name, handler) {
             return this.on("eventadd", data, name, handler);
         },
@@ -4440,7 +4583,7 @@
             return '[Svidget.Widget { id: "' + this.id() + '" }]';
         }
     };
-    Svidget.Widget.eventTypes = [ "change", "pagepopulate", "paramvaluechange", "paramchange", "paramadd", "paramremove", "actioninvoke", "actionchange", "actionadd", "actionremove", "eventtrigger", "eventadd", "eventremove" ];
+    Svidget.Widget.eventTypes = [ "change", "pagepopulate", "paramvaluechange", "paramset", "paramchange", "paramadd", "paramremove", "actioninvoke", "actionchange", "actionadd", "actionremove", "eventtrigger", "eventchange", "eventadd", "eventremove" ];
     Svidget.extend(Svidget.Widget, Svidget.ObjectPrototype);
     Svidget.extend(Svidget.Widget, new Svidget.EventPrototype(Svidget.Widget.eventTypes));
     /**
@@ -5892,7 +6035,7 @@
                 this.signalStart(widget, widget.paramValues());
             }
         },
-        // if DOM not yet laoded, returns null
+        // if DOM not yet loaded, returns null
         // if <object> is determined to be cross-domain, disables it and returns an alternate <iframe>
         // else returns declaring <object>
         resolveCoreWidgetElement: function(objEle, widget, crossdomain) {
@@ -5981,21 +6124,30 @@
             var iframe = document.createElement("iframe");
             var objItem = Svidget.DOM.wrap(objEle);
             objItem.attributes().each(function(a) {
-                if (a.name() == "data") iframe.setAttribute("src", a.value()); else if (a.name() == "id") iframe.setAttribute("id", a.value() + "_frame"); else iframe.setAttribute(a.name(), a.value());
+                if (a.name() == "data" || a.name() == "data-url") iframe.setAttribute("src", a.value()); else if (a.name() == "id") iframe.setAttribute("id", a.value() + "_frame"); else iframe.setAttribute(a.name(), a.value());
             });
+            iframe.frameBorder = 0;
+            iframe.seamless = true;
             return iframe;
         },
         buildObjectElement: function(options, paramObj) {
             if (!document.createElement) return null;
             var objEle = document.createElement("object");
             objEle.setAttribute("role", "svidget");
-            objEle.setAttribute("data", options.url);
+            objEle.setAttribute("data-url", options.url);
+            // for crossdomain, no need to load widget into object, an iframe will take its place
+            if (options.crossdomain !== true) objEle.setAttribute("data", options.url);
             if (options.id) objEle.setAttribute("id", options.id);
             if (options.width) objEle.setAttribute("width", options.width);
             if (options.height) objEle.setAttribute("height", options.height);
             // yes, if these values are false we dont want to write them out
             if (options.connected !== undefined) objEle.setAttribute("data-connected", options.connected);
             if (options.crossdomain !== undefined) objEle.setAttribute("data-crossdomain", options.crossdomain);
+            // copy other known attributes
+            if (options.style) objEle.setAttribute("style", options.style);
+            if (options.cssclass) objEle.setAttribute("class", options.cssclass);
+            if (options.allowfullscreen !== undefined) objEle.setAttribute("allowfullscreen", options.allowfullscreen);
+            if (options.title) objEle.setAttribute("title", options.title);
             // params
             for (var key in paramObj) {
                 var paramEle = document.createElement("param");
@@ -6086,7 +6238,6 @@
             // returns the WidgetReference object
             // if callback defined, call it
             if (callback && typeof callback === "function") callback(widget);
-            //this.waitForWidgets();
             // return widget
             return widget;
         },
@@ -6670,6 +6821,7 @@
                 Svidget.log("widget: standalone {id: " + id + "}");
             }
             this.paramValues = paramValues || {};
+            this.fixSizing();
         },
         startWidgetWithPageParams: function() {
             //Svidget.log("startWidgetWithPageParams");
@@ -6707,6 +6859,14 @@
         },
         isValidSvidgetElement: function(xele, name) {
             return xele != null && xele.localName == name && xele.namespaceURI == Svidget.Namespaces.svidget;
+        },
+        fixSizing: function() {
+            var root = Svidget.DOM.root();
+            // for iframes with viewBox, we need to ensure SVG content scales with iframe size, so we set width/height to 100%
+            if (root && root.viewBox && root.viewBox.baseVal && (root.viewBox.baseVal.width > 0 && root.viewBox.baseVal.height > 0)) {
+                root.setAttribute("width", "100%");
+                root.setAttribute("height", "100%");
+            }
         },
         // ***********************************
         // REGION: Public Properties

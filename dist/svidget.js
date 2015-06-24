@@ -1,6 +1,6 @@
 /*** * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
- * Svidget.js v0.3.1
- * Release Date: 2015-06-22
+ * Svidget.js v0.3.2
+ * Release Date: 2015-06-23
  * 
  * A framework for creating complex widgets using SVG.
  * 
@@ -41,7 +41,7 @@
         global.svidget = factory(global);
     }
 })(this, function(global, createOptions) {
-    var VERSION = "0.3.1";
+    var VERSION = "0.3.2";
     /**
  * Namespace for all Svidget library classes.
  * @namspace
@@ -1394,9 +1394,9 @@
         },
         clone: function(item) {},
         cloneDetached: function(item) {},
-        isDOMNode: function(source) {
-            if (source == null) return null;
-            return source.namespaceURI && source.localName && source.nodeType && source.value && (source.nodeType == 1 || source.nodeType == 2);
+        isDOMNode: function(node) {
+            if (node == null) return null;
+            return node.namespaceURI != null && node.localName != null && node.nodeType != null && (node.value != null || node.textContent != null) && (node.nodeType == 1 || node.nodeType == 2);
         },
         fromNodeType: function(type) {
             if (type == 1) return "element";
@@ -1513,18 +1513,15 @@
         var privates = new function() {
             this.writable = [ "value" ];
             this.type = null;
+            this.typeCode = null;
             this.name = null;
             this.value = null;
             this.namespace = null;
             this.source = source;
-            this.sourceDOM = isSourceDOM(source);
+            this.sourceDOM = Svidget.DOM.isDOMNode(source);
         }();
         // private accessors
         this.setup(privates);
-        function isSourceDOM(source) {
-            if (source == null) return false;
-            return source.namespaceURI && source.localName && source.nodeType && (source.value || source.textContent) && (source.nodeType == 1 || source.nodeType == 2);
-        }
         function getType(typeCode) {
             if (typeCode == Svidget.NodeType.element) return "element";
             if (typeCode == Svidget.NodeType.attribute) return "attribute";
@@ -1646,8 +1643,8 @@
             // lazy load
             if (this.cachedElements != null && Svidget.isArray(this.cachedElements)) return this.cachedElements;
             var isDOM = this.isAttached();
-            if (!isDOM && (!source.elements || !source.elements.length)) return null;
             var source = this.source();
+            if (!isDOM && (!source.elements || !source.elements.length)) return null;
             var origcol = isDOM ? source.children : source.elements;
             var eles = new Svidget.Collection(Svidget.array(origcol));
             eles = eles.select(function(e) {
@@ -1665,8 +1662,8 @@
             // lazy load
             if (this.cachedAttributes != null && Svidget.isArray(this.cachedAttributes)) return this.cachedAttributes;
             var isDOM = this.isAttached();
-            if (!isDOM && (!source.attributes || !source.attributes.length)) return null;
             var source = this.source();
+            if (!isDOM && (!source.attributes || !source.attributes.length)) return null;
             var origcol = source.attributes;
             var attrs = new Svidget.Collection(Svidget.array(origcol));
             attrs = attrs.select(function(a) {
@@ -6038,7 +6035,7 @@
                 this.signalStart(widget, widget.paramValues());
             }
         },
-        // if DOM not yet laoded, returns null
+        // if DOM not yet loaded, returns null
         // if <object> is determined to be cross-domain, disables it and returns an alternate <iframe>
         // else returns declaring <object>
         resolveCoreWidgetElement: function(objEle, widget, crossdomain) {
@@ -6127,7 +6124,7 @@
             var iframe = document.createElement("iframe");
             var objItem = Svidget.DOM.wrap(objEle);
             objItem.attributes().each(function(a) {
-                if (a.name() == "data") iframe.setAttribute("src", a.value()); else if (a.name() == "id") iframe.setAttribute("id", a.value() + "_frame"); else iframe.setAttribute(a.name(), a.value());
+                if (a.name() == "data" || a.name() == "data-url") iframe.setAttribute("src", a.value()); else if (a.name() == "id") iframe.setAttribute("id", a.value() + "_frame"); else iframe.setAttribute(a.name(), a.value());
             });
             iframe.frameBorder = 0;
             iframe.seamless = true;
@@ -6137,13 +6134,20 @@
             if (!document.createElement) return null;
             var objEle = document.createElement("object");
             objEle.setAttribute("role", "svidget");
-            objEle.setAttribute("data", options.url);
+            objEle.setAttribute("data-url", options.url);
+            // for crossdomain, no need to load widget into object, an iframe will take its place
+            if (options.crossdomain !== true) objEle.setAttribute("data", options.url);
             if (options.id) objEle.setAttribute("id", options.id);
             if (options.width) objEle.setAttribute("width", options.width);
             if (options.height) objEle.setAttribute("height", options.height);
             // yes, if these values are false we dont want to write them out
             if (options.connected !== undefined) objEle.setAttribute("data-connected", options.connected);
             if (options.crossdomain !== undefined) objEle.setAttribute("data-crossdomain", options.crossdomain);
+            // copy other known attributes
+            if (options.style) objEle.setAttribute("style", options.style);
+            if (options.cssclass) objEle.setAttribute("class", options.cssclass);
+            if (options.allowfullscreen !== undefined) objEle.setAttribute("allowfullscreen", options.allowfullscreen);
+            if (options.title) objEle.setAttribute("title", options.title);
             // params
             for (var key in paramObj) {
                 var paramEle = document.createElement("param");
@@ -6234,7 +6238,6 @@
             // returns the WidgetReference object
             // if callback defined, call it
             if (callback && typeof callback === "function") callback(widget);
-            //this.waitForWidgets();
             // return widget
             return widget;
         },

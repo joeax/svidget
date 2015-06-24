@@ -61,3 +61,7 @@
 - fixed exposing svidget.dom
 - fixed issue with SVG not scaling when loaded in an iframe
 
+0.3.2
+- fixed issues with svidget.load() not loading property for iframes
+- expanded options object for svidget.load() to include style, cssclass, allowfullscreen, title attributes.
+

@@ -204,9 +204,9 @@ Svidget.DOM = {
 		// returns a clone DomItem without its underlying element/attribute, to be used as a transport
 	},
 
-	isDOMNode: function (source) {
-		if (source == null) return null;
-		return (source.namespaceURI && source.localName && source.nodeType && source.value && (source.nodeType == 1 || source.nodeType == 2)); //!source.attributes || 
+	isDOMNode: function (node) {
+		if (node == null) return null;
+		return (node.namespaceURI != null && node.localName != null && node.nodeType != null && (node.value != null || node.textContent != null) && (node.nodeType == 1 || node.nodeType == 2)); //!source.attributes || 
 	},
 
 	fromNodeType: function (type) {

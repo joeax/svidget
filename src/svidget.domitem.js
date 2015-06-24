@@ -26,19 +26,20 @@ Svidget.DOMItem = function (source) {
 	var privates = new (function () {
 		this.writable = ["value"];
 		this.type = null;
+		this.typeCode = null;
 		this.name = null;
 		this.value = null;
 		this.namespace = null;
 		this.source = source;
-		this.sourceDOM = isSourceDOM(source); // ? source : null;
+		this.sourceDOM = Svidget.DOM.isDOMNode(source); // ? source : null;
 	})();
 	// private accessors
 	this.setup(privates);
 
-	function isSourceDOM(source) {
+	/*function isSourceDOM(source) {
 		if (source == null) return false;
-		return (source.namespaceURI && source.localName && source.nodeType && (source.value || source.textContent) && (source.nodeType == 1 || source.nodeType == 2)); //!source.attributes || 
-	}
+		return (true && source.namespaceURI && source.localName && source.nodeType && (source.value || source.textContent) && (source.nodeType == 1 || source.nodeType == 2)); //!source.attributes || 
+	}*/
 
 	function getType(typeCode) {
 		if (typeCode == Svidget.NodeType.element) return "element";
@@ -181,8 +182,8 @@ Svidget.DOMItem.prototype = {
 		// lazy load
 		if (this.cachedElements != null && Svidget.isArray(this.cachedElements)) return this.cachedElements;
 		var isDOM = this.isAttached();
-		if (!isDOM && (!source.elements || !source.elements.length)) return null;
 		var source = this.source();
+		if (!isDOM && (!source.elements || !source.elements.length)) return null;
 		var origcol = isDOM ? source.children : source.elements;
 		var eles = new Svidget.Collection(Svidget.array(origcol));
 		eles = eles.select(function (e) { return new Svidget.DOMItem(e); });
@@ -199,8 +200,8 @@ Svidget.DOMItem.prototype = {
 		// lazy load
 		if (this.cachedAttributes != null && Svidget.isArray(this.cachedAttributes)) return this.cachedAttributes;
 		var isDOM = this.isAttached();
-		if (!isDOM && (!source.attributes || !source.attributes.length)) return null;
 		var source = this.source();
+		if (!isDOM && (!source.attributes || !source.attributes.length)) return null;
 		var origcol = source.attributes;
 		var attrs = new Svidget.Collection(Svidget.array(origcol));
 		attrs = attrs.select(function (a) { return new Svidget.DOMItem(a); });

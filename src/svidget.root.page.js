@@ -93,16 +93,6 @@ Svidget.Root.PagePrototype = {
 	},
 
 	readyWidgetReference: function (widget, objEle) { 
-		/*
-		//if (true || !widget.hasElement() || !Svidget.DOM.isElementDocumentReady(widget.element())) {
-		//	// widget hasn't finished loading yet, so defer until it is loaded
-		//	this.addWidgetLoadEvents(objEle, widget);
-		//}
-		//else {
-		//	// widget dom is ready, so finish processing it now
-		//	this.finishPageWidget(widget);
-		//}
-		*/
 		// if <iframe> already loaded due to data-crossdomain
 		var ele = widget.element() || objEle;
 		this.addWidgetLoadEvents(ele, widget);
@@ -153,7 +143,7 @@ Svidget.Root.PagePrototype = {
 		}
 	},
 
-	// if DOM not yet laoded, returns null
+	// if DOM not yet loaded, returns null
 	// if <object> is determined to be cross-domain, disables it and returns an alternate <iframe>
 	// else returns declaring <object>
 	resolveCoreWidgetElement: function (objEle, widget, crossdomain) {
@@ -248,7 +238,7 @@ Svidget.Root.PagePrototype = {
 		var iframe = document.createElement("iframe");
 		var objItem = Svidget.DOM.wrap(objEle);
 		objItem.attributes().each(function (a) {
-			if (a.name() == "data")
+			if (a.name() == "data" || a.name() == "data-url")
 				iframe.setAttribute("src", a.value());
 			else if (a.name() == "id")
 				iframe.setAttribute("id", a.value() + "_frame");
@@ -264,13 +254,21 @@ Svidget.Root.PagePrototype = {
 		if (!document.createElement) return null;
 		var objEle = document.createElement("object");
 		objEle.setAttribute("role", "svidget");
-		objEle.setAttribute("data", options.url);
+		objEle.setAttribute("data-url", options.url);
+		// for crossdomain, no need to load widget into object, an iframe will take its place
+		if (options.crossdomain !== true)
+			objEle.setAttribute("data", options.url);
 		if (options.id) objEle.setAttribute("id", options.id);
 		if (options.width) objEle.setAttribute("width", options.width);
 		if (options.height) objEle.setAttribute("height", options.height);
 		// yes, if these values are false we dont want to write them out
 		if (options.connected !== undefined) objEle.setAttribute("data-connected", options.connected);
 		if (options.crossdomain !== undefined) objEle.setAttribute("data-crossdomain", options.crossdomain);
+		// copy other known attributes
+		if (options.style) objEle.setAttribute("style", options.style);
+		if (options.cssclass) objEle.setAttribute("class", options.cssclass);
+		if (options.allowfullscreen !== undefined) objEle.setAttribute("allowfullscreen", options.allowfullscreen);
+		if (options.title) objEle.setAttribute("title", options.title);
 		// params
 		for (var key in paramObj) {
 			var paramEle = document.createElement("param");
@@ -368,7 +366,6 @@ Svidget.Root.PagePrototype = {
 		// if callback defined, call it
 		if (callback && typeof (callback) === "function") callback(widget);
 
-		//this.waitForWidgets();
 		// return widget
 		return widget;
 	},
