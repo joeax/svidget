@@ -5980,7 +5980,7 @@
             if (paramValues === undefined) paramObj = this.parseParamElements(objEle); else paramObj = paramValues;
             // check for forced values
             // allow case-insensitive per HTML rules
-            var connected = Svidget.Conversion.toBool(objEle.getAttribute("data-connected"));
+            var connected = !objEle.hasAttribute("data-connected") || Svidget.Conversion.toBool(objEle.getAttribute("data-connected"));
             var crossdomain = Svidget.Conversion.toBool(objEle.getAttribute("data-crossdomain")) || objEle.data == "";
             // position if x and y are specified
             this.setElementPosition(objEle, objEle.getAttribute("data-x"), objEle.getAttribute("data-y"));
