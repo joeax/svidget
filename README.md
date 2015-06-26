@@ -13,7 +13,7 @@ Svidget is not another data visualization framework like [D3](https://github.com
 
 
 ###Download
-Download the latest stable builds from the `dist` folder. The current stable version is **0.3.2**.
+Download the latest stable builds from the `dist` folder. The current stable version is **0.3.3**.
 
 ###Install
 Bower
