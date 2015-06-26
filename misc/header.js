@@ -4,7 +4,7 @@
  * 
  * A framework for creating complex widgets using SVG.
  * 
- * http://www.svidget.org/
+ * http://www.svidget.com/
  * 
  * Copyright @@year, Joe Agster
  * Licensed under the MIT license.

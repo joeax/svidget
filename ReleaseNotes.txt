@@ -65,3 +65,10 @@
 - fixed issues with svidget.load() not loading property for iframes
 - expanded options object for svidget.load() to include style, cssclass, allowfullscreen, title attributes.
 
+0.3.3
+- fixed bug with iframe being loaded more than once when calling svidget.load() with crossdomain = true
+- fixed IE bug with nested iframes, the first <object> to be inserted was prompting a readystatechange event, causing the element to be parsed twice
+- defer calling of callback passed into svidget.load() until after load completes
+- support other roles along with svidget, i.e. <object role="svidget,presentation">
+- new x,y properties in svidget.load() options and data-x, data-y in <object> to position element, shortcut to using position: absolute with top,left
+

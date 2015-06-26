@@ -64,6 +64,8 @@ Svidget.Root.PagePrototype = {
 	// objEle = <object role="svidget" data="(url)">
 	// paramValues: passed in when adding widget dynamically via load()
 	loadPageWidget: function (objEle, paramValues) {
+		// check if a widget object was already created for this DOM <object> node, or via svidget.load call, if so then exit
+		if (objEle.widgetReference != null || objEle.svidgetLoad) return;
 		var widget = this.createWidgetReference(objEle, paramValues);
 		this.addWidget(widget);
 		//if (!Svidget.DOM.isElementDocumentReady(objEle)) {
@@ -79,16 +81,19 @@ Svidget.Root.PagePrototype = {
 		else
 			paramObj = paramValues;
 		// check for forced values
-		var connected = objEle.getAttribute("data-connected") != "false"; //todo: allow case-insensitive
-		var crossdomain = objEle.getAttribute("data-crossdomain") == "true"; //todo: allow case-insensitive
-
+		// allow case-insensitive per HTML rules
+		var connected = Svidget.Conversion.toBool(objEle.getAttribute("data-connected")); 
+		var crossdomain = Svidget.Conversion.toBool(objEle.getAttribute("data-crossdomain")) || objEle.data == "";
+		// position if x and y are specified
+		this.setElementPosition(objEle, objEle.getAttribute("data-x"), objEle.getAttribute("data-y"));
 		// generate ID
 		// tests: test an element with same id before and test with one after declared element
-		var widgetID = this.getWidgetIDForElement(objEle); //(objEle.id == null) ? this.generateWidgetID() : objEle.id;
+		var widgetID = this.getWidgetIDForElement(objEle);
 		// resolve core element, if widget DOM not ready this will return null
 		var coreEle = this.resolveCoreWidgetElement(objEle, null, crossdomain);
 		// create WidgetReference
 		var wRef = new Svidget.WidgetReference(widgetID, paramObj, objEle, coreEle, connected, crossdomain);
+		objEle._widget = wRef;
 		return wRef;
 	},
 
@@ -263,12 +268,14 @@ Svidget.Root.PagePrototype = {
 		if (options.height) objEle.setAttribute("height", options.height);
 		// yes, if these values are false we dont want to write them out
 		if (options.connected !== undefined) objEle.setAttribute("data-connected", options.connected);
-		if (options.crossdomain !== undefined) objEle.setAttribute("data-crossdomain", options.crossdomain);
+		if (options.crossdomain === true) objEle.setAttribute("data-crossdomain", options.crossdomain);
 		// copy other known attributes
 		if (options.style) objEle.setAttribute("style", options.style);
 		if (options.cssclass) objEle.setAttribute("class", options.cssclass);
 		if (options.allowfullscreen !== undefined) objEle.setAttribute("allowfullscreen", options.allowfullscreen);
 		if (options.title) objEle.setAttribute("title", options.title);
+		// position if x and y are specified
+		this.setElementPosition(objEle, options.x, options.y);
 		// params
 		for (var key in paramObj) {
 			var paramEle = document.createElement("param");
@@ -280,8 +287,21 @@ Svidget.Root.PagePrototype = {
 
 	createObjectElement: function (container, options, paramObj) {
 		var objEle = this.buildObjectElement(options, paramObj);
+		// 0.3.3: set flag, causing problems in IE with nested iframes (see Starry Night CodePen) as once objEle is inserted readystatechange is fired, causing flow to be out of sync
+		objEle.svidgetLoad = true;
 		container.appendChild(objEle);
 		return objEle;
+	},
+
+	setElementPosition: function (ele, x, y) {
+		var px = x != null ? parseFloat(x) : NaN;
+		var py = y != null ? parseFloat(y) : NaN;
+		if (!isNaN(px) || !isNaN(py)) {
+			var pos = ele.style.position;
+			if (pos != "absolute" && pos != "fixed") ele.style.position = "absolute";
+			if (!isNaN(px)) ele.style.left = px + "px";
+			if (!isNaN(py)) ele.style.top = py + "px";
+		}
 	},
 
 	// this is called once the params/actions and widget data are sent from the widget
@@ -293,9 +313,15 @@ Svidget.Root.PagePrototype = {
 	},
 
 	findAllWidgetElements: function () {
+		var that = this;
 		var objectEles = Svidget.DOM.getByName("object", true); //document.getElementsByTagName("object");
-		var svidgetEles = objectEles.where(function (item) { return Svidget.DOM.attrValue(item, "role") == "svidget"; });
+		var svidgetEles = objectEles.where(function (item) { return that.containsSvidgetRole(item); });
 		return svidgetEles;
+	},
+
+	containsSvidgetRole: function (ele) {
+		var role = Svidget.DOM.attrValue(ele, "role");
+		return /(^|,)\s*svidget\s*(,|$)/.test(role);
 	},
 
 	// Parses the <param> elements inside of the <object> element for the widget.
@@ -360,11 +386,16 @@ Svidget.Root.PagePrototype = {
 		this.allWidgetsStarted = false;
 		// build out <object> element
 		var widgetEle = this.createObjectElement(container, options, paramObj);
+		delete widgetEle.svidgetLoad; // clear flag
 		var widget = this.loadPageWidget(widgetEle, paramObj);
 		// note: if this is called before ready, then it is queued
 		// returns the WidgetReference object
-		// if callback defined, call it
-		if (callback && typeof (callback) === "function") callback(widget);
+		// if callback defined, defer invocation
+		if (callback && typeof callback === "function") {
+			setTimeout(function () {
+				callback(widget);
+			}, 0);
+		}
 
 		// return widget
 		return widget;

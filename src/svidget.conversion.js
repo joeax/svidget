@@ -59,7 +59,7 @@ Svidget.Conversion.toNumber = function (val, isInt) {
 	if (!val) return 0; // null, undefined, false all convert to 0
 	if (val === true) return 1; // true converts to 1
 	if (isInt) return parseInt(val + "");
-	return +val;
+	return parseFloat(val);
 }
 
 /**
