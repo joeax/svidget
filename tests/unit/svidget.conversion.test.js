@@ -37,7 +37,7 @@ describe('Svidget.Conversion Test', function () {
 		it('should convert to number', function () {
 			test.number(svidget.conversion.to("3", "number")).is(3);
 			test.number(svidget.conversion.to("3.5", "number")).is(3.5);
-			test.number(svidget.conversion.to("XYZ", "number")).isNaN(); // todo, unit.js should support a isNaN() here
+			test.number(svidget.conversion.to("XYZ", "number")).is(0); //.isNaN(); // todo, unit.js should support a isNaN() here
 			test.number(svidget.conversion.to(true, "number")).is(1);
 			test.number(svidget.conversion.to(false, "number")).is(0);
 		});

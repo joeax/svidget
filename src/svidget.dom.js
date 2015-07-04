@@ -196,6 +196,12 @@ Svidget.DOM = {
 		return null;
 	},
 
+	// determines if attribute is specified but empty/no value (i.e. <object data-crossdomain />
+	isAttrEmpty: function (ele, attrName) {
+		var av = this.attrValue(ele, attrName);
+		return av != null && av.length == 0;
+	},
+
 	clone: function (item) {
 		// todo
 	},
@@ -249,6 +255,8 @@ Svidget.DOM = {
 	getDocument: function (objOrWinEle) {
 		try {
 			var doc = objOrWinEle.contentDocument;
+			// 0.3.4: bug fix: FF doesn't throw exception when accessing contentDocument, so security check for contentWindow.document instead
+			var doc2 = objOrWinEle.contentWindow != null ? objOrWinEle.contentWindow.document : null;
 			// certain browsers (Chrome) returns a blank document instead of null
 			if (doc != null && doc.URL == "about:blank") return null;
 			return doc;

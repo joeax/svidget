@@ -82,8 +82,8 @@ Svidget.Root.PagePrototype = {
 			paramObj = paramValues;
 		// check for forced values
 		// allow case-insensitive per HTML rules
-		var connected = !objEle.hasAttribute("data-connected") || Svidget.Conversion.toBool(objEle.getAttribute("data-connected")); 
-		var crossdomain = Svidget.Conversion.toBool(objEle.getAttribute("data-crossdomain")) || objEle.data == "";
+		var connected = !objEle.hasAttribute("data-connected") || this.isAttrEmptyOrTrue(objEle, "data-connected");
+		var crossdomain = this.isAttrEmptyOrTrue(objEle, "data-crossdomain") || objEle.data == "";
 		// position if x and y are specified
 		this.setElementPosition(objEle, objEle.getAttribute("data-x"), objEle.getAttribute("data-y"));
 		// generate ID
@@ -95,6 +95,11 @@ Svidget.Root.PagePrototype = {
 		var wRef = new Svidget.WidgetReference(widgetID, paramObj, objEle, coreEle, connected, crossdomain);
 		objEle._widget = wRef;
 		return wRef;
+	},
+
+	isAttrEmptyOrTrue: function (ele, attr) {
+		if (Svidget.DOM.isAttrEmpty(ele, attr)) return true;
+		return Svidget.Conversion.toBool(Svidget.DOM.attrValue(ele, attr));
 	},
 
 	readyWidgetReference: function (widget, objEle) { 

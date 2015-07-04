@@ -72,3 +72,7 @@
 - support other roles along with svidget, i.e. <object role="svidget,presentation">
 - new x,y properties in svidget.load() options and data-x, data-y in <object> to position element, shortcut to using position: absolute with top,left
 
+0.3.4
+- fixed param name/shortname for query string so that name or shortname can be used to specify value
+- data-crossdomain and data-connected can be left blank (i.e. <object data-crossdomain />) and will default to true
+- fixed number conversion, NaN now converts to 0 (when specifying coercion vis coerce="true" in paramm)

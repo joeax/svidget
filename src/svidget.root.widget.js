@@ -335,6 +335,7 @@ Svidget.Root.WidgetPrototype = {
 		col.each(function (p) {
 			var key = qsMode ? p.shortname() || p.name() : p.name();
 			var val = paramValues[key]; // query string value present so use it
+			if (val === undefined) val = paramValues[p.name()]; // 0.3.4: fallback on name if used instead of shortname
 			if (val === undefined) val = p.defvalue(); // 0.1.3: query string value not present, so use defvalue
 			if (key !== undefined) {
 				// value is present in query string or defvalue attr

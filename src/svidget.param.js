@@ -34,7 +34,7 @@ Svidget.Param = function (name, value, options, parent) {
 	var c = Svidget.Conversion;
 	// private fields
 	var privates = new (function () {
-		this.writable = ["shortname", "binding", "enabled", "type", "subtype", "value", "description", "defvalue", "typedata", "coerce"];
+		this.writable = ["shortname", "binding", "enabled", "type", "subtype", "value", "description", "defvalue", "typedata", "coerce", "group"];
 		this.name = c.toString(name);
 		this.shortname = c.toString(options.shortname);
 		this.description = c.toString(options.description);
@@ -43,6 +43,7 @@ Svidget.Param = function (name, value, options, parent) {
 		this.subtype = c.toString(options.subtype); // resolveSubtype(this.type, options.subtype);
 		this.typedata = c.toString(options.typedata);
 		this.coerce = c.toBool(options.coerce); // default is false
+		this.group = c.toString(options.group);
 		this.value = this.coerce ? resolveValue(value, this.type, this.subtype, this.typedata) : value;
 		this.defvalue = options.defvalue; // note: only coerced to type when used as a value
 		this.sanitizer = (!Svidget.isFunction(options.sanitizer) ? c.toString(options.sanitizer) : options.sanitizer) || null;
@@ -118,6 +119,23 @@ Svidget.Param.prototype = {
 		// fire "changed" event
 		val = this.getPrivate("shortname"); // get converted value
 		this.trigger("change", { property: "shortname", value: val });
+		// set was successful
+		return true;
+	},
+
+	/**
+	 * Gets or sets the group value. This is used to group/categorize params into groups.
+	 * @method
+	 * @param {boolean} [val] - Sets the group when specified.
+	 * @returns {boolean} - The group when nothing is passed, or true/false if succeeded or failed when setting.
+	*/
+	group: function (val) {
+		var res = this.getset("group", val, "string");
+		// if undefined its a get so return value, if res is false then set failed
+		if (val === undefined || !!!res) return res;
+		// fire "changed" event
+		val = this.getPrivate("group"); // get converted value
+		this.trigger("change", { property: "group", value: val });
 		// set was successful
 		return true;
 	},
@@ -390,8 +408,8 @@ Svidget.Param.prototype = {
 
 // todo: convert these to functions so that users can't manipulate
 Svidget.Param.eventTypes = ["change", "set"];
-Svidget.Param.optionProperties = ["type", "subtype", "binding", "sanitizer", "enabled", "shortname", "defvalue", "typedata", "coerce"];
-Svidget.Param.allProxyProperties = ["name", "value", "type", "subtype", "enabled", "shortname", "defvalue", "typedata", "coerce"]; // 0.1.3: removed "binding", 
+Svidget.Param.optionProperties = ["type", "subtype", "binding", "sanitizer", "enabled", "shortname", "defvalue", "typedata", "coerce", "group"];
+Svidget.Param.allProxyProperties = ["name", "value", "type", "subtype", "enabled", "shortname", "defvalue", "typedata", "coerce", "group"]; // 0.1.3: removed "binding", 
 Svidget.Param.writableProxyProperties = ["value"];
 
 Svidget.extend(Svidget.Param, Svidget.ObjectPrototype);
