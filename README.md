@@ -102,7 +102,7 @@ Ok so now that we have an SVG widget, let's use it on a page:
 </object>
 ```
 
-> The usage of <param> elements in an <object> tag to pass data to the SVG document is loosely based on the W3 SVG Parameters spec. For more information, [click here](http://www.w3.org/TR/SVGParamPrimer/).
+> The usage of &lt;param&gt; elements in an &lt;object&gt; tag to pass data to the SVG document is loosely based on the W3 SVG Parameters spec, and will work whether the browser supports it or not. For more information, [click here](http://www.w3.org/TR/SVGParamPrimer/).
 
 That's it! In addition to this declarative syntax, you can also programatically add a widget to the page at any time:
 
