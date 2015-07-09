@@ -7,7 +7,6 @@ Svidget is not another data visualization library like [D3](https://github.com/m
 
 <small>\* Just kidding</small>
 
-> Version 0.3.x is released as of June 6. See release notes for details. I finished most of the unit tests, fixed a lot of small issues, made performance improvements, and have opened up much of the internals like type conversion as public APIs. 
 
 **Visit the [Svidget.js Website](http://www.svidget.com)** for some really cool demos, the developer guide, and the API documentation.
 
