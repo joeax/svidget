@@ -10,7 +10,7 @@ Svidget is not another data visualization library like [D3](https://github.com/m
 
 **Visit the [Svidget.js Website](http://www.svidget.com)** for some really cool demos, the developer guide, and the API documentation.
 
-##Use Cases
+###Use Cases
 - **HMI** - SVG components in a web-based HMI application.
 - **Specialized Charts** - Highly specialized charts you cannot easily create with off the shelf charting libraries like [Chartist.js](http://gionkunz.github.io/chartist-js/).
 - **Reusable D3 Components** - Package your complex D3 visualizations as easily reusable components.
@@ -141,7 +141,7 @@ Basically any JavaScript framework that can be embedded in an SVG file will work
 A general rule is if the framework only supports IE9 and above it will work. Frameworks that try to support non-HTML5 browsers like IE6 probably won't.
 
 
-####Falling Back
+#####Falling Back
 In non-HTML5 browsers, Svidget will attempt to fall back to fallback content specified in the <object> tag.
 
 
