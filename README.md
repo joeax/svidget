@@ -10,6 +10,11 @@ Svidget is not another data visualization library like [D3](https://github.com/m
 
 **Visit the [Svidget.js Website](http://www.svidget.com)** for some really cool demos, the developer guide, and the API documentation.
 
+##Use Cases
+- **HMI** - SVG components in a web-based HMI application.
+- **Specialized Charts** - Highly specialized charts you cannot easily create with off the shelf charting libraries like [Chartist.js](http://gionkunz.github.io/chartist-js/).
+- **Reusable D3 Components** - Package your complex D3 visualizations as easily reusable components.
+
 ###Demos
 - **[Clock](http://www.svidget.com/examples/clock)**
 - **[Donut Chart](http://www.svidget.com/examples/donutchart)**
@@ -174,6 +179,8 @@ If you find Svidget fascinating and want to contribute, that's great! Please fol
 - Please respect the coding conventions in place. Please put a comment as to what you changed. 
 - Please do some basic testing of your code, like testing against the spinning star demo widget. 
 - Run the unit tests. Add some unit tests of your own if necessary.
+
+Also check out the [list](/CONTRIBUTING.md) of planned features.
 
 ###License
 Licensed under [MIT](http://opensource.org/licenses/MIT).
