@@ -10,6 +10,13 @@ Svidget is not another data visualization library like [D3](https://github.com/m
 
 **Visit the [Svidget.js Website](http://www.svidget.com)** for some really cool demos, the developer guide, and the API documentation.
 
+###Demos
+- **[Clock](http://www.svidget.com/examples/clock)**
+- **[Donut Chart](http://www.svidget.com/examples/donutchart)**
+- **[Pie Chart](http://www.svidget.com/examples/piechart)**
+- **[Spinning Star](http://www.svidget.com/examples/spinningstar)**
+- **[Starry Night](http://www.svidget.com/labs/starrynight)** - a lab demonstrating several spinning stars
+- **[US Map](http://www.svidget.com/examples/usmap)**
 
 ###Download
 Download the latest stable builds from the `dist` folder. The current stable version is **0.3.4**.
