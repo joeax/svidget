@@ -22,6 +22,7 @@ Svidget is not another data visualization library like [D3](https://github.com/m
 - **[Spinning Star](http://www.svidget.com/examples/spinningstar)**
 - **[Starry Night](http://www.svidget.com/labs/starrynight)** - a lab demonstrating several spinning stars
 - **[US Map](http://www.svidget.com/examples/usmap)**
+- **[RD/IO](http://www.remote-devices.io/)** - An IoT HMI platform developed by [Dmitriy Vostrikov](https://github.com/dsvost). Also check out his video [here](https://www.youtube.com/watch?v=gZtP7w6e6-k).
 
 ###Download
 Download the latest stable builds from the `dist` folder. The current stable version is **0.3.4**.
