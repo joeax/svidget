@@ -12,7 +12,7 @@ svidget.core.js
 ******************************************/
 
 /**
- * Represents a structured collection. Extends array by providing additional methods to select, tranverse, and modify an array.s
+ * Represents a structured collection. Extends Array by providing additional methods to select, tranverse, and modify an array.
  * @constructor
  * @augments Array
  * @param {Array} array - The initial elements of the collection.
