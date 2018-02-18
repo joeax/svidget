@@ -10,12 +10,12 @@ Svidget is not another data visualization library like [D3](https://github.com/m
 
 **Visit the [Svidget.js Website](http://www.svidget.com)** for some really cool demos, the developer guide, and the API documentation.
 
-###Use Cases
+### Use Cases
 - **HMI** - SVG components in a web-based HMI application.
 - **Specialized Charts** - Highly specialized charts you cannot easily create with off the shelf charting libraries like [Chartist.js](http://gionkunz.github.io/chartist-js/).
 - **Reusable D3 Components** - Package your complex D3 visualizations as easily reusable components.
 
-###Demos
+### Demos
 - **[Clock](http://www.svidget.com/examples/clock)**
 - **[Donut Chart](http://www.svidget.com/examples/donutchart)**
 - **[Pie Chart](http://www.svidget.com/examples/piechart)**
@@ -24,10 +24,10 @@ Svidget is not another data visualization library like [D3](https://github.com/m
 - **[US Map](http://www.svidget.com/examples/usmap)**
 - **[RD/IO](http://www.remote-devices.io/)** - An IoT HMI platform developed by [Dmitriy Vostrikov](https://github.com/dsvost). Also check out his video [here](https://www.youtube.com/watch?v=gZtP7w6e6-k).
 
-###Download
+### Download
 Download the latest stable builds from the `dist` folder. The current stable version is **0.3.4**.
 
-###Install
+### Install
 Bower
 
     bower install svidget
@@ -36,7 +36,7 @@ npm
 
     npm install svidget
 
-###Using
+### Using
 To get started, consider this simple star SVG file.
 
 ![Star](https://raw.githubusercontent.com/joeax/svidget/master/demo/images/star.png)
@@ -130,7 +130,7 @@ For more information, see the [Svidget website](http://www.svidget.com).
 
 
 
-###Compatibility
+### Compatibility
 These frameworks have been tested and shown to play nice with Svidget within an SVG file.
 
 > - jQuery 2.x and above
@@ -142,11 +142,11 @@ Basically any JavaScript framework that can be embedded in an SVG file will work
 A general rule is if the framework only supports IE9 and above it will work. Frameworks that try to support non-HTML5 browsers like IE6 probably won't.
 
 
-#####Falling Back
+##### Falling Back
 In non-HTML5 browsers, Svidget will attempt to fall back to fallback content specified in the <object> tag.
 
 
-###Build
+### Build
 The latest builds are in the releases folder. Get started today! 
 
 When reporting issues, please be as descriptive as possible, including steps to reproduce.
@@ -171,10 +171,10 @@ Run this grunt command to build and run unit tests:
 
 The unit tests use the [Mocha](http://mochajs.org/) framework and [Unit.js](http://unitjs.com/) assertion library,
 
-###Release Notes
+### Release Notes
 See ReleaseNotes.txt.
 
-###Contribute
+### Contribute
 If you find Svidget fascinating and want to contribute, that's great! Please follow these guidelines:
 
 - Please respect the coding conventions in place. Please put a comment as to what you changed. 
@@ -183,7 +183,7 @@ If you find Svidget fascinating and want to contribute, that's great! Please fol
 
 Also check out the [list](/CONTRIBUTING.md) of planned features.
 
-###License
+### License
 Licensed under [MIT](http://opensource.org/licenses/MIT).
 
 
