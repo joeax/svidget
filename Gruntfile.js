@@ -2,56 +2,56 @@
 	
 	var coreFiles = [
     // core
-    'src/svidget.core.js',
-    'src/svidget.objectprototype.js',
-    'src/svidget.eventprototype.js',
-    'src/svidget.paramprototype.js',
+		'src/svidget.core.js',
+		'src/svidget.objectprototype.js',
+		'src/svidget.eventprototype.js',
+		'src/svidget.paramprototype.js',
 		'src/svidget.collection.js',
-    'src/svidget.objectcollection.js',
-    'src/svidget.communicator.js',
+		'src/svidget.objectcollection.js',
+		'src/svidget.communicator.js',
 		'src/svidget.conversion.js',
-    'src/svidget.dom.js',
-    'src/svidget.domitem.js',
-    'src/svidget.domquery.js',
-    'src/svidget.enums.js',
-    'src/svidget.event.js',
-    'src/svidget.eventcontainer.js',
-    'src/svidget.root.js',
-    'src/svidget.util.js'
+		'src/svidget.dom.js',
+		'src/svidget.domitem.js',
+		'src/svidget.domquery.js',
+		'src/svidget.enums.js',
+		'src/svidget.event.js',
+		'src/svidget.eventcontainer.js',
+		'src/svidget.root.js',
+		'src/svidget.util.js'
 	];
 	
 	var objectFiles = [
 		// objects
 		'src/svidget.action.js',
-    'src/svidget.actioncollection.js',
-    'src/svidget.actionparam.js',
-    'src/svidget.actionparamcollection.js',
-    'src/svidget.eventdesc.js',
-    'src/svidget.eventdesccollection.js',
-    'src/svidget.param.js',
-    'src/svidget.paramcollection.js',
-    'src/svidget.widget.js'
+		'src/svidget.actioncollection.js',
+		'src/svidget.actionparam.js',
+		'src/svidget.actionparamcollection.js',
+		'src/svidget.eventdesc.js',
+		'src/svidget.eventdesccollection.js',
+		'src/svidget.param.js',
+		'src/svidget.paramcollection.js',
+		'src/svidget.widget.js'
 	];
 	
 	var proxyFiles = [
 		// proxies
-    'src/svidget.proxy.js',
-    'src/svidget.actionproxy.js',
-    'src/svidget.actionproxycollection.js',
-    'src/svidget.actionparamproxy.js',
-    'src/svidget.actionparamproxycollection.js',
-    'src/svidget.eventdescproxy.js',
-    'src/svidget.eventdescproxycollection.js',
-    'src/svidget.paramproxy.js',
-    'src/svidget.paramproxycollection.js',
-    'src/svidget.widgetreference.js'
+		'src/svidget.proxy.js',
+		'src/svidget.actionproxy.js',
+		'src/svidget.actionproxycollection.js',
+		'src/svidget.actionparamproxy.js',
+		'src/svidget.actionparamproxycollection.js',
+		'src/svidget.eventdescproxy.js',
+		'src/svidget.eventdescproxycollection.js',
+		'src/svidget.paramproxy.js',
+		'src/svidget.paramproxycollection.js',
+		'src/svidget.widgetreference.js'
 	];
 	
 	var startFiles = [
 		// start
-    'src/svidget.root.page.js',
-    'src/svidget.root.widget.js',
-    'src/svidget.start.js'
+		'src/svidget.root.page.js',
+		'src/svidget.root.widget.js',
+		'src/svidget.start.js'
 	];
 	
 	var allFiles = [].concat(coreFiles, objectFiles, proxyFiles, startFiles);
@@ -136,7 +136,7 @@
 		wrap: {
 			full: {
 				src: ['dist/svidget-full.js'],
-				dest: '',
+				dest: 'dist/svidget-full.js',
 				options: {
 					wrapper: getClosureWrapArray() //[';(function () {\n', '\n}).call(this);']
 				}
@@ -148,11 +148,11 @@
 					mangle: false,
 					beautify: true,
 					preserveComments: commentFilter, //'all',
-					compress: false /*{
+					compress: {
 						booleans: false,
 						cascade: false,
 						sequences: false
-					}*/
+					}
 				},
 				files: {
 					'dist/svidget.js': 'dist/svidget-full.js'
@@ -164,7 +164,11 @@
 					mangle: true,
 					beautify: false,
 					preserveComments: false,
-					compress: true
+					compress: {
+						booleans: true,
+						cascade: true,
+						sequences: true
+					}
 				},
 				files: {
 					'dist/svidget.min.js': 'dist/svidget-full.js'
