@@ -75,4 +75,7 @@
 0.3.4
 - fixed param name/shortname for query string so that name or shortname can be used to specify value
 - data-crossdomain and data-connected can be left blank (i.e. <object data-crossdomain />) and will default to true
-- fixed number conversion, NaN now converts to 0 (when specifying coercion vis coerce="true" in paramm)
+- fixed number conversion, NaN now converts to 0 (when specifying coercion vis coerce="true" in param)
+
+0.3.5
+- updated grunt/uglify, this causes a slight change in the way the dist files are generated (should have no effect on functionality)
