@@ -19,7 +19,7 @@
   "bugs": {
     "url": "https://github.com/joeax/svidget/issues"
   },
-  "homepage": "http://www.svidget.com",
+  "homepage": "https://www.svidget.io",
   "devDependencies": {
     "grunt": "^0.4.5",
     "grunt-contrib-clean": "^0.6.0",
