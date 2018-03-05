@@ -8,7 +8,7 @@ Svidget is not another data visualization library like [D3](https://github.com/m
 <small>\* Just kidding</small>
 
 
-**Visit the [Svidget.js Website](http://www.svidget.com)** for some really cool demos, the developer guide, and the API documentation.
+**Visit the [Svidget.js Website](https://www.svidget.io)** for some really cool demos, the developer guide, and the API documentation.
 
 ### Use Cases
 - **HMI** - SVG components in a web-based HMI application.
@@ -16,16 +16,16 @@ Svidget is not another data visualization library like [D3](https://github.com/m
 - **Reusable D3 Components** - Package your complex D3 visualizations as easily reusable components.
 
 ### Demos
-- **[Clock](http://www.svidget.com/examples/clock)**
-- **[Donut Chart](http://www.svidget.com/examples/donutchart)**
-- **[Pie Chart](http://www.svidget.com/examples/piechart)**
-- **[Spinning Star](http://www.svidget.com/examples/spinningstar)**
-- **[Starry Night](http://www.svidget.com/labs/starrynight)** - a lab demonstrating several spinning stars
-- **[US Map](http://www.svidget.com/examples/usmap)**
-- **[RD/IO](http://www.remote-devices.io/)** - An IoT HMI platform developed by [Dmitriy Vostrikov](https://github.com/dsvost). Also check out his video [here](https://www.youtube.com/watch?v=gZtP7w6e6-k).
+- **[Clock](https://www.svidget.io/examples/clock)**
+- **[Donut Chart](https://www.svidget.io/examples/donutchart)**
+- **[Pie Chart](https://www.svidget.io/examples/piechart)**
+- **[Spinning Star](https://www.svidget.io/examples/spinningstar)**
+- **[Starry Night](https://www.svidget.io/labs/starrynight)** - a lab demonstrating several spinning stars
+- **[US Map](https://www.svidget.io/examples/usmap)**
+- **[RD/IO](https://www.remote-devices.io/)** - An IoT HMI platform developed by [Dmitriy Vostrikov](https://github.com/dsvost). Also check out his video [here](https://www.youtube.com/watch?v=gZtP7w6e6-k).
 
 ### Download
-Download the latest stable builds from the `dist` folder. The current stable version is **0.3.4**.
+Download the latest stable builds from the `dist` folder. The current stable version is **0.3.5**.
 
 ### Install
 Bower
@@ -126,7 +126,7 @@ svidget.load("#widgetContainer", "widgets/star.svg", {
 });
 ```
 
-For more information, see the [Svidget website](http://www.svidget.com).
+For more information, see the [Svidget website](https://www.svidget.io).
 
 
 
