@@ -19,6 +19,7 @@ Svidget is not another data visualization library like [D3](https://github.com/m
 - **[Clock](https://www.svidget.io/examples/clock)**
 - **[Donut Chart](https://www.svidget.io/examples/donutchart)**
 - **[Pie Chart](https://www.svidget.io/examples/piechart)**
+- **[Nest Thermostat](https://www.svidget.io/examples/nestthermostat)**
 - **[Spinning Star](https://www.svidget.io/examples/spinningstar)**
 - **[Starry Night](https://www.svidget.io/labs/starrynight)** - a lab demonstrating several spinning stars
 - **[US Map](https://www.svidget.io/examples/usmap)**
