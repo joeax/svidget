@@ -95,7 +95,8 @@
 		// file header - strip out
 		if (comm.substr(0, 6) == "******") return false;
 		// single line, jsdoc, main header - keep in
-		if (comm.substr(0, 1) == "*" || comm.indexOf("2014") > 0 || comment.type == "comment1") return true;
+		//if (comm.substr(0, 1) == "*" || comm.indexOf("2014") > 0 || comment.type == "comment1") return true;
+		if (comm.substr(0, 3) == "/**" || comm.indexOf("2014") > 0 || comment.type == "comment1") return true;
 		// multiline, others - strip out
 		return false;
 	}
@@ -150,7 +151,7 @@
 					preserveComments: commentFilter, //'all',
 					compress: {
 						booleans: false,
-						cascade: false,
+						collapse_vars: false,
 						sequences: false
 					}
 				},
@@ -166,7 +167,7 @@
 					preserveComments: false,
 					compress: {
 						booleans: true,
-						cascade: true,
+						collapse_vars: true,
 						sequences: true
 					}
 				},
