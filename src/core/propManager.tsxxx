@@ -1,0 +1,107 @@
+﻿/*****************************************
+svidget.objectprototype.js
+
+Contains common prototype functionality for all common Svidget objects.
+
+Dependencies:
+svidget.core.js
+
+
+******************************************/
+
+/// <reference path="enums.ts" />
+/// <reference path="object.ts" />
+/// <reference path="types.ts" />
+/// <reference path="./collection.ts" />
+
+namespace Svidget {
+    export type PropManagedConstructor = new (...args: any[]) => Formulation;
+
+    /**
+     * Encapsulates common functionality for managing properties.
+     * @mixin
+     * @static
+     * @memberof Svidget
+     */
+    export function PropManagerMixin<TBase extends PropManagedConstructor>(Base: TBase) {
+        return class ObjectBase<TProps extends Record<string, unknown>> {
+            protected props: TProps = {} as TProps;
+            private _parent: unknown;
+
+            // protected
+            // as of 0.3.0: type argument converts val to type
+            // as of 0.5.0: returns final value stored in set mode
+            protected getset<TType extends unknown>(
+                name: keyof TProps,
+                val?: TType,
+                type?: ParamTypeName,
+                validator?: ValidatorFunctionType
+            ): boolean | TType {
+                // ** get mode
+                const curValue = this.props[name];
+                if (val === undefined) return curValue as TType;
+                // ** set mode
+                let finalVal = val;
+                // first, convert if needed
+                if (type != null) finalVal = Svidget.convert(val, type);
+                // if value is current value then do nothing
+                if (finalVal === curValue) return;
+                // then, validate
+                if (validator && !validator.call(this, finalVal)) return; // throw error?
+                // finally, commit the value
+                this.props[name] = finalVal as unknown;
+
+                return finalVal;
+            }
+
+            get parent(): unknown {
+                return this._parent;
+            }
+
+            // protected
+            // should always return a collection
+            protected select<T>(
+                col: Collection<T>,
+                selector: string | number | CollectionPredicateFunc<T>
+            ) {
+                if (typeof selector === "number") {
+                    selector = parseInt(selector); // coerce to integer
+                    return col.wrap(col.getByIndex(selector));
+                } else if (typeof selector === "function") {
+                    return col.find(selector);
+                }
+                if (selector !== undefined)
+                    return col.wrap(col.getByName(selector + ""));
+                // todo: should we clone collection?
+                return col;
+            }
+
+            // protected
+            // should always return a single item
+            protected selectFirst<T>(
+                col: Collection<T>,
+                selector: string | number | CollectionPredicateFunc<T>
+            ) {
+                if (typeof selector === "number") {
+                    selector = parseInt(selector); // coerce to integer
+                    return col.getByIndex(selector);
+                } else if (typeof selector === "function") {
+                    return col.first(selector);
+                }
+                if (selector !== undefined) return col.getByName(selector + "");
+                return col.first();
+            }
+
+            // protected
+            protected wireCollectionAddRemoveHandlers(
+                col,
+                addFunc,
+                removeFunc
+            ) {
+                if (col == null) return;
+                col.onAdded(Svidget.wrap(addFunc, this));
+                col.onRemoved(Svidget.wrap(removeFunc, this));
+            }
+        };
+    }
+}

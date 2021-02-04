@@ -1,0 +1,15 @@
+
+
+All 1st class objects
+public readonly __type
+get name() // readonly
+get parent() // type defined by object.. i.e. Widget, Action, etc
+
+Param
+
+
+
+
+TASKS
+
+- Update JSDoc/TSDoc for all public members

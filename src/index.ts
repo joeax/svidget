@@ -1,8 +1,8 @@
 ﻿/*****************************************
-svidget.start.js
+index.ts
 
 The library entry point. 
-Initializes svidget as a standalone browser module, or an AMD or Node/CommonJS module as needed.
+Initializes svidget as the root library object.
 
 ******************************************/
 
@@ -14,4 +14,5 @@ Initializes svidget as a standalone browser module, or an AMD or Node/CommonJS m
 if (!window.document) {
 	console.warn("svidget requires a global windowy object with window.document to work correctly.");
 }
-return new Svidget.Root(window, createOptions);
+
+export const svidget = Svidget.Root(window, createOptions);

@@ -12,42 +12,41 @@ Prerequisites:
 
 ******************************************/
 
+namespace Svidget {
 
 /**
  * Provides communications functionality between a page and a widget. Internal class only.
  * @class
  */
-Svidget.Communicator = function () {
-	this.__type = "Svidget.Communicator";
-	this.sameDomain = null;
+export class Communicator {
+	private readonly __type = "Svidget.Communicator";
+	private readonly root: Root;
+	private sameDomain: boolean;
+	private sameParentDomain: boolean;
 
-	this._init();
-}
-
-Svidget.Communicator.prototype = {
-
-	_init: function () {
+	constructor(root: Root) {
+		this.root = root;
 		this.addMessageEvent();
-	},
+	}
 
 	// REGION: Events
 
-	addMessageEvent: function () {
+	addMessageEvent() {
 		if (!window.addEventListener) return;
-		window.addEventListener('message', Svidget.wrap(this.receiveXSM, this), false);
-	},
+		window.addEventListener('message', Svidget.bind(this.receiveXSM, this), false);
+	}
 
 	// REGION: Receive
 
-	receiveFromParent: function (name, payload) {
-		svidget.receiveFromParent(name, payload);
-	},
+	receiveFromParent(name, payload) {
+		this.root.receiveFromParent(name, payload);
+	}
 
-	receiveFromWidget: function (name, payload, widgetID) {
-		svidget.receiveFromWidget(name, payload, widgetID);
-	},
+	receiveFromWidget(name, payload, widgetID) {
+		this.root.receiveFromWidget(name, payload, widgetID);
+	}
 
-	receiveXSM: function (message) {
+	receiveXSM(message) {
 		if (message == null) return;
 		var msgData = message.data;
 		if (msgData == null) return;
@@ -56,11 +55,11 @@ Svidget.Communicator.prototype = {
 			this.receiveFromWidget(msgData.name, msgData.payload, msgData.widget);
 		else
 			this.receiveFromParent(msgData.name, msgData.payload);
-	},
+	}
 
 	// REGION: Signal Parent
 
-	signalParent: function (name, payload, widgetID) {
+	signalParent(name, payload, widgetID) {
 		// todo: cache result of isParentSameDomain
 		if (this.isParentSameDomain()) {
 			this.signalParentDirect(name, payload, widgetID);
@@ -68,46 +67,46 @@ Svidget.Communicator.prototype = {
 		else {
 			this.signalParentXSM(name, payload, widgetID);
 		}
-	},
+	}
 
-	signalParentDirect: function (name, payload, widgetID) {
+	signalParentDirect(name, payload, widgetID) {
 		//var check = window === window.parent;
 		// note: if window.parent.svidget is null it means the widget DOM was ready before the page DOM, although unlikely it is possible
 		// so we need to handle somehow
-		if (window.parent != null && window !== window.parent && window.parent.svidget != null && window.parent.svidget) {
+		if (window.parent != null && window !== window.parent && (window.parent as Svidgetable).svidget != null) { //} && window.parent.svidget) {
 			var root = window.parent.svidget;
 			setTimeout(function () {
 				root.routeFromWidget(name, payload, widgetID);
 			}, 0);
 			//window.parent.svidget.routeFromWidget(name, payload, widgetID);
 		}
-	},
+	}
 
-	signalParentXSM: function (name, payload, widgetID) {
+	signalParentXSM(name, payload, widgetID) {
 		if (window.parent != null && window.parent.postMessage != null) {
 			//alert('postMessage');
 			var msg = this.buildSignalParentMessage(name, payload, widgetID);
 			window.parent.postMessage(msg, '*');
 		}
-	},
+	}
 
-	buildSignalParentMessage: function (name, payload, widgetID) {
+	buildSignalParentMessage(name, payload, widgetID): CrossMessage {
 		return {
 			name: name,
 			payload: payload,
 			widget: widgetID,
 		};
-	},
+	}
 
 	// todo: move to widget
 	// note: this returns true when widget is forced cross domain
-	isParentSameDomain: function () {
+	isParentSameDomain(): boolean {
 		if (this.sameParentDomain == null) this.sameParentDomain = this.checkParentSameDomain();
 		return this.sameParentDomain;
-	},
+	}
 
 	// todo: move to Svidget.DOM
-	checkParentSameDomain: function () {
+	checkParentSameDomain(): boolean {
 		if (window.parent == null) return false;
 		try {
 			var d = window.parent.document;
@@ -116,11 +115,11 @@ Svidget.Communicator.prototype = {
 		catch (ex) {
 			return false;
 		}
-	},
+	}
 
 	// REGION: Widgets
 
-	signalWidget: function (widgetRef, name, payload) {
+	signalWidget(widgetRef, name, payload) {
 		Svidget.log("communicator: signalWidget {name: " + name + "}");
 		if (!widgetRef.isCrossDomain()) //this.isWidgetSameDomain(widgetProxy))
 			this.signalWidgetDirect(widgetRef, name, payload);
@@ -128,7 +127,7 @@ Svidget.Communicator.prototype = {
 			this.signalWidgetXSM(widgetRef, name, payload);
 	},
 
-	signalWidgetDirect: function (widgetRef, name, payload) {
+	signalWidgetDirect(widgetRef, name, payload) {
 		if (widgetRef == null) return;
 		var root = widgetRef.root();
 		if (root != null) {
@@ -136,9 +135,9 @@ Svidget.Communicator.prototype = {
 				root.receiveFromParent(name, payload);
 			}, 0);
 		}
-	},
+	}
 
-	signalWidgetXSM: function (widgetRef, name, payload) {
+	signalWidgetXSM(widgetRef, name, payload) {
 		if (widgetRef != null && widgetRef.window() != null) {
 			var msg = this.buildSignalWidgetMessage(name, payload);
 			//widgetRef.window().postMessage(msg, '*');
@@ -147,9 +146,9 @@ Svidget.Communicator.prototype = {
 				widgetRef.window().postMessage(msg, '*');
 			}, 0);
 		}
-	},
+	}
 
-	buildSignalWidgetMessage: function (name, payload) {
+	buildSignalWidgetMessage(name, payload) {
 		return {
 			name: name,
 			payload: payload
@@ -157,7 +156,7 @@ Svidget.Communicator.prototype = {
 	}
 
 	/*
-	//	isWidgetSameDomain: function (widgetRef) {
+	//	isWidgetSameDomain(widgetRef) {
 	//		try {
 	//			var d = widgetRef.document();
 	//			return d != null;
@@ -167,4 +166,6 @@ Svidget.Communicator.prototype = {
 	//		}
 	//	}
 	*/
+}
+
 }

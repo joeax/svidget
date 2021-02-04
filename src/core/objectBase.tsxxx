@@ -1,0 +1,116 @@
+﻿/*****************************************
+svidget.objectprototype.js
+
+Contains common prototype functionality for all common Svidget objects.
+
+Dependencies:
+svidget.core.js
+
+
+******************************************/
+
+/// <reference path="collection.ts" />
+/// <reference path="enums.ts" />
+/// <reference path="objectCollection.ts" />
+/// <reference path="types.ts" />
+
+namespace Svidget {
+
+    /**
+     * Encapsulates common functionality for all object types in the framework.
+     * @class
+     * @static
+     * @memberof Svidget
+     */
+    export class ObjectBase<TProps extends BaseProps> implements Base { //Record<string, unknown>
+        private readonly _typeName: string;
+        private readonly _parent: Base;
+        private readonly props: TProps;
+
+        constructor(parent: Base, options: TProps, typeName: string) {
+            this._parent = parent;
+            this.props = options ?? {} as TProps;
+        }
+
+        // protected
+        // as of 0.3.0: type argument converts val to type
+        // as of 0.5.0: returns final value stored in set mode
+        protected getset<TType extends unknown>(
+            name: keyof TProps,
+            val?: TType,
+            type?: ParamTypeName,
+            validator?: ValidatorFunctionType
+        ): TType {
+            // ** get mode
+            const curValue = this.props[name];
+            if (val === undefined) return curValue as TType;
+            // ** set mode
+            let finalVal = val;
+            // first, convert if needed
+            if (type != null) finalVal = Svidget.convert(val, type);
+            // if value is current value then do nothing
+            if (finalVal === curValue) return;
+            // then, validate
+            if (validator && !validator.call(this, finalVal)) return; // throw error?
+            // finally, commit the value
+            (this.props as Record<string, unknown>)[name] = finalVal as unknown;
+
+            return finalVal;
+        }
+
+        get typeName(): string {
+            return this._typeName;
+        }
+
+        get parent(): Base {
+            return this._parent;
+        }
+
+        get name(): string {
+            return this.getset("name") as string;
+        }
+
+
+
+        // protected
+        // should always return a collection
+        protected select<T>(
+            col: ObjectCollection<T>,
+            selector: string | number | CollectionPredicateFunc<T>
+        ) {
+            if (typeof selector === "number") {
+                selector = parseInt(selector); // coerce to integer
+                return col.wrap(col.getByIndex(selector));
+            } else if (typeof selector === "function") {
+                return col.find(selector);
+            }
+            if (selector !== undefined)
+                return col.wrap(col.getByName(selector + ""));
+            // todo: should we clone collection?
+            return col;
+        }
+
+        // protected
+        // should always return a single item
+        protected selectFirst<T>(
+            col: ObjectCollection<T>,
+            selector: string | number | CollectionPredicateFunc<T>
+        ) {
+            if (typeof selector === "number") {
+                selector = parseInt(selector); // coerce to integer
+                return col.getByIndex(selector);
+            } else if (typeof selector === "function") {
+                return col.items.first(selector);
+            }
+            if (selector !== undefined) return col.getByName(selector + "");
+            return col.items.first();
+        }
+
+        // protected
+        protected wireCollectionAddRemoveHandlers<T>(col: ObjectCollection<T>, addFunc: DispatchFunc<T>, removeFunc: DispatchFunc<T>) {
+            if (col == null) return;
+            col.onAdded(addFunc.bind(this));
+            col.onRemoved(removeFunc.bind(this));
+        }
+    }
+}

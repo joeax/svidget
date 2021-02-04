@@ -11,7 +11,9 @@ Svidget.Collection
 Svidget.ObjectPrototype
 
 ******************************************/
+/// <reference path="types.ts" />
 
+namespace Svidget {
 
 /**
  * Encapsulates logic for a proxy object that is meant to shadow a concrete one.
@@ -33,27 +35,33 @@ Svidget.ObjectPrototype
 //   - if success, widget triggers event
 //   - if fail, root calls fail function with current value, object restores value
 */
-Svidget.Proxy = function (parent, options, propList, writePropList, eventList) {
-	this.__type = "Svidget.Proxy";
-	var that = this;
-	options = options || {};
+export class Proxy<TProps extends ProxyProps, TEventTypes extends ProxyEventTypes> 
+	extends ObjectBase<TProps, TEventTypes> implements ProxyArtifact {
+// = function (parent, options, propList, writePropList, eventList) {
+
+	constructor(props: TProps, parent: WidgetReference, typeName: string) {
+		super(
+			props as TProps,
+			validateParent(parent),
+			typeName
+		);
 
 	// convert to collections
-	var propCol = new Svidget.Collection(Svidget.isArray(propList) ? propList : null);
-	var writePropCol = new Svidget.Collection(Svidget.isArray(writePropList) ? writePropList : null);
+	//var propCol = new Svidget.Collection(Svidget.isArray(propList) ? propList : null);
+	//var writePropCol = new Svidget.Collection(Svidget.isArray(writePropList) ? writePropList : null);
 	// filter so that writable properties are also contained in all properties
-	writePropCol = writePropCol.where(function (i) { return propCol.contains(i); });
+	//writePropCol = writePropCol.where(function (i) { return propCol.contains(i); });
 
 	// private fields
-	var privates = {
-		writable: writePropCol.toArray(),
-		propertyChangeFuncs: new Svidget.Collection(),
-		eventContainer: new Svidget.EventContainer(eventList, that),
-		parent: parent,
-		connected: options.connected == null ? true : !!options.connected // default to true
-	};
+	//var privates = {
+	//	writable: writePropCol.toArray(),
+	//	propertyChangeFuncs: new Svidget.Collection(),
+	//	eventContainer: new Svidget.EventContainer(eventList, that),
+	//	parent: parent,
+	//	connected: options.connected == null ? true : !!options.connected // default to true
+	//};
 	// private accessors
-	this.setup(privates);
+	//this.setup(privates);
 
 	// copy property values to privates
 	for (var p in options) {
@@ -73,6 +81,14 @@ Svidget.Proxy = function (parent, options, propList, writePropList, eventList) {
 		}
 	}
 
+            // validate parent
+            function validateParent(parent: WidgetReference): Widget {
+                if (parent && !(parent instanceof WidgetReference)) {
+                    throw new Error("Proxy parent must be a WidgetReference");
+                }
+                return parent;
+            }
+
 	function buildPropFunc(prop) {
 		return function(val) { 
 			return this.getsetProp(prop, val);
@@ -81,48 +97,38 @@ Svidget.Proxy = function (parent, options, propList, writePropList, eventList) {
 
 }
 
-Svidget.Proxy.prototype = {
+
 
 	/**
-	 * Gets the parent object.
-	 * @method
-	 * @returns {Svidget.WidgetReference}
+	 * Gets whether the proxy is connected to its underlying widget counterpart.
 	*/
-	parent: function () {
-		var res = this.getPrivate("parent");
-		return res;
-	},
+	/*
+	// Note: used by ParamProxy to determine if params from <params> elements or from Widget
+	*/
+	get connected(): boolean {
+		return this.getset<boolean>("connected");
+	}
+
 	
 	/**
 	 * Gets whether the proxy object is attached to its parent.
 	 * @method
 	 * @returns {boolean}
 	*/
-	attached: function () {
-		var parent = this.parent();
-		return parent != null;
-	},
+	get attached(): boolean {
+		return this.parent != null && this.parent instanceof WidgetReference;
+	}
 
-	propertyChangeFuncs: function () {
+	propertyChangeFuncs() {
 		return this.getPrivate("propertyChangeFuncs");
-	},
+	}
 
-	/**
-	 * Gets whether the proxy is connected to its underlying widget counterpart.
-	 * @method
-	 * @returns {boolean}
-	*/
-	/*
-	// Note: used by ParamProxy to determine if params from <params> elements or from Widget
-	*/
-	connected: function (val) {
-		return this.getPrivate("connected");
-	},
+
 
 	// private
 	// this is invoked when attempting to set a property value on the proxy itself
 	// this in turn notifies the parent, which in turn notifies the widget
-	getsetProp: function (prop, val) {
+	protected getsetProp(prop, val) {
 		var res = this.getset(prop, val);
 		// if undefined its a get so return value, if res is false then set failed
 		if (val === undefined || !!!res) return res;
@@ -130,38 +136,38 @@ Svidget.Proxy.prototype = {
 		// this.triggerPropertyChange(prop, val); // obsolete
 		this.handlePropertyChange(prop, val);
 		return true;
-	},
+	}
 
 
 	/**
 	 * @abstract
 	*/
-	handlePropertyChange: function (name, val) {
+	handlePropertyChange(name: keyof TProps, val: unknown): void {
 		// override me
-	},
+	}
 
-	triggerPropertyChange: function (name, val) {
+	triggerPropertyChange(name: keyof TProps, val: unknown) {
 		// notifies root that property change, sends it to widget
 		// invoke func(this, name, val)
 		var funcList = this.propertyChangeFuncs();
 		var that = this;
 		funcList.each(function (func) { func(that, name, val); });
-	},
+	}
 
 	// private
 	// this is invoked when the widget communicates that a property was changed
-	notifyPropertyChange: function (name, val) {
+	notifyPropertyChange(name, val) {
 		// notifies this proxy that property changed on widget
 		if (name == null) return;
 		// update value to match source
 		this.getset(name, val);
 		// trigger change event
 		this.triggerFromWidget("change", { property: name, value: val }, this);
-	},
+	}
 
 	// internal
 	// refreshes the proxy object with values from the widget
-	refreshProperties: function (propObj) {
+	refreshProperties(propObj) {
 		for (var name in propObj) {
 			var item = this.getPrivate(name);
 			if (item != null) {
@@ -175,66 +181,38 @@ Svidget.Proxy.prototype = {
 	 * @method
 	 * @returns {boolean}
 	*/
-	connect: function () {
-		this.setPrivate("connected", true);
-	},
+	// TODO: find out how this works
+	//connect() {
+	//	this.setPrivate("connected", true);
+	//}
 
 	// obsolete (9/1/2014)
 	// use regular events ("change", "paramchange")
-	onPropertyChange: function (func) {
+	onPropertyChange(func) {
 		var funcList = this.propertyChangeFuncs();
 		if (!typeof func === "function") return false;
 		funcList.add(func);
 		return true;
-	},
+	}
 
 	// obsolete (9/1/2014)
 	// use regular events ("change", "paramchange")
-	offPropertyChange: function (func) {
+	offPropertyChange(func) {
 		var funcList = this.propertyChangeFuncs();
 		return funcList.remove(func);
-	},
+	}
 
 	/* Proxy Events */
 
-	eventContainer: function () {
-		return this.getPrivate("eventContainer");
-	},
-
-	/**
-	 * Registers an event handler for the proxy object.
-	 * @method
-	 * @param {string} type - The event type i.e. "change".
-	 * @param {object} [data] - Arbirary data to initialize Event object with when event is triggered.
-	 * @param {string} [name] - The name of the handler. Useful when removing the handler for the event.
-	 * @param {Function} handler - The event handler.
-	 * @returns {boolean} - True if the event handler was successfully added.
-	*/
-	on: function (type, data, name, handler) {
-		this.eventContainer().on(type, data, name, handler);
-	},
-
-	/**
-	 * Unregisters an event handler for the proxy object.
-	 * @method
-	 * @memberof Svidget.Root.prototype
-	 * @param {string} type - The event type i.e. "change".
-	 * @param {(Function|string)} handlerOrName - The handler function and/or the handler name used when calling on().
-	 * @returns {boolean} - True if the event handler was successfully removed.
-	*/
-	off: function (type, handlerOrName) {
-		this.eventContainer().off(type, handlerOrName);
-	},
-
 	// Note: no access to trigger() object events here, only from widget
 	// this is invoked from the widget to signal that the event was triggered
-	triggerFromWidget: function (type, value, originalTarget) {
+	triggerFromWidget(type, value, originalTarget) {
 		this.eventContainer().trigger(type, value, originalTarget);
-	},
+	}
 
-	registerBubbleCallback: function (types, bubbleTarget, callback) {
+	registerBubbleCallback(types, bubbleTarget, callback) {
 		this.eventContainer().registerBubbleCallback(types, bubbleTarget, callback);
 	}
 }
 
-Svidget.extend(Svidget.Proxy, Svidget.ObjectPrototype);
+}
