@@ -24,14 +24,14 @@ namespace Svidget {
     export abstract class ObjectCollection<
         T extends Artifact
     > extends ObjectBase<ArtifactCollectionProps, never> {
-        public readonly __type = "Svidget.ObjectCollection";
+        //public readonly __type = "Svidget.ObjectCollection";
         private readonly col: Collection<T>;
         //= function (array, type) {
         // todo: filter input array by type specified
 
         constructor(array?: Array<T>, parent: Artifact, typeName: string) {
             // Svidget.Collection.apply(this, [array]);
-            super(undefined, parent, typeName);
+            super(undefined, parent, "Svidget.ObjectCollection");
             this.col = new Collection<T>(array);
 
             // private fields
@@ -178,21 +178,56 @@ Svidget.extend(Svidget.ObjectCollection, {
         }
 
         /**
-         * Wraps the specified item in a new ObjectCollection.
+         * Wraps the specified item in a new Collection.
          * @method
          * @param {object} item - The item to make a collection from.
          * @returns {Svidget.Collection} - The collection.
          */
         wrap(item: T) {
-            var items = [item];
-            if (item == null || !item instanceof this.type()) items = [];
+            const items = [item];
+            if (item == null || !item instanceof T) items = [];
             //var col = new this.constructor(items, this.parent);
             // 0.3.0: wrap as a plain jane collection
-            var col = new Svidget.Collection(items); //, this.parent);
+            const col = new Collection(items); //, this.parent);
             return col;
         }
 
+                        // TODO: should move somewhere else
+        // protected
+        // should always return a collection
+        select(
+            selector: string | number | CollectionPredicateFunc<T>
+        ) {
+            if (typeof selector === "number") {
+                const index = Conversion.toInteger(selector); // coerce to integer
+                return this.wrap(this.getByIndex(index));
+            } 
+            else if (typeof selector === "function")
+                return this.col.where(selector);
+            else if (selector !== undefined)
+                return this.wrap(this.getByName(Conversion.toString(selector)));
+            // todo: should we clone collection?
+            return this.col.clone();
+        }
+
+                // TODO: should move somewhere else
+        // protected
+        // should always return a single item
+        selectFirst(
+            selector: string | number | CollectionPredicateFunc<T>
+        ) {
+            return this.select(selector).first();
+        }
+
+
         /* REGION Events */
+
+        // todo: move to utility area
+        // protected
+        wireCollectionAddRemoveHandlers<T>(addFunc: DispatchFunc<T>, removeFunc: DispatchFunc<T>) {
+            this.onAdded(addFunc.bind(this));
+            this.onRemoved(removeFunc.bind(this));
+        }
 
         // internal
         // wires up an internal handler when an item is added to the collection

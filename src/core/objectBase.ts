@@ -30,10 +30,10 @@ namespace Svidget {
         protected readonly props: PropContainer<TProps>;
         protected readonly events: EventContainer<TEventTypes>; // = new EventContainer(eventTypes);
 
-        constructor(options: TProps, parent: WidgetArtifact, typeName: string) {
+        constructor(props: TProps, parent: WidgetArtifact, typeName: string) {
             this.__type = typeName;
             this._parent = parent;
-            this.props = new PropContainer<TProps>(options);
+            this.props = new PropContainer<TProps>(props);
             this.events = new EventContainer<TEventTypes>();
         }
 
@@ -76,49 +76,12 @@ namespace Svidget {
             this.events.trigger(type, value, originalTarget)
         }
 
-
-        // TODO: should move somewhere else
-        // protected
-        // should always return a collection
-        protected select<T>(
-            col: ObjectCollection<T>,
-            selector: string | number | CollectionPredicateFunc<T>
-        ) {
-            if (typeof selector === "number") {
-                selector = parseInt(selector); // coerce to integer
-                return col.wrap(col.getByIndex(selector));
-            } else if (typeof selector === "function") {
-                return col.find(selector);
-            }
-            if (selector !== undefined)
-                return col.wrap(col.getByName(selector + ""));
-            // todo: should we clone collection?
-            return col;
-        }
-
-        // TODO: should move somewhere else
-        // protected
-        // should always return a single item
-        protected selectFirst<T>(
-            col: ObjectCollection<T>,
-            selector: string | number | CollectionPredicateFunc<T>
-        ) {
-            if (typeof selector === "number") {
-                selector = parseInt(selector); // coerce to integer
-                return col.getByIndex(selector);
-            } else if (typeof selector === "function") {
-                return col.items.first(selector);
-            }
-            if (selector !== undefined) return col.getByName(selector + "");
-            return col.items.first();
-        }
-
         // move somewhere else?
         // protected
-        protected wireCollectionAddRemoveHandlers<T>(col: ObjectCollection<T>, addFunc: DispatchFunc<T>, removeFunc: DispatchFunc<T>) {
-            if (col == null) return;
-            col.onAdded(addFunc.bind(this));
-            col.onRemoved(removeFunc.bind(this));
-        }
+        //protected wireCollectionAddRemoveHandlers<T>(col: ObjectCollection<T>, addFunc: DispatchFunc<T>, removeFunc: DispatchFunc<T>) {
+        //    if (col == null) return;
+        //    col.onAdded(addFunc.bind(this));
+        //    col.onRemoved(removeFunc.bind(this));
+        //}
     }
 }

@@ -20,12 +20,15 @@ namespace Svidget {
  */
 export class Communicator {
 	private readonly __type = "Svidget.Communicator";
-	private readonly root: Root;
+	private readonly _receiveFromParent: ParentReceiveFunc;
+	private readonly _receiveFromWidget: WidgetReceiveFunc;
 	private sameDomain: boolean;
 	private sameParentDomain: boolean;
 
-	constructor(root: Root) {
-		this.root = root;
+	//constructor({ receiveFromParent, receiveFromWidget }: { receiveFromParent: ParentReceiveFunc, receiveFromWidget: WidgetReceiveFunc }) {
+	constructor() {
+		//this._receiveFromParent = Svidget.bind(receiveFromParent, this);
+		//this._receiveFromWidget = Svidget.bind(receiveFromParent, this);
 		this.addMessageEvent();
 	}
 
@@ -38,19 +41,23 @@ export class Communicator {
 
 	// REGION: Receive
 
-	receiveFromParent(name, payload) {
-		this.root.receiveFromParent(name, payload);
+	// todo: remove dependency on "root" object
+	// invert so that root "owns" this object instead
+	// we can also decouple root and pass a generic object with receiveFromParent/receiveFromWidget
+	private receiveFromParent(name: string, payload: unknown) {
+		if (this.receiveFromParent) this.receiveFromParent(name, payload);
 	}
 
-	receiveFromWidget(name, payload, widgetID) {
-		this.root.receiveFromWidget(name, payload, widgetID);
+	private receiveFromWidget(name: string, payload: unknown, widgetID: string) {
+		if (this.receiveFromWidget) this.receiveFromWidget(name, payload, widgetID);
 	}
 
-	receiveXSM(message) {
+	private receiveXSM(message: MessageEvent<CrossMessage>): void {
 		if (message == null) return;
-		var msgData = message.data;
+		const msgData = message.data;
 		if (msgData == null) return;
 		// it's possible in future we'll have a nested widget scenario, so a widget can have both a parent and widgets.
+		// a widget will always send its widget ID
 		if (msgData.widget !== undefined)
 			this.receiveFromWidget(msgData.name, msgData.payload, msgData.widget);
 		else
@@ -59,7 +66,7 @@ export class Communicator {
 
 	// REGION: Signal Parent
 
-	signalParent(name, payload, widgetID) {
+	signalParent(name: string, payload: unknown, widgetID: string): void {
 		// todo: cache result of isParentSameDomain
 		if (this.isParentSameDomain()) {
 			this.signalParentDirect(name, payload, widgetID);
@@ -69,12 +76,12 @@ export class Communicator {
 		}
 	}
 
-	signalParentDirect(name, payload, widgetID) {
+	signalParentDirect(name: string, payload: unknown, widgetID: string): void {
 		//var check = window === window.parent;
 		// note: if window.parent.svidget is null it means the widget DOM was ready before the page DOM, although unlikely it is possible
 		// so we need to handle somehow
 		if (window.parent != null && window !== window.parent && (window.parent as Svidgetable).svidget != null) { //} && window.parent.svidget) {
-			var root = window.parent.svidget;
+			const root = window.parent.svidget;
 			setTimeout(function () {
 				root.routeFromWidget(name, payload, widgetID);
 			}, 0);
@@ -125,7 +132,7 @@ export class Communicator {
 			this.signalWidgetDirect(widgetRef, name, payload);
 		else
 			this.signalWidgetXSM(widgetRef, name, payload);
-	},
+	}
 
 	signalWidgetDirect(widgetRef, name, payload) {
 		if (widgetRef == null) return;

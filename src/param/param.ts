@@ -57,7 +57,7 @@ namespace Svidget {
             parent: Widget
         ) {
             super(
-                transformToProps(options, name, value),
+                transformToParamProps(options, name, value),
                 validateParent(parent),
                 "Svidget.Param"
             );
@@ -140,9 +140,6 @@ namespace Svidget {
         /**
          * Gets or sets the description.
          */
-        get description(): string {
-            return this.getset<string>("description");
-        }
         set description(input: string) {
             const val = this.getset("description", input, "string");
             // fire "changed" event
@@ -152,9 +149,6 @@ namespace Svidget {
         /**
          * Gets or sets whether the param is enabled.
          */
-        get enabled(): boolean {
-            return this.getset<boolean>("enabled");
-        }
         set enabled(input: boolean) {
             const val = this.getset("enabled", input, "boolean");
             // fire "changed" event
@@ -164,9 +158,6 @@ namespace Svidget {
         /**
          * Gets or sets the param data type.
          */
-        get type(): ParamTypeName {
-            return this.getset<ParamTypeName>("type");
-        }
         set type(input: ParamTypeName) {
             const val = this.getset("type", input, "string");
             // fire "changed" event
@@ -176,9 +167,6 @@ namespace Svidget {
         /**
          * Gets or sets the param data subtype.
          */
-        get subtype(): ParamSubTypeName {
-            return this.getset<ParamSubTypeName>("type");
-        }
         set subtype(input: ParamSubTypeName) {
             const val = this.getset("subtype", input, "string");
             // fire "changed" event
@@ -188,9 +176,6 @@ namespace Svidget {
         /**
          * Gets or sets the group value. This is used to group/categorize params into groups.
          */
-        get typedata(): string {
-            return this.getset<string>("typedata");
-        }
         set typedata(input: string) {
             const val = this.getset("typedata", input, "string");
             // fire "changed" event
@@ -200,9 +185,6 @@ namespace Svidget {
         /**
          * Gets or sets whether the value should be coerced, using the type, subtype, and typedata values.
          */
-        get coerce(): boolean {
-            return this.getset<boolean>("coerce");
-        }
         set coerce(input: boolean) {
             const val = this.getset("coerce", input, "boolean");
             // fire "changed" event
@@ -212,9 +194,6 @@ namespace Svidget {
         /**
          * Gets or sets whether the value should be coerced, using the type, subtype, and typedata values.
          */
-        get defvalue(): unknown {
-            return this.getset<unknown>("defvalue");
-        }
         set defvalue(input: unknown) {
             const val = this.getset("defvalue", input);
             // fire "changed" event
@@ -224,9 +203,6 @@ namespace Svidget {
         /**
          * Gets or sets the group value. This is used to group/categorize params into groups.
          */
-        get group(): string {
-            return this.getset<string>("group");
-        }
         set group(input: string) {
             const val = this.getset("group", input, "string");
             // fire "changed" event
@@ -345,7 +321,7 @@ namespace Svidget {
          * @method
          * @returns {boolean} - A generic serialized object representing the Param object.
          */
-        toTransport(): ParamCore {
+        toTransport(): ParamTransport {
             // todo: use allProxyProperties and automate this
             var transport = {
                 name: this.name,

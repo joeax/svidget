@@ -73,6 +73,14 @@ namespace Svidget {
             return val;
         }
 
+                /**
+         * Converts any value to a number.
+         * @static
+         */
+        static toInteger(input: unknown): number {
+            return Conversion.toNumber(input, true);
+        }
+
         /**
          * Converts any value to a bool.
          * @static

@@ -1,5 +1,5 @@
 namespace Svidget {
-    export function transformToProps(options: ParamOptions, name: string, value: unknown): ParamProps {
+    export function transformToParamProps(options: ParamOptions, name: string, value: unknown): ParamProps {
         const c = Conversion;
         // infer type from value/defvalue if type is null/undefined
         const type = resolveType(options.type, value, options.defvalue);
@@ -30,8 +30,8 @@ namespace Svidget {
         };
     }
 
-    export function transformToProxyProps(options: ParamProxyOptions, name: string, value: unknown): ParamProxyProps {
-        const paramProps = transformToProps(options, name, value);
+    export function transformToParamProxyProps(options: ParamProxyOptions, name: string, value: unknown): ParamProxyProps {
+        const paramProps = transformToParamProps(options, name, value);
         return {...paramProps, connected: true } as ParamProxyProps;
     }
 

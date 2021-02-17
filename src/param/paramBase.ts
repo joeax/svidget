@@ -12,16 +12,9 @@ svidget.core.js
 /// <reference path="types.ts" />
 /// <reference path="../core/collection.ts" />
 /// <reference path="../core/enums.ts" />
+/// <reference path="../core/objectBase.ts" />
 
 namespace Svidget {
-
-    interface Foo {
-        getset: (val: string) => string;
-    }
-
-    interface Mixable {
-        __configure: (foo: Foo) => void;
-    }
 
     export class ParamBase implements ParamCore, BaseMixin<ParamProps, ParamEventTypes> {
         //private readonly getter: GetterFunc;

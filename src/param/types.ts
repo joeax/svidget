@@ -33,6 +33,8 @@ namespace Svidget {
         defvalue: unknown;
     }
 
+    export interface ParamTransport extends ParamCore, Transport {}
+
     // Represents the props that are stored internally by Params
     export interface ParamProps extends Partial<Omit<ParamCore, "name">>, ArtifactProps {
         binding?: string;

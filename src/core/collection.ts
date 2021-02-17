@@ -78,6 +78,21 @@ namespace Svidget {
             return null;
         }
 
+        /**
+         * Returns the last item in the collection that satisfies the condition in the specified predicate function.
+         * @method
+         * @param {Function} predicate - A function that accepts an item as input and returns true/false.
+         * @returns {object} - The item in the collection.
+         */
+        where(predicate?: CollectionPredicateFunc<T>): Collection<T> {
+            if (predicate == null || typeof predicate !== "function")
+                return new Collection(this);
+            else {
+                const items = this.filter(predicate);
+                return new Collection(items);
+            }
+        }
+
         /*
 	// others, if needed:
 	// average
@@ -188,6 +203,10 @@ namespace Svidget {
         }
 
         // misc
+
+        clone(): Collection<T> {
+            return new Collection(this);
+        }
 
         /**
          * Returns a new array based on items in the collection.

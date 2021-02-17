@@ -44,7 +44,7 @@ namespace Svidget {
             parent: WidgetReference
         ) {
             super(
-                transformToProxyProps(options, name, value),
+                transformToParamProxyProps(options, name, value),
                 parent,
                 "Svidget.ParamProxy"
             );

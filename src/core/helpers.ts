@@ -1,5 +1,19 @@
+/*****************************************
+extensions.ts
+
+Defines various functions and helpers.
+
+******************************************/
+
+/// <reference path="../utils/conversion.ts" />
+
+
 namespace Svidget {
+    export const declaredHandlerName = "_declared";
+    export const emptyArray = []; // todo: do we need?
+    export const defaultType = "object";
     const enableLogging = true;
+
 
     export function readOnlyProperty(value: any): PropertyDescriptor {
         return {
@@ -98,7 +112,7 @@ export function extendOLD = function (objtype, prototype, overwrite) {
         if (!anyCollection || !anyCollection.length) return null;
         try {
             // this may blow up for IE8 and below and other less than modern browsers
-            return Svidget.emptyArray.slice.call(anyCollection, 0);
+            return emptyArray.slice.call(anyCollection, 0);
         } catch (e) {
             // iterate the old fashioned way and push items onto array
             var res = [];
@@ -134,7 +148,7 @@ export function extendOLD = function (objtype, prototype, overwrite) {
     }
 
     export function getType(val) {
-        if (val == null) return Svidget.defaultType; // object is the default type (as of 0.3.0, formerly "string")
+        if (val == null) return defaultType; // object is the default type (as of 0.3.0, formerly "string")
         if (Array.isArray(val)) return "array";
         var type = typeof val;
         // if (type === "boolean") return "bool"; // as of 0.3.0 using "boolean" not "bool"
@@ -146,7 +160,7 @@ export function extendOLD = function (objtype, prototype, overwrite) {
     // Given a type, determines if it is valid and if not returns the default type.
     export function resolveType(type: string): ParamTypeName {
         const resultType = Svidget.Conversion.toString(type);
-        if (Svidget.ParamTypes[type] === undefined) return Svidget.defaultType;
+        if (Svidget.ParamTypes[type] === undefined) return defaultType;
         if (type === "bool") return "boolean";
         return resultType as ParamTypeName;
     }
@@ -171,4 +185,8 @@ export function extendOLD = function (objtype, prototype, overwrite) {
         basable.off = base.off.bind(mixin);
         basable.trigger = base.trigger.bind(mixin);
     }
+
+    export function toCollectionTransport<T extends Artifact>(col: Collection<T>): Array<any> {
+        return col.map((c) => c.toTransport());
+	}
 }

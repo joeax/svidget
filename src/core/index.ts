@@ -23,9 +23,6 @@ namespace Svidget {
     export const root = null; // set in Svidget.Root, this is the singleton instance to the global "svidget" object.
     //export const global = global; // In server side environments will === global, in browser === window
     export const version = VERSION;
-    export const declaredHandlerName = "_declared";
-    export const emptyArray = []; // todo: do we need?
-    export const defaultType = "object";
 
     export function createRoot(): Root {
 

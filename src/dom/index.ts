@@ -376,12 +376,13 @@ namespace Svidget {
 
         // todo: support for event delegation?
 
-        static on(obj, type, callback, capture) {
-            capture = !!capture; // normalize to bool (default == false)
+        static on(obj: Element | Document | Window, type: string, callback: (...args) => any, options?: any) {
+            //capture = !!capture; // normalize to bool (default == false)
             var attached = false;
             if (obj.addEventListener) {
                 // Supports DOM spec
-                obj.addEventListener(type, callback, capture);
+                document.addEventListener
+                obj.addEventListener(type, callback, options);
                 attached = true;
             } else if (obj.attachEvent) {
                 // IE8 and below

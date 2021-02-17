@@ -15,4 +15,4 @@ if (!window.document) {
 	console.warn("svidget requires a global windowy object with window.document to work correctly.");
 }
 
-export const svidget = Svidget.Root(window, createOptions);
+export const svidget = Svidget.Root(window); //, createOptions);

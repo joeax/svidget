@@ -72,6 +72,7 @@ namespace Svidget {
     export interface Artifact {
         readonly __type: string;
         readonly parent: Artifact;
+        toTransport: () => any;
     }
 
     export interface WidgetArtifact extends Artifact {
@@ -84,6 +85,10 @@ namespace Svidget {
     export interface ArtifactProps {
         name: string;
         external: boolean;
+    }
+
+    export interface Transport {
+        name: string;
     }
 
     interface ArtifactCollectionProps extends ArtifactProps {
