@@ -1,0 +1,5 @@
+﻿@import url('normalize.css');
+@import url('style.css');
+@import url('style.tablet.css') (min-width: 768px) and (max-width: 1023px);
+@import url('style.smartphone.css') (min-width: 480px) and (max-width: 767px);
+@import url('style.mobile.css') (max-width: 479px);

@@ -1,0 +1,42 @@
+﻿body {  }		
+h1 { font-size: 1.5rem; }
+h2 { font-size: 1.67rem; }
+h3 { font-size: 2rem; }
+h4 { font-size: 1.25rem; }
+
+.circlelabel { font-size: 1.25rem; width: 2em; height: 2em; margin-right: 0.5em; }
+
+.headerright { float: none; width: 100%; }
+
+.sec-intro { padding: 2px; }
+.sec-intro > div { width: 100%; min-width: 0px; }
+.introdesc { font-size: 1.25rem; }
+
+.widgetexample { padding: 0px; margin: auto; }
+.widgetexample > img { width: 280px; height: 280px; }
+
+@media (max-width: 420px) {
+	.widgetblockinstance > object { max-width: 100%; }
+}
+.widgetblockcontrols { min-width: 75%; }
+
+.galleryitem { width: 160px; height: 160px; font-size: 0.85rem; }
+.galleryitem img { width: 120px; height: 120px; }
+
+.circlelist li { width: 160px; height: 160px; border-radius: 80px; padding: 30px; font-size: 0.75rem; }
+.circlelist li p { width: 100px; }
+
+.featureitem { width: auto; padding: 1em; min-height: 0px; font-size: 1em; }
+
+.scrollToTop { bottom: 2px; right: 2px; width: 32px; height: 32px; }
+.scrollToTop i { font-size: 1.5em; }
+
+.code { display: none; }
+.codelauncher { display: block; margin-bottom: 0.5em; }
+
+.sidebar { display: none; }
+.contentpane { float: none; width: auto; }
+
+.content { width: 100%; }
+
+.footer-github { display: none; }

@@ -1,0 +1,13 @@
+﻿h1 { font-size: 2.5rem; }
+
+.sec-intro { padding: 2px; }
+.sec-intro > div { width: 100%; }
+.content { width: 100%; }
+
+.sidebar { display: none; }
+.contentpane { float: none; width: auto; }
+
+.scrollToTop { bottom: 2px; right: 2px; width: 40px; height: 40px; }
+.scrollToTop i { font-size: 2em; }
+
+.widgetblockcontrols { min-width: 75%; }

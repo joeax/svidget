@@ -1,0 +1,38 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:svidget="http://www.svidget.org/svidget"
+		 width="800" height="200" style="background:#333341;">
+	<title>Gear</title>
+
+	<link xlink:href='http://fonts.googleapis.com/css?family=Montserrat' rel='stylesheet' type='text/css' />
+	<style>
+		<![CDATA[
+		text#logo {	font: 100px 'Montserrat', Helvetica, Arial, sans-serif;	}
+		text#logo tspan:first-child { font-weight: bold; }
+		]]>
+	</style>
+
+	<defs>
+		<linearGradient id="grad-fire" y1="0" y2="100%" x1="0" x2="0">
+			<stop offset="0%" stop-color="#ff4141" stop-opacity="1" />
+			<stop offset="100%" stop-color="#b32222" stop-opacity="1" />
+		</linearGradient>
+		<mask id="circlemask">
+			<rect x="0" y="0" width="100%" height="100%" fill="white" />
+			<circle r="29" cx="100" cy="100" fill="black" />
+		</mask>
+	</defs>
+
+	<g>
+		<path id="inner" stroke="#ffb244" fill="url(#grad-fire)" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" mask="url(#circlemask)"
+					d="M88.11 24.94 L100 4 L111.89 24.94 L134.5 32.28 L134.5 32.28 L156.43 22.33 L153.74 46.26 L167.72 65.5 L167.72 65.5 L191.3 70.33 L175.06 88.11 L175.06 111.89 L175.06 111.89 L191.3 129.67 L167.72 134.5 L153.74 153.74 L153.74 153.74 L156.43 177.67 L134.5 167.72 L111.89 175.06 L111.89 175.06 L100 196 L88.11 175.06 L65.5 167.72 L65.5 167.72 L43.57 177.67 L46.26 153.74 L32.28 134.5 L32.28 134.5 L8.7 129.67 L24.94 111.89 L24.94 88.11 L24.94 88.11 L8.7 70.33 L32.28 65.5 L46.26 46.26 L46.26 46.26 L43.57 22.33 L65.5 32.28 L88.11 24.94 z" />
+		<circle id="inner" r="26" cx="100" cy="100" stroke="#ffb244" stroke-width="6" fill="none" />
+	</g>
+	<g>
+		<text id="logo" fill="#fff" x="220" y="120" dominant-baseline="middle">
+			<tspan>svidget</tspan>
+			<tspan>.</tspan>
+			<tspan>js</tspan>
+		</text>
+	</g>
+
+</svg>

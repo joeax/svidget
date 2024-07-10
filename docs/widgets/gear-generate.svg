@@ -1,0 +1,103 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:svidget="http://www.svidget.org/svidget"
+		 width="200" height="200" style="background:#333341;">
+	<title>Gear</title>
+	
+	<defs>
+		<linearGradient id="backgroundGradient" y1="0" y2="100%" x1="0" x2="0">
+			<stop offset="0%" stop-color="#fff" stop-opacity="0.5" />
+			<stop offset="100%" stop-color="#fff" stop-opacity="0.0" />
+		</linearGradient>
+	</defs>
+
+	<g>
+		<circle id="inner" r="26" cx="100" cy="100" stroke="#fff" stroke-width="4" fill="none" />
+		<circle id="outer" r="76" cx="100" cy="100" stroke="#fff" fill="none" display="none" />
+		<path stroke="red" stroke-width="4" fill="none" d="M100 24 L123.49 27.72 L144.67 38.51" display="none" />
+
+
+	</g>
+
+	<g stroke="#fff" display="none">
+		<path stroke-width="4" stroke-linecap="round" stroke-linejoin="round" fill="none" d="M88.11 25.06 l11.89 -20 l11.89 20 l22.61 7.22" />
+		<path stroke-width="4" stroke-linecap="round" stroke-linejoin="round" fill="none" d="M88.11 25.06 l11.89 -20 l11.89 20 l22.61 7.22" transform="rotate(36 100 100)" />
+		<path stroke-width="4" stroke-linecap="round" stroke-linejoin="round" fill="none" d="M88.11 25.06 l11.89 -20 l11.89 20 l22.61 7.22" transform="rotate(72 100 100)" />
+		<path stroke-width="4" stroke-linecap="round" stroke-linejoin="round" fill="none" d="M88.11 25.06 l11.89 -20 l11.89 20 l22.61 7.22" transform="rotate(108 100 100)" />
+		<path stroke-width="4" stroke-linecap="round" stroke-linejoin="round" fill="none" d="M88.11 25.06 l11.89 -20 l11.89 20 l22.61 7.22" transform="rotate(144 100 100)" />
+		<path stroke-width="4" stroke-linecap="round" stroke-linejoin="round" fill="none" d="M88.11 25.06 l11.89 -20 l11.89 20 l22.61 7.22" transform="rotate(180 100 100)" />
+		<path stroke-width="4" stroke-linecap="round" stroke-linejoin="round" fill="none" d="M88.11 25.06 l11.89 -20 l11.89 20 l22.61 7.22" transform="rotate(216 100 100)" />
+		<path stroke-width="4" stroke-linecap="round" stroke-linejoin="round" fill="none" d="M88.11 25.06 l11.89 -20 l11.89 20 l22.61 7.22" transform="rotate(252 100 100)" />
+		<path stroke-width="4" stroke-linecap="round" stroke-linejoin="round" fill="none" d="M88.11 25.06 l11.89 -20 l11.89 20 l22.61 7.22" transform="rotate(288 100 100)" />
+		<path stroke-width="4" stroke-linecap="round" stroke-linejoin="round" fill="none" d="M88.11 25.06 l11.89 -20 l11.89 20 l22.61 7.22" transform="rotate(324 100 100)" />
+	</g>
+
+	<path id="pathtest" stroke="#fff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" fill="none" d="" />
+	<path id="pathtest2" stroke="#fff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" fill="none" d="M88.11 24.94 L100 4 L111.89 24.94 L134.5 32.28 L134.5 32.28 L156.43 22.33 L153.74 46.26 L167.72 65.5 L167.72 65.5 L191.3 70.33 L175.06 88.11 L175.06 111.89 L175.06 111.89 L191.3 129.67 L167.72 134.5 L153.74 153.74 L153.74 153.74 L156.43 177.67 L134.5 167.72 L111.89 175.06 L111.89 175.06 L100 196 L88.11 175.06 L65.5 167.72 L65.5 167.72 L43.57 177.67 L46.26 153.74 L32.28 134.5 L32.28 134.5 L8.7 129.67 L24.94 111.89 L24.94 88.11 L24.94 88.11 L8.7 70.33 L32.28 65.5 L46.26 46.26 L46.26 46.26 L43.57 22.33 L65.5 32.28 L88.11 24.94" />
+	<text id="diag" fill="#fff" x="50%" y="100" text-anchor="middle"></text>
+	
+	<script type="application/ecmascript">
+		<![CDATA[
+		
+		//window.addEventListener('load', init, false);
+
+		function init() {
+			var pathtest = document.getElementById("pathtest");
+			var d = generatePath(76, 100, 100, 20);
+			pathtest.setAttribute('d', d);
+			var diag = document.getElementById("diag");
+			//diag.textContent = d;
+		}
+		
+		function generatePath(radius, cx, cy, height) {
+			debugger;
+			var spokes = 10;
+			var degSpoke = 360 / spokes;
+			var startAngle = -(degSpoke / 4);
+			var startx, starty, midx, midx, endx, endy, tipx, tipy;
+			var angle = startAngle;			
+			var path = "";
+			
+			for (var i=0; i<spokes; i++) {
+				startx = arcX(angle, radius, cx);
+				starty = arcY(angle, radius, cy);
+				midx = arcX(angle + (degSpoke / 2), radius, cx);
+				midy = arcY(angle + (degSpoke / 2), radius, cy);
+				endx = arcX(angle + degSpoke, radius, cx);
+				endy = arcY(angle + degSpoke, radius, cy);
+				tipx = arcX(angle + (degSpoke / 4), radius + height, cx);
+				tipy = arcY(angle + (degSpoke / 4), radius + height, cy);
+				path += linePath(startx, starty) + " " + linePath(tipx, tipy) + " " + linePath(midx, midy) + " " + linePath(endx, endy) + " ";
+				angle += degSpoke;
+			}
+			
+			return path;
+		}
+		
+		function arcX(angle, radius, cx) {
+			var radangle = rad(angle);
+			var x = (radius * Math.sin(radangle)) + cx;
+			return round2dec(x);
+		}
+		
+		function arcY(angle, radius, cy) {
+			var radangle = rad(angle);
+			var y = cy - (radius * Math.cos(radangle));
+			return round2dec(y);
+		}
+		
+		function linePath(x, y) {
+			return "L" + x + " " + y;
+		}
+		
+		function rad(angle) {
+			return Math.PI * (angle / 180);
+		}
+		
+		function round2dec(val) {
+			return Math.round(val * 100) / 100;
+		}
+		
+		]]>
+	</script>
+	
+</svg>

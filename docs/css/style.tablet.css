@@ -1,0 +1,9 @@
+﻿.sec-intro > div { width: 80%; }
+.content { width: 90%; }
+.widgetblockcontrols { min-width: 50%; }
+.sidebar { display: none; }
+.contentpane { float: none; width: auto; }
+.headerright { min-width: 0; }
+
+.scrollToTop { bottom: 8px; right: 8px; width: 40px; height: 40px; }
+.scrollToTop i { font-size: 2em; }
