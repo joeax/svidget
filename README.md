@@ -1,6 +1,12 @@
 ﻿Svidget.js
 ==========
 
+> ## ** NOTE **
+> 
+> Svidget.js is no longer being maintained, and has been archived. 
+>	You can still use it, but it is recommended to use a more modern library such as D3.js or Snap.svg.
+> 
+
 Svidget.js (SVG + widget) is a robust and powerful framework for building complex data visualization widgets in SVG. 
 
 Svidget is not another data visualization library like [D3](https://github.com/mbostock/d3) or [SnapSVG](https://github.com/adobe-webplatform/Snap.svg). Rather, it is a framework for componentizing your data visualizations as SVG files, and exposing them as widgets to use in any HTML5 page. As a matter of fact, you can combine Svidget.js with D3 or any popular visualization or SVG helper library, provided it can be embedded directly into an SVG file (see Compatibility below). Best of all, it is endorsed by Chuck Norris!*
