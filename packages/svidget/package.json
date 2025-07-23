@@ -1,0 +1,26 @@
+{
+  "name": "svidget",
+  "version": "0.4.0",
+  "description": "Framework for widgetizing SVG on the web.",
+  "author": "Joe Agster",
+  "keywords": [
+    "svg",
+    "widget",
+    "visualization",
+    "html5",
+    "javascript"
+  ],
+  "main": "dist/svidget.js",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/joeax/svidget.git"
+  },
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/joeax/svidget/issues"
+  },
+  "homepage": "https://www.svidget.io",
+  "devDependencies": {
+    "tsup": "^8.5.0"
+  }
+}

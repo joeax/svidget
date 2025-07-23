@@ -1,0 +1,19 @@
+{
+  "compilerOptions": {
+    "target": "ES2022", // Latest stable ECMAScript target
+    "module": "ES2022", // Modern module system
+    "declaration": true, // Generate .d.ts files for library consumers
+    "outDir": "dist", // Output directory for compiled files
+    "rootDir": "src", // Source directory
+    "strict": true, // Enable all strict type-checking options
+    "esModuleInterop": true, // Better compatibility with CommonJS modules
+    "forceConsistentCasingInFileNames": true,
+    "skipLibCheck": true, // Skip type checking of declaration files
+    "moduleResolution": "node", // Node-style module resolution
+    "resolveJsonModule": true, // Allow importing .json files
+    "sourceMap": true, // Generate source maps
+    "removeComments": true // Remove comments from output
+  },
+  "include": ["src"],
+  "exclude": ["node_modules", "dist", "test"]
+}
