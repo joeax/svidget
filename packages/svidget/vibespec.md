@@ -11,6 +11,8 @@ The goal of this vibespec is to convert the legacy codebase into a modern TypeSc
 - All files must have a header that describes its purpose.
 - Because libraries for page scope and widget scope will be built separately, code should be cleanly separated as possible.
 - Migrate all legacy unit tests and add new unit tests using `jest` into `tests/unit` folder.
+- All TypeScript files should be named with camelCase (i.e. `paramProxy.ts`).
+- All class names must be named with PascalCase (i.e. `ParamProxy`).
 
 ### Future
 - React wrapper library
@@ -233,6 +235,7 @@ The `svidget-page` library is responsible for the functionality of Svidget widge
 ### Classes
 - `Widget`: Represents a widget instance.
 - `WidgetReference`: Represents a reference to a widget instance.
+- `EventableBase`: Base class for classes that support event handling and emit events.
 - `Param`: Represents a parameter of a widget.
 - `ParamBase`: Represents the base class for `Param` and `ActionParam`.
 - `Action`: Represents an action that can be invoked on a widget.
@@ -270,7 +273,7 @@ The whole package will be deployed manually to `npm` once manual testing is comp
 - **Scope**: The location context where the library is running, either in a widget (SVG) `widget` scope, or on the web page (HTML) `page` scope.
 - **Proxy**: A wrapper around a widget or its properties that allows for event registration and invocation in the web context.
 - **Binding Selector**: A special syntax used to bind widget parameters to SVG attributes or elements, allowing for dynamic updates and interactions.
-- **Standalone**: A mode in which the widget is loaded on the page but no communication link is established.
+- **Standalone**: A mode in which the widget is loaded on the page but no communication link is established, or when SVG is navigated to directly in the browser.
 
 ## References
 

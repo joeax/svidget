@@ -3,8 +3,10 @@
         "actionparam",
         "componentizing",
         "defvalue",
+        "eventable",
         "objectcollection",
         "Svidget",
-        "typedata"
+        "typedata",
+        "Unregisters"
     ]
 }

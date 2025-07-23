@@ -5,9 +5,13 @@ _*
 *.suo
 .DS_Store
 .docs
+.vibespec
 node_modules
 obj
 playground
 app.js
 Thumbs.db
-
+src_old
+src_old2
+unit_old
+unit_old2
