@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:tns="http://www.svidget.org/svidget" targetNamespace="http://www.svidget.org/svidget" elementFormDefault="qualified">
 	<xsd:annotation>
-		<xsd:documentation>This is the svidget schema for version 0.2.0.</xsd:documentation>
+		<xsd:documentation>This is the svidget schema for version 0.4.0.</xsd:documentation>
 	</xsd:annotation>
 	
 	<!-- <svidget:params> element -->

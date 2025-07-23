@@ -4,9 +4,10 @@ _*
 *.dat
 *.suo
 .DS_Store
+.docs
 node_modules
 obj
 playground
 app.js
 Thumbs.db
-.vs/config/applicationhost.config
+
