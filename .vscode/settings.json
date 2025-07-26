@@ -3,10 +3,18 @@
         "actionparam",
         "componentizing",
         "defvalue",
+        "eles",
         "eventable",
+        "eventadd",
+        "jsonify",
         "objectcollection",
+        "pagepopulate",
+        "paramadd",
+        "paramchange",
+        "paramremove",
         "Svidget",
         "typedata",
-        "Unregisters"
+        "Unregisters",
+        "xlink"
     ]
 }

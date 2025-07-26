@@ -181,6 +181,22 @@ The `svidget-page` library is responsible for the functionality of Svidget widge
 - The global object provides methods for managing the lifecycle of these widgets, including creation, updates, and destruction.
 - The global object detects changes to the DOM when new `<object data-svidget>` elements are added or removed, and updates the widget list accordingly.
 
+### Communication Flow
+
+#### Widget to Page
+When events are triggered in the widget context, they are communicated to the page context.
+
+##### Param Example
+- When a param is set (value changed) in the widget context, it triggers the `set` event.
+- The widget subscribes to all param events, so it receives the event.
+- The widget calls the signal method on the `WidgetRoot` instance to notify the page context of the change.
+- The signal method invoke the parent directly or through XSM to send a message to the page context.
+- The page context receives the message and routes the message to the corresponding `WidgetReference` instance.
+- The `WidgetReference` instance locates the target param and emits its `set` event and also triggers the `paramset` event for listeners listening to all widgets and params.
+
+
+
+
 ## Folder Structure
 - `src/`: Contains the source code for the Svidget library.
 - `src_old/`: Contains the old legacy code for the widget library that is being converted.
@@ -206,6 +222,10 @@ The `svidget-page` library is responsible for the functionality of Svidget widge
 - Prefer implementing todo's that you find.
 - All classes no longer need to namespaced with `Svidget` i.e. `Svidget.EventDesc` should be just `EventDesc`.
 - Existing event registration methods like `ontrigger` should be renamed in pascal-case like `onTrigger`.
+- Child classes like `Param` should no longer accept `parent` argument in constructor, but instead should pass a handler for receiving events.
+- Rename `toTransport` to `serialize`.
+- In classes where there were getter/setter methods defined, implement them as properties with `get` and `set` accessors.
+- `Action`, `EventDesc`, `Param` classes should have an `options` argument that is an object with properties that match the class properties as string from the element (i.e. `<svidget:param>`).
 
 ### Files
 - `action.ts`: Contains the `Action` class, which represents an action that can be invoked on a widget.
@@ -274,6 +294,7 @@ The whole package will be deployed manually to `npm` once manual testing is comp
 - **Proxy**: A wrapper around a widget or its properties that allows for event registration and invocation in the web context.
 - **Binding Selector**: A special syntax used to bind widget parameters to SVG attributes or elements, allowing for dynamic updates and interactions.
 - **Standalone**: A mode in which the widget is loaded on the page but no communication link is established, or when SVG is navigated to directly in the browser.
+- **Declared Event**: An event handler defined on the element itself as a string i.e. `<object onchange="foo()">`.
 
 ## References
 
