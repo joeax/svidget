@@ -1,18 +1,11 @@
-import { ActionParam, ActionParamEventType, ActionParamOptions, ActionParamTransport } from './actionParam';
-import { EventableBase, EventHandler } from './eventableBase';
+import { ActionParam, ActionParamEventType, ActionParamOptions } from './actionParam';
 import { select, selectFirst } from './collections';
-import { toString, toBool } from './conversion';
+import { toBool, toString } from './conversion';
+import { resolveBinding } from './core';
+import { EventableBase, EventHandler } from './eventableBase';
+import { ActionTransport, ActionParamTransport } from './transports';
 import { Binding, Optional } from './types';
 import { WidgetEvent } from './widgetEvent';
-import { resolveBinding } from './core';
-
-export interface ActionTransport {
-    name: string;
-    description?: string;
-    external: boolean;
-    enabled: boolean;
-    params: ActionParamTransport[];
-}
 
 /**
  * ActionOptions interface
@@ -190,7 +183,7 @@ export class Action extends EventableBase<ActionEventType> {
     }
 
     newParam(name: string, options: ActionParamOptions): ActionParam {
-        const param = new ActionParam(name, options, this.paramBubbleHandler.bind(this));
+        const param = new ActionParam(name, this.name, options, this.paramBubbleHandler.bind(this));
         return param;
     }
 

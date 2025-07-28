@@ -1,6 +1,9 @@
 
 import { WidgetRoot } from './widgetRoot';
 
+export type { WidgetRoot };
+
+
 // Entrypoint for SVG/widget context
 function onDomReady(fn: () => void) {
     if (document.readyState === 'loading') {
@@ -12,6 +15,6 @@ function onDomReady(fn: () => void) {
 
 onDomReady(() => {
     // Instantiate WidgetRoot and assign to global svidget
-    const root = WidgetRoot.getCurrent();
+    const root = new WidgetRoot();
     (window as any).svidget = root;
 });

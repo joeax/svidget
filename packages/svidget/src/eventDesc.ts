@@ -1,15 +1,9 @@
 
-import { toString, toBool } from "./conversion";
-import { EventableBase, EventHandler } from "./eventableBase";
+import { toBool, toString } from './conversion';
+import { EventableBase, EventHandler } from './eventableBase';
+import { EventDescTransport } from './transports';
 import { Optional } from './types';
-import { WidgetEvent } from "./widgetEvent";
-
-export interface EventDescTransport {
-  name: string;
-  description?: string;
-  external: boolean;
-  enabled: boolean;
-}
+import { WidgetEvent } from './widgetEvent';
 
 export const EventDescOptionProperties = ['external', 'enabled', 'description'];
 
@@ -95,10 +89,19 @@ export class EventDesc extends EventableBase<EventDescEventType> {
         }
     }
 
-    /** Triggers the event for the EventDesc object. */
-    triggerEvent(value?: any): void {
-        if (!this.enabled) return;
-        this.trigger('trigger', value);
+    /**
+    * Dispatches the event for the EventDesc object. This in turn calls the trigger method with
+    * the type 'trigger' and the value passed in. The page is then notified that the event
+    * was triggered and can respond accordingly.
+    * Note: This is called by the widget manually. 
+    * @method
+    * @param {object} value - The value to set to the Event.value property.
+    */
+    dispatch(value?: any): boolean {
+        if (!this.enabled) return false;
+        const type = "trigger" as EventDescEventType;
+        this.trigger(type, value);
+        return true;
     }
 
     // --- Event Registration Shortcuts ---

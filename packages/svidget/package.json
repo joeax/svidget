@@ -21,6 +21,12 @@
   },
   "homepage": "https://www.svidget.io",
   "devDependencies": {
-    "tsup": "^8.5.0"
+    "@swc/core": "^1.13.2",
+    "tsup": "^8.5.0",
+    "typescript": "^5.8.3"
+  },
+  "scripts": {
+    "build": "tsup src/index.ts --format esm,cjs --dts --out-dir dist",
+    "buildsvg": "tsup src/index.svg.ts --config tsup.config.svg.ts"
   }
 }

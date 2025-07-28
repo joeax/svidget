@@ -1,15 +1,7 @@
 import { EventHandler } from './eventableBase';
 import { ParamBase, ParamBaseOptions } from './paramBase';
+import { ActionParamTransport } from './transports';
 import { WidgetEvent } from './widgetEvent';
-
-export interface ActionParamTransport {
-    name: string;
-    type: string;
-    subtype?: string;
-    typedata?: string;
-    defaultValue?: any;
-    description?: string;
-}
 
 /**
  * ActionOptions interface
@@ -32,7 +24,7 @@ export type ActionParamEventNotifier = (type: ActionParamEventType, event: Widge
  * @module ActionParam
  */
 export class ActionParam extends ParamBase<ActionParamEventType, ActionParamOptions> {
-    // ...base properties are inherited from ParamBase...
+    private _actionName: string;
     /**
      * Constructs an ActionParam instance.
      * @param name Name of the parameter
@@ -43,8 +35,9 @@ export class ActionParam extends ParamBase<ActionParamEventType, ActionParamOpti
      * @param subType Subtype of the parameter
      * @param typedata Choices for the parameter
      */
-    constructor(name: string, options: ActionParamOptions, eventNotifier?: ActionParamEventNotifier) {
+    constructor(name: string, actionName: string, options: ActionParamOptions, eventNotifier?: ActionParamEventNotifier) {
         super(name, options);
+        this._actionName = actionName;
         this.registerEventNotifier(eventNotifier);
     }
 
@@ -60,6 +53,7 @@ export class ActionParam extends ParamBase<ActionParamEventType, ActionParamOpti
     serialize(): ActionParamTransport {
         return {
             name: this.name,
+            actionName: this._actionName, // Include action name if applicable
             type: this.type,
             defaultValue: this.defaultValue,
             // Optionally add description, subType, typedata if needed for proxy

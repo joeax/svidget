@@ -4,22 +4,39 @@
  * Provides API for parameters, actions, events, and widget lifecycle.
  * @module Widget
  */
-import { Param, ParamEventType, ParamOptions, ParamTransport } from './param';
-import { Action, ActionEventType, ActionOptions, ActionTransport } from './action';
-import { EventDesc, EventDescEventType, EventDescOptions, EventDescTransport } from './eventDesc';
+import { Param, ParamEventType, ParamOptions } from './param';
+import { Action, ActionEventType, ActionOptions } from './action';
+import { EventDesc, EventDescEventType, EventDescOptions } from './eventDesc';
+import { WidgetTransport, ParamTransport, ActionTransport, EventDescTransport } from './transports';
 import { EventableBase, EventHandler } from './eventableBase';
 import { logInfo } from './logging';
 import { WidgetEvent } from './widgetEvent';
+import { WidgetCommunicator } from './widgetCommunicator';
+import { ActionParam } from './actionParam';
 
-interface WidgetTransport {
-    id: string;
-    enabled: boolean;
-    params: ParamTransport[];
-    actions: ActionTransport[];
-    events: EventDescTransport[];
-}
+// Widget Events
+export const WidgetEventTypes = [
+    'change',
+    'paramadd',
+    'paramremove',
+    'paramchange',
+    'paramset',
+    'actionadd',
+    'actionremove',
+    'actionchange',
+    'actioninvoke',
+    'actionparamadd',
+    'actionparamremove',
+    'actionparamchange',
+    'eventadd',
+    'eventremove',
+    'eventchange',
+    'eventtrigger',
+    'pagepopulate',
+] as const;
+export type WidgetEventType = (typeof WidgetEventTypes)[number];
 
-export class Widget extends EventableBase {
+export class Widget extends EventableBase<WidgetEventType> {
     private _id: string;
     private _title: string;
     private _description: string;
@@ -30,6 +47,7 @@ export class Widget extends EventableBase {
     private _started: boolean;
     private _connected: boolean;
     private _populatedFromPage: boolean;
+    private _communicator?: WidgetCommunicator;
     //page: any;
     //parentElement: Element | null;
 
@@ -161,6 +179,10 @@ export class Widget extends EventableBase {
         this.trigger('pagepopulate', this);
     }
 
+    setCommunicator(communicator: WidgetCommunicator): void {
+        this._communicator = communicator;
+    }
+
     // --- Param Management ---
 
     getParam(selector: string | number): Param | undefined {
@@ -208,7 +230,7 @@ export class Widget extends EventableBase {
         // event.value = param
         this.trigger('paramadd', param);
         // signal parent
-        svidget.signalParamAdded(param);
+        this._communicator?.signalParamAdded(param);
     }
 
     // internal
@@ -220,7 +242,7 @@ export class Widget extends EventableBase {
         // event.value = param.name
         this.trigger('paramremove', param.name);
         // signal parent
-        svidget.signalParamRemoved(param.name);
+        this._communicator?.signalParamRemoved(param.name);
     }
 
     // internal
@@ -235,7 +257,7 @@ export class Widget extends EventableBase {
     private triggerParamChanged(param: Param, eventValue: any): void {
         this.trigger('paramchange', eventValue, param);
         // signal parent
-        svidget.signalParamChanged(param, eventValue);
+        this._communicator?.signalParamChanged(param, eventValue);
     }
 
     // private
@@ -244,7 +266,7 @@ export class Widget extends EventableBase {
         this.trigger('paramset', eventValue, param);
         // this.trigger('paramvaluechange', eventValue, param);
         // signal parent
-        svidget.signalParamSet(param, eventValue);
+        this._communicator?.signalParamSet(param, eventValue);
     }
 
     // --- Action Management ---
@@ -294,7 +316,7 @@ export class Widget extends EventableBase {
         // event.value = param
         this.trigger('actionadd', action);
         // signal parent
-        svidget.signalActionAdded(action);
+        this._communicator?.signalActionAdded(action);
     }
 
     // internal
@@ -306,45 +328,62 @@ export class Widget extends EventableBase {
         // event.value = param.name
         this.trigger('actionremove', action.name);
         // signal parent
-        svidget.signalActionRemoved(action.name);
+        this._communicator?.signalActionRemoved(action.name);
     }
 
-    private actionBubbleHandler(type: ActionEventType, event: any, action: Action): void {
+    private actionBubbleHandler(
+        type: ActionEventType,
+        event: WidgetEvent,
+        action: Action,
+        actionParam?: ActionParam
+    ): void {
         if (type === 'change') this.triggerActionChanged(action, event.value);
         if (type === 'invoke') this.triggerActionInvoke(action, event.value);
-        if (type === 'paramchange') this.triggerActionParamChange(action, event.value);
-        if (type === 'paramadd') this.triggerActionParamAdd(action, event.value);
-        if (type === 'paramremove') this.triggerActionParamRemove(action, event.value);
+        if (type === 'paramchange') this.triggerActionParamChanged(action, actionParam!, event.value);
+        if (type === 'paramadd') this.triggerActionParamAdded(action, actionParam!, event.value);
+        if (type === 'paramremove') this.triggerActionParamRemoved(action, actionParam!, event.value);
     }
 
     private triggerActionChanged(action: Action, eventValue: any): void {
         this.trigger('actionchange', eventValue, action);
         // signal parent
-        svidget.signalActionChanged(action, eventValue);
+        this._communicator?.signalActionChanged(action, eventValue);
     }
 
     private triggerActionInvoke(action: Action, eventValue: any): void {
         this.trigger('actioninvoke', eventValue, action);
         // signal parent
-        svidget.signalActionInvoke(action, eventValue);
+        this._communicator?.signalActionInvoked(action, eventValue);
     }
 
-    private triggerActionParamChange(action: Action, eventValue: any): void {
+    private triggerActionParamChanged(
+        action: Action,
+        actionParam: ActionParam,
+        eventValue: any
+    ): void {
         this.trigger('actionparamchange', eventValue, action);
         // signal parent
-        svidget.signalActionParamChange(action, eventValue);
+        this._communicator?.signalActionParamChanged(actionParam, action.name, eventValue);
     }
 
-    private triggerActionParamAdd(action: Action, eventValue: any): void {
+    private triggerActionParamAdded(
+        action: Action,
+        actionParam: ActionParam,
+        eventValue: any
+    ): void {
         this.trigger('actionparamadd', eventValue, action);
         // signal parent
-        svidget.signalActionParamAdd(action, eventValue);
+        this._communicator?.signalActionParamAdded(actionParam, action.name);
     }
 
-    private triggerActionParamRemove(action: Action, eventValue: any): void {
+    private triggerActionParamRemoved(
+        action: Action,
+        actionParam: ActionParam,
+        eventValue: any
+    ): void {
         this.trigger('actionparamremove', eventValue, action);
         // signal parent
-        svidget.signalActionParamRemove(action, eventValue);
+        this._communicator?.signalActionParamRemoved(actionParam.name, action.name);
     }
 
     // --- Event Management ---
@@ -391,7 +430,7 @@ export class Widget extends EventableBase {
         // event.value = param
         this.trigger('eventadd', event);
         // signal parent
-        svidget.signalEventAdded(event);
+        this._communicator?.signalEventAdded(event);
     }
 
     // internal
@@ -403,7 +442,7 @@ export class Widget extends EventableBase {
         // event.value = param.name
         this.trigger('eventremove', event.name);
         // signal parent
-        svidget.signalEventRemoved(event.name);
+        this._communicator?.signalEventRemoved(event.name);
     }
 
     // internal, called from EventDesc to bubble event
@@ -419,13 +458,13 @@ export class Widget extends EventableBase {
     private triggerEventTrigger(eventDesc: EventDesc, event: WidgetEvent): void {
         this.trigger('eventtrigger', event, eventDesc);
         // signal parent
-        svidget.signalEventTrigger(eventDesc, event);
+        this._communicator?.signalEventTriggered(eventDesc, event);
     }
 
     private triggerEventChanged(eventDesc: EventDesc, newValue: any): void {
         this.trigger('eventchange', newValue, eventDesc);
         // signal parent
-        svidget.signalEventChanged(eventDesc, newValue);
+        this._communicator?.signalEventChanged(eventDesc, newValue);
     }
 
     // --- Serialization ---

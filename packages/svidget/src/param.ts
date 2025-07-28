@@ -1,26 +1,13 @@
 import { convertTo, toBool, toString } from './conversion';
 import { WidgetEvent } from './widgetEvent';
-import { ParamType, ParamSubType, Optional } from './types';
+import { ParamTransport } from './transports';
 import { ParamBase, ParamBaseOptions } from './paramBase';
-import { EventHandler } from './eventableBase';
+import { Optional } from './types';
 import { findFunction, isFunction } from './core';
+import { EventHandler } from './eventableBase';
 import { DOM } from './dom';
 
-export interface ParamTransport {
-    name: string;
-    type?: ParamType;
-    value: any;
-    enabled?: boolean;
-    shortName?: Optional<string>;
-    coerce?: boolean;
-    group?: Optional<string>;
-    defaultValue?: any;
-    description?: Optional<string>;
-    subType?: ParamSubType;
-    typeData?: Optional<string>;
-}
-
-export type SanitizerFunc = (val: any) => any;;
+export type SanitizerFunc = (val: any) => any;
 
 export interface ParamOptions extends ParamBaseOptions {
     value?: any;
@@ -251,15 +238,15 @@ export class Param extends ParamBase<ParamEventType, ParamOptions> {
     serialize(): ParamTransport {
         return {
             name: this.name,
-            shortName: this.shortName,
+            shortName: this.shortName ?? undefined,
             enabled: this.enabled,
             type: this.type,
             subType: this.subType,
-            typeData: this.typeData,
+            typeData: this.typeData ?? undefined,
             coerce: this.coerce,
             defaultValue: this.defaultValue,
             value: this.value,
-            group: this.group,
+            group: this.group ?? undefined,
             description: this.description ?? undefined,
         };
     }

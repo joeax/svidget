@@ -194,9 +194,6 @@ When events are triggered in the widget context, they are communicated to the pa
 - The page context receives the message and routes the message to the corresponding `WidgetReference` instance.
 - The `WidgetReference` instance locates the target param and emits its `set` event and also triggers the `paramset` event for listeners listening to all widgets and params.
 
-
-
-
 ## Folder Structure
 - `src/`: Contains the source code for the Svidget library.
 - `src_old/`: Contains the old legacy code for the widget library that is being converted.
@@ -245,8 +242,8 @@ When events are triggered in the widget context, they are communicated to the pa
 - `log.ts`: Contains the logging functionality for Svidget.
 - `param.ts`: Contains the `Param` class, which represents a parameter of a widget.
 - `paramBase.ts`: Contains the `ParamBase` class, which is the base class for `Param` and `ActionParam`.
-- `root.page.ts`: Contains the main Svidget class for interacting with widgets on the web page.
-- `root.widget.ts`: Contains the main Svidget class for interacting with widgets in the widget context.
+- `pageRoot.ts`: Contains the main Svidget class for interacting with widgets on the web page. (old file `svidget.root.page.js`).
+- `widgetRoot.ts`: Contains the main Svidget class for interacting with widgets in the widget context. (old file `svidget.root.widget.js`).
 - `types.ts`: Contains TypeScript union types for Svidget enums.
 - `widget.ts`: Contains the `Widget` class, which represents a widget singleton instance in the widget scope.
 - `widgetEvent.ts`: Contains the `WidgetEvent` class.
@@ -260,12 +257,12 @@ When events are triggered in the widget context, they are communicated to the pa
 - `ParamBase`: Represents the base class for `Param` and `ActionParam`.
 - `Action`: Represents an action that can be invoked on a widget.
 - `ActionParam`: Represents an action param for an action.
-- `Event`: Represents an event emitted by a widget. (formerly called `EventDesc`)
+- `EventDesc`: Represents an event emitted by a widget.
 - `DOMQuery`: Represents a query result for DOM elements in the widget context.
 - `DOMItem`: Represents a single DOM element in the widget context.
-- `WidgetEvent`: Represents an event emitted. Subclass of `Event` that adds additional functionality. Contains a factory function (formerly DOMEvent). Derived from `svidget.event`.
+- `WidgetEvent`: Represents an event emitted. <!-- Subclass of `Event` that adds additional functionality.--> Contains a factory function (formerly DOMEvent). Derived from `svidget.event`.
 - `PageRoot`: Represents the main Svidget class for interacting with widgets on the web page.
-- `WidgetRoot`: Represents the main Svidget class for interacting with widgets in the widget context.
+- `WidgetRoot`: Represents the main Svidget class for interacting with widgets in the widget (SVG) context.
 
 #### Proxy Classes
 - `Proxy`: Represents a base proxy class in the web context. Contains all the base event registration logic.

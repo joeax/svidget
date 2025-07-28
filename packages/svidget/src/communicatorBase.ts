@@ -6,7 +6,7 @@
 
 export interface MessageData {
     name: string;
-    payload: any;
+    payload: string | object;
     widget?: string;
 }
 

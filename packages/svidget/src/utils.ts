@@ -27,7 +27,7 @@ export function parseQueryString(duplicates: boolean = false, lastOneWins: boole
 	let match,
         pl = /\+/g, // Regex for replacing addition symbol with a space
         search = /([^&=]+)=?([^&]*)/g,
-        decode = function (s) {
+        decode = function (s: string): string {
             return decodeURIComponent(s.replace(pl, ' '));
         },
         query = queryString.substring(1);
@@ -53,11 +53,15 @@ export function parseQueryString(duplicates: boolean = false, lastOneWins: boole
 }
 
 
-export function isValidSvidgetElement(xele: DOMElement, name: string): boolean {
+export function isValidSvidgetElement(xele: Element, name: string): boolean {
     return xele != null && xele.localName == name && xele.namespaceURI == namespaces.svidget;
 }
 
-export function fixSizing() {
+/**
+ * Fixes SVG sizing issues by setting width and height to 100% if viewBox is defined.
+ * This ensures that SVG content scales correctly with the iframe size.
+ */
+export function fixSVGSizing() {
     const root = DOM.root<SVGSVGElement>();
     // for iframes with viewBox, we need to ensure SVG content scales with iframe size, so we set width/height to 100%
     if (

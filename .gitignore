@@ -6,6 +6,7 @@ _*
 .DS_Store
 .docs
 .vibespec
+.ignore
 node_modules
 obj
 playground
@@ -15,3 +16,4 @@ src_old
 src_old2
 unit_old
 unit_old2
+packages/**/dist
