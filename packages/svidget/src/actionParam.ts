@@ -1,6 +1,5 @@
 import { EventHandler } from './eventableBase';
 import { ParamBase, ParamBaseOptions } from './paramBase';
-import { ActionParamEventType, ActionParamEventTypes } from './types';
 import { WidgetEvent } from './widgetEvent';
 
 export interface ActionParamTransport {
@@ -21,7 +20,11 @@ export interface ActionParamOptions extends ParamBaseOptions {}
 
 export const ActionParamOptionProperties = ['type', 'subtype', 'typedata', 'description', 'defaultValue'];
 
-export type ActionParamEventNotifier = (type: ActionParamEventType, event: WidgetEvent) => void;
+// ActionParam Events
+export const ActionParamEventTypes = ['change'] as const;
+export type ActionParamEventType = (typeof ActionParamEventTypes)[number];
+
+export type ActionParamEventNotifier = (type: ActionParamEventType, event: WidgetEvent, target: ActionParam) => void;
 
 /**
  * ActionParam class

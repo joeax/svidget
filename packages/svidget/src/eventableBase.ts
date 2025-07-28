@@ -21,7 +21,7 @@ type EventHandlers<TEventType extends string> = Map<TEventType, Array<EventHandl
  * EventableBase class
  * Provides basic event handling functionality for classes that fire events.
  */
-export class EventableBase<TEventType extends string = string> {
+export abstract class EventableBase<TEventType extends string = string> {
     /** Event handler registry */
     protected handlers: EventHandlers<TEventType> = new Map();
     private bubbleParents: BubbleParents<TEventType> = {};

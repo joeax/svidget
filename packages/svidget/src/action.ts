@@ -1,8 +1,8 @@
-import { ActionParam, ActionParamTransport } from './actionParam';
+import { ActionParam, ActionParamEventType, ActionParamOptions, ActionParamTransport } from './actionParam';
 import { EventableBase, EventHandler } from './eventableBase';
 import { select, selectFirst } from './collections';
 import { toString, toBool } from './conversion';
-import { ActionEventType, ActionEventTypes, Binding, Optional } from './types';
+import { Binding, Optional } from './types';
 import { WidgetEvent } from './widgetEvent';
 import { resolveBinding } from './core';
 
@@ -28,7 +28,17 @@ export interface ActionOptions {
 
 export const ActionOptionProperties = ['external', 'binding', 'enabled', 'description'];
 
-export type ActionEventNotifier = (type: ActionEventType, event: WidgetEvent) => void;
+// Action Events
+export const ActionEventTypes = [
+  "invoke",
+  "change",
+  "paramchange",
+  "paramadd",
+  "paramremove",
+] as const;
+export type ActionEventType = (typeof ActionEventTypes)[number];
+
+export type ActionEventNotifier = (type: ActionEventType, event: WidgetEvent, target: Action) => void;
 
 /**
  * Action class
@@ -154,7 +164,9 @@ export class Action extends EventableBase<ActionEventType> {
      * @param {(string|number|function)} [selector] - The param name, index, or search function (with signature function (param) returns boolean).
      * @returns {Svidget.Collection} - A collection based on the selector, or the entire collection.
      */
-    getParams(selector: number | string | ((param: ActionParam) => boolean)): ActionParam | undefined {
+    getParams(
+        selector: number | string | ((param: ActionParam) => boolean)
+    ): ActionParam | undefined {
         var col = this._params;
         return select(col, selector);
     }
@@ -169,10 +181,17 @@ export class Action extends EventableBase<ActionEventType> {
      * @param {(string|number|function)} selector - The param name, index, or search function (with signature function (param) returns boolean).
      * @returns {Svidget.ActionParam} - The ActionParam based on the selector. If selector is invalid, null is returned.
      */
-    getParam(selector: number | string | ((param: ActionParam) => boolean)): ActionParam | undefined {
+    getParam(
+        selector: number | string | ((param: ActionParam) => boolean)
+    ): ActionParam | undefined {
         var col = this._params;
         var item = selectFirst(col, selector);
         return item;
+    }
+
+    newParam(name: string, options: ActionParamOptions): ActionParam {
+        const param = new ActionParam(name, options, this.paramBubbleHandler.bind(this));
+        return param;
     }
 
     /**
@@ -200,12 +219,27 @@ export class Action extends EventableBase<ActionEventType> {
         this.trigger('change', { property: 'params', value: [] });
     }
 
+    // internal
+    // called from param to bubble event
+    private paramBubbleHandler(type: ActionParamEventType, event: WidgetEvent, param: ActionParam): void {
+        if (type === 'change') this.triggerActionParamChanged(param, event.value);
+    }
+
+    private triggerActionParamChanged(param: ActionParam, value: any): void {
+        this.trigger('paramchange', value, param);
+    }
+
     /**
      * Invokes the action binding function or handler with provided arguments, triggers 'invoke' event.
      * Uses default values for missing args.
      * @param args Arguments to pass to the handler
      */
     invoke(...args: any[]): any {
+        // call invoke in the context of this action
+        this.invokeInternal.apply(this, args);
+    }
+
+    private invokeInternal(...args: any[]): any {
         if (!this.enabled) return false;
         const func = this.invocableBindingFunc();
         if (!func) return false;

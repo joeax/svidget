@@ -1,7 +1,7 @@
 
 import { toString, toBool } from "./conversion";
 import { EventableBase, EventHandler } from "./eventableBase";
-import { EventDescEventType, EventDescEventTypes, Optional } from './types';
+import { Optional } from './types';
 import { WidgetEvent } from "./widgetEvent";
 
 export interface EventDescTransport {
@@ -13,7 +13,12 @@ export interface EventDescTransport {
 
 export const EventDescOptionProperties = ['external', 'enabled', 'description'];
 
-export type EventDescEventNotifier = (type: EventDescEventType, event: WidgetEvent) => void;
+// EventDesc Events
+export const EventDescEventTypes = ['trigger', 'change'] as const;
+export type EventDescEventType = (typeof EventDescEventTypes)[number];
+
+
+export type EventDescEventNotifier = (type: EventDescEventType, event: WidgetEvent, target: EventDesc) => void;
 
 /**
  * EventDescOptions interface

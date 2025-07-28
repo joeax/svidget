@@ -12,7 +12,7 @@ import { isArray } from './core';
  * @enum
  * @readonly
  */
-const nodeTypes = {
+export const nodeTypes = {
     element: 0,
     attribute: 1,
     text: 2,
@@ -26,7 +26,7 @@ export type DOMElement = HTMLElement | SVGElement;
  * @enum
  * @readonly
  */
-const namespaces = {
+export const namespaces = {
     html: 'http://www.w3.org/1999/xhtml', // also used for HTML5
     svidget: 'http://www.svidget.org/svidget',
     svg: 'http://www.w3.org/2000/svg',
@@ -61,11 +61,6 @@ export class DOM {
         return tags;
     }
 
-    static getByNameSvidget(tagName: string, asArray?: boolean): ArrayLike<Element> | null {
-        // @ts-ignore: Svidget.Namespaces.svidget is legacy
-        return DOM.getByNameNS(namespaces.svidget, tagName, asArray);
-    }
-
     static getChildrenByName(
         source: Document | Element,
         tagName: string,
@@ -92,7 +87,6 @@ export class DOM {
         if (sel == null) return undefined;
         const attrRX = /@[^=#\s]+/g;
         const hasAttr = attrRX.test(sel);
-        // @ts-ignore: Svidget.Collection is legacy
         const col = [];
         let res;
 
@@ -168,8 +162,8 @@ export class DOM {
     //     };
     // }
 
-    static root(): HTMLElement {
-        return document.documentElement;
+    static root<TElement extends HTMLHtmlElement | SVGSVGElement>(): TElement {
+        return document.documentElement as TElement;
     }
 
     static rootItem(): any {
@@ -321,7 +315,7 @@ export class DOMQuery {
     /**
      * Gets the collection of items that are the result of the query.
      * @method
-     * @returns {Svidget.Collection}
+     * @returns {DOMItem[]} - the collection of DOMItems
      */
     items() {
         return this._items;
@@ -331,7 +325,7 @@ export class DOMQuery {
      * Gets the item in the collection at the specified index.
      * @method
      * @param {number} index - The index
-     * @returns {Svidget.Collection}
+     * @returns {DOMItem[]} - the DOMItem at the specified index
      */
     at(index: number): DOMItem | undefined {
         return this._items[index];
@@ -428,10 +422,8 @@ export class DOMItem {
     set value(val: any) {
         const strval = val + '';
         const source = this._source as NodeLike;
-        if (source.value)
-            source.value = strval;
-        else
-            (this._source as SVGElement).textContent = strval;
+        if (source.value) source.value = strval;
+        else (this._source as SVGElement).textContent = strval;
     }
 
     /**
@@ -494,7 +486,7 @@ export class DOMItem {
     /**
      * Returns a collection of DOMItem objects representing child elements. Returns null if item is an attribute.
      * @method
-     * @returns {Svidget.Collection} - the collection of DOMItems
+     * @returns {DOMItem[] | null} - the collection of DOMItems or null
      */
     get elements(): DOMItem[] | null {
         // lazy load
@@ -506,7 +498,7 @@ export class DOMItem {
         const origCol = isDOM ? element.children : node.elements;
         if (origCol == null) return null;
         const eles = Array.from(origCol as ArrayLike<Element | Attr>);
-        const items = eles.map(e => new DOMItem(e));
+        const items = eles.map((e) => new DOMItem(e));
         this._cachedElements = items;
         return this._cachedElements;
     }
@@ -514,7 +506,7 @@ export class DOMItem {
     /**
      * Returns a collection of DOMItem objects representing attributes. Returns null if item is an attribute.
      * @method
-     * @returns {Svidget.Collection} - the collection of DOMItems
+     * @returns {DOMItem[] | null} - the collection of DOMItems or null
      */
     attributes() {
         // lazy load
@@ -526,7 +518,7 @@ export class DOMItem {
         const origCol = node.attributes;
         if (origCol == null) return null;
         const attrs = Array.from(origCol);
-        const items = attrs.map(a => new DOMItem(a));
+        const items = attrs.map((a) => new DOMItem(a));
         this._cachedAttributes = items;
         return this._cachedAttributes;
     }
@@ -543,7 +535,7 @@ export class DOMItem {
     /**
      * Returns whether the DOMItem actually wraps an underlying DOM object.
      * @method
-     * @returns {Svidget.Collection} - the collection of DOMItems
+     * @returns {boolean} - whether the DOMItem is attached to a DOM object
      */
     get isAttached(): boolean {
         return this._isDOMNode;
@@ -575,6 +567,7 @@ function getNodeValue(node: Element | Attr | NodeLike): string | undefined {
         return undefined;
     }
 }
+
 
 
 // /**

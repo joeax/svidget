@@ -4,10 +4,12 @@
  * Provides API for parameters, actions, events, and widget lifecycle.
  * @module Widget
  */
-import { Param, ParamTransport } from './param';
-import { Action, ActionTransport } from './action';
-import { EventDesc, EventDescTransport } from './eventDesc';
+import { Param, ParamEventType, ParamOptions, ParamTransport } from './param';
+import { Action, ActionEventType, ActionOptions, ActionTransport } from './action';
+import { EventDesc, EventDescEventType, EventDescOptions, EventDescTransport } from './eventDesc';
 import { EventableBase, EventHandler } from './eventableBase';
+import { logInfo } from './logging';
+import { WidgetEvent } from './widgetEvent';
 
 interface WidgetTransport {
     id: string;
@@ -21,15 +23,15 @@ export class Widget extends EventableBase {
     private _id: string;
     private _title: string;
     private _description: string;
-    params: Param[];
-    actions: Action[];
-    events: EventDesc[];
+    private _params: Param[];
+    private _actions: Action[];
+    private _events: EventDesc[];
     private _enabled: boolean;
     private _started: boolean;
     private _connected: boolean;
     private _populatedFromPage: boolean;
-    page: any;
-    parentElement: Element | null;
+    //page: any;
+    //parentElement: Element | null;
 
     /**
      * Constructs a Widget instance.
@@ -37,20 +39,32 @@ export class Widget extends EventableBase {
      * @param title Widget title
      * @param description Widget description
      */
-    constructor(id: string, title: string, description: string) {
+    constructor(id?: string, title?: string, description?: string) {
         super();
-        this._id = id;
-        this._title = title;
-        this._description = description;
-        this.params = [];
-        this.actions = [];
-        this.events = [];
+        this._id = id || '';
+        this._title = title || '';
+        this._description = description || '';
+        this._params = [];
+        this._actions = [];
+        this._events = [];
         this._enabled = true;
         this._started = false;
         this._connected = false;
         this._populatedFromPage = false;
-        this.page = null;
-        this.parentElement = null;
+        // this.page = null;
+        // this.parentElement = null;
+    }
+
+    get params(): Param[] {
+        return this._params;
+    }
+
+    get actions(): Action[] {
+        return this._actions;
+    }
+
+    get events(): EventDesc[] {
+        return this._events;
     }
 
     /**
@@ -119,10 +133,6 @@ export class Widget extends EventableBase {
     get populatedFromPage(): boolean {
         return this._populatedFromPage;
     }
-    set populatedFromPage(val: boolean) {
-        this._populatedFromPage = val;
-        this.trigger('pagepopulate', this);
-    }
 
     // --- Lifecycle Methods ---
 
@@ -147,7 +157,7 @@ export class Widget extends EventableBase {
      * Sets populatedFromPage and triggers event
      */
     setPopulatedFromPage(): void {
-        this.populatedFromPage = true;
+        this._populatedFromPage = true;
         this.trigger('pagepopulate', this);
     }
 
@@ -158,10 +168,18 @@ export class Widget extends EventableBase {
         return this.params.find((p) => p.name === selector);
     }
 
+    newParam(name: string, value: any, options: ParamOptions): Param {
+        const param = new Param(name, value, options, this.paramBubbleHandler.bind(this));
+        return param;
+    }
+
     addParam(param: Param): boolean {
-        if (this.params.some((p) => p.name === param.name)) return false;
+        if (this.params.some((p) => p.name === param.name)) {
+            logInfo(`Widget: Param with name "${param.name}" already exists.`);
+            return false;
+        }
         this.params.push(param);
-        this.trigger('paramadd', param);
+        this.handleParamAdded(param);
         return true;
     }
 
@@ -169,13 +187,64 @@ export class Widget extends EventableBase {
         const idx = this.params.findIndex((p) => p.name === name);
         if (idx === -1) return false;
         const [removed] = this.params.splice(idx, 1);
-        this.trigger('paramremove', removed.name);
+        this.handleParamRemoved(removed);
         return true;
     }
 
     clearParams(): void {
-        this.params = [];
+        this._params.forEach((p) => {
+            this.handleParamRemoved(p);
+        });
+        this._params = [];
         this.trigger('change', { property: 'params', value: [] });
+    }
+
+    // internal
+    // handle param added
+    private handleParamAdded(param: Param): void {
+        // raise event
+        //alert('param added');
+        logInfo('widget: param added: ' + param.name);
+        // event.value = param
+        this.trigger('paramadd', param);
+        // signal parent
+        svidget.signalParamAdded(param);
+    }
+
+    // internal
+    // handle param removed
+    private handleParamRemoved(param: Param): void {
+        // raise event
+        //alert('param removed');
+        logInfo('widget: param removed: ' + param.name);
+        // event.value = param.name
+        this.trigger('paramremove', param.name);
+        // signal parent
+        svidget.signalParamRemoved(param.name);
+    }
+
+    // internal
+    // called from param to bubble event
+    private paramBubbleHandler(type: ParamEventType, event: WidgetEvent, param: Param): void {
+        if (type === 'change') this.triggerParamChanged(param, event.value);
+        if (type === 'set') this.triggerParamSet(param, event.value);
+    }
+
+    // private
+    // eventValue ex = { property: "binding", value: bindValue }
+    private triggerParamChanged(param: Param, eventValue: any): void {
+        this.trigger('paramchange', eventValue, param);
+        // signal parent
+        svidget.signalParamChanged(param, eventValue);
+    }
+
+    // private
+    // eventValue ex = { value: "3" }
+    private triggerParamSet(param: Param, eventValue: any): void {
+        this.trigger('paramset', eventValue, param);
+        // this.trigger('paramvaluechange', eventValue, param);
+        // signal parent
+        svidget.signalParamSet(param, eventValue);
     }
 
     // --- Action Management ---
@@ -185,10 +254,18 @@ export class Widget extends EventableBase {
         return this.actions.find((a) => a.name === selector);
     }
 
+    newAction(name: string, options: ActionOptions): Action {
+        const action = new Action(name, options, this.actionBubbleHandler.bind(this));
+        return action;
+    }
+
     addAction(action: Action): boolean {
-        if (this.actions.some((a) => a.name === action.name)) return false;
+        if (this.actions.some((a) => a.name === action.name)) {
+            logInfo(`Widget: Action with name "${action.name}" already exists.`);
+            return false;
+        }
         this.actions.push(action);
-        this.trigger('actionadd', action);
+        this.handleActionAdded(action);
         return true;
     }
 
@@ -196,13 +273,78 @@ export class Widget extends EventableBase {
         const idx = this.actions.findIndex((a) => a.name === name);
         if (idx === -1) return false;
         const [removed] = this.actions.splice(idx, 1);
-        this.trigger('actionremove', removed.name);
+        this.handleActionRemoved(removed);
         return true;
     }
 
     clearActions(): void {
-        this.actions = [];
+        this._actions.forEach((a) => {
+            this.handleActionRemoved(a);
+        });
+        this._actions = [];
         this.trigger('change', { property: 'actions', value: [] });
+    }
+
+    // internal
+    // handle action added
+    private handleActionAdded(action: Action): void {
+        // raise event
+        //alert('param added');
+        logInfo('widget: action added: ' + action.name);
+        // event.value = param
+        this.trigger('actionadd', action);
+        // signal parent
+        svidget.signalActionAdded(action);
+    }
+
+    // internal
+    // handle action removed
+    private handleActionRemoved(action: Action): void {
+        // raise event
+        //alert('param removed');
+        logInfo('widget: action removed: ' + action.name);
+        // event.value = param.name
+        this.trigger('actionremove', action.name);
+        // signal parent
+        svidget.signalActionRemoved(action.name);
+    }
+
+    private actionBubbleHandler(type: ActionEventType, event: any, action: Action): void {
+        if (type === 'change') this.triggerActionChanged(action, event.value);
+        if (type === 'invoke') this.triggerActionInvoke(action, event.value);
+        if (type === 'paramchange') this.triggerActionParamChange(action, event.value);
+        if (type === 'paramadd') this.triggerActionParamAdd(action, event.value);
+        if (type === 'paramremove') this.triggerActionParamRemove(action, event.value);
+    }
+
+    private triggerActionChanged(action: Action, eventValue: any): void {
+        this.trigger('actionchange', eventValue, action);
+        // signal parent
+        svidget.signalActionChanged(action, eventValue);
+    }
+
+    private triggerActionInvoke(action: Action, eventValue: any): void {
+        this.trigger('actioninvoke', eventValue, action);
+        // signal parent
+        svidget.signalActionInvoke(action, eventValue);
+    }
+
+    private triggerActionParamChange(action: Action, eventValue: any): void {
+        this.trigger('actionparamchange', eventValue, action);
+        // signal parent
+        svidget.signalActionParamChange(action, eventValue);
+    }
+
+    private triggerActionParamAdd(action: Action, eventValue: any): void {
+        this.trigger('actionparamadd', eventValue, action);
+        // signal parent
+        svidget.signalActionParamAdd(action, eventValue);
+    }
+
+    private triggerActionParamRemove(action: Action, eventValue: any): void {
+        this.trigger('actionparamremove', eventValue, action);
+        // signal parent
+        svidget.signalActionParamRemove(action, eventValue);
     }
 
     // --- Event Management ---
@@ -212,10 +354,15 @@ export class Widget extends EventableBase {
         return this.events.find((e) => e.name === selector);
     }
 
+    newEvent(name: string, options: EventDescOptions): EventDesc {
+        const event = new EventDesc(name, options, this.eventBubbleHandler.bind(this));
+        return event;
+    }
+
     addEvent(event: EventDesc): boolean {
         if (this.events.some((e) => e.name === event.name)) return false;
         this.events.push(event);
-        this.trigger('eventadd', event);
+        this.handleEventAdded(event);
         return true;
     }
 
@@ -223,13 +370,62 @@ export class Widget extends EventableBase {
         const idx = this.events.findIndex((e) => e.name === name);
         if (idx === -1) return false;
         const [removed] = this.events.splice(idx, 1);
-        this.trigger('eventremove', removed.name);
+        this.handleEventRemoved(removed);
         return true;
     }
 
     clearEvents(): void {
-        this.events = [];
+        this._events.forEach((e) => {
+            this.handleEventRemoved(e);
+        });
+        this._events = [];
         this.trigger('change', { property: 'events', value: [] });
+    }
+
+    // internal
+    // handle action added
+    private handleEventAdded(event: EventDesc): void {
+        // raise event
+        //alert('param added');
+        logInfo('widget: event added: ' + event.name);
+        // event.value = param
+        this.trigger('eventadd', event);
+        // signal parent
+        svidget.signalEventAdded(event);
+    }
+
+    // internal
+    // handle action removed
+    private handleEventRemoved(event: EventDesc): void {
+        // raise event
+        //alert('param removed');
+        logInfo('widget: event removed: ' + event.name);
+        // event.value = param.name
+        this.trigger('eventremove', event.name);
+        // signal parent
+        svidget.signalEventRemoved(event.name);
+    }
+
+    // internal, called from EventDesc to bubble event
+    private eventBubbleHandler(
+        type: EventDescEventType,
+        event: WidgetEvent,
+        eventDesc: EventDesc
+    ): void {
+        if (type === 'trigger') this.triggerEventTrigger(eventDesc, event);
+        if (type === 'change') this.triggerEventChanged(eventDesc, event.value);
+    }
+
+    private triggerEventTrigger(eventDesc: EventDesc, event: WidgetEvent): void {
+        this.trigger('eventtrigger', event, eventDesc);
+        // signal parent
+        svidget.signalEventTrigger(eventDesc, event);
+    }
+
+    private triggerEventChanged(eventDesc: EventDesc, newValue: any): void {
+        this.trigger('eventchange', newValue, eventDesc);
+        // signal parent
+        svidget.signalEventChanged(eventDesc, newValue);
     }
 
     // --- Serialization ---
@@ -256,10 +452,10 @@ export class Widget extends EventableBase {
         this.off('change', handler, name);
     }
     onParamAdd(handler: EventHandler, name?: string, data?: any): void {
-        this.on('paramadd', handler);
+        this.on('paramadd', handler, name, data);
     }
-    offParamAdd(handler: EventHandler): void {
-        this.off('paramadd', handler);
+    offParamAdd(handler: EventHandler, name?: string): void {
+        this.off('paramadd', handler, name);
     }
     onParamRemove(handler: EventHandler, name?: string, data?: any): void {
         this.on('paramremove', handler, name, data);
@@ -302,6 +498,24 @@ export class Widget extends EventableBase {
     }
     offActionInvoke(handler: EventHandler, name?: string): void {
         this.off('actioninvoke', handler, name);
+    }
+    onActionParamAdd(handler: EventHandler, name?: string, data?: any): void {
+        this.on('actionparamadd', handler, name, data);
+    }
+    offActionParamAdd(handler: EventHandler, name?: string): void {
+        this.off('actionparamadd', handler, name);
+    }
+    onActionParamRemove(handler: EventHandler, name?: string, data?: any): void {
+        this.on('actionparamremove', handler, name, data);
+    }
+    offActionParamRemove(handler: EventHandler, name?: string): void {
+        this.off('actionparamremove', handler, name);
+    }
+    onActionParamChange(handler: EventHandler, name?: string, data?: any): void {
+        this.on('actionparamchange', handler, name, data);
+    }
+    offActionParamChange(handler: EventHandler, name?: string): void {
+        this.off('actionparamchange', handler, name);
     }
     onEventAdd(handler: EventHandler, name?: string, data?: any): void {
         this.on('eventadd', handler, name, data);

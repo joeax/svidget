@@ -1,6 +1,6 @@
 import { convertTo, toBool, toString } from './conversion';
 import { WidgetEvent } from './widgetEvent';
-import { ParamType, ParamSubType, ParamEventType, ParamEventTypes, Optional } from './types';
+import { ParamType, ParamSubType, Optional } from './types';
 import { ParamBase, ParamBaseOptions } from './paramBase';
 import { EventHandler } from './eventableBase';
 import { findFunction, isFunction } from './core';
@@ -45,14 +45,18 @@ export const ParamOptionProperties = [
     'sanitizer',
 ];
 
-export type ParamEventNotifier = (type: ParamEventType, event: WidgetEvent) => void;
+// Param Events
+export const ParamEventTypes = ["change", "set"] as const;
+export type ParamEventType = (typeof ParamEventTypes)[number];
+
+export type ParamEventNotifier = (type: ParamEventType, event: WidgetEvent, target: Param) => void;
 
 
 
 /**
  * Param class
  * Represents a parameter of a widget.
- * DO NOT CREATE DIRECTLY, use Widget.createParam() instead.
+ * DO NOT CREATE DIRECTLY, use Widget.newParam() instead.
  * @module param
  */
 

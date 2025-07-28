@@ -24,7 +24,7 @@ export type ParamBaseEventNotifier<TEventType extends string = string> = (type: 
  * Base class for Param and ActionParam.
  * @module ParamBase
  */
-export class ParamBase<
+export abstract class ParamBase<
     TEventType extends string = string,
     TOptionsType extends ParamBaseOptions = ParamBaseOptions
 > extends EventableBase<TEventType> {
