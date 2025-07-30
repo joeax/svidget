@@ -5,7 +5,7 @@ import { EventDesc, EventDescOptionProperties } from './eventDesc';
 import { RootBase } from './rootBase';
 import { logInfo } from './logging';
 import { DOM } from './dom';
-import { fixSVGSizing, getSvidgetElement, isValidSvidgetElement, parseQueryString } from './utils';
+import { fixSVGSizing, getByNameSVG, getSvidgetElement, isValidSvidgetElement, parseQueryString } from './utils';
 import {
     Params,
     ParentActionInvokePayload,
@@ -151,6 +151,16 @@ export class WidgetRoot extends RootBase<WidgetRootEventType> {
 
     /** Parses <svidget:params>, <svidget:actions>, <svidget:events> elements and populates the widget. */
     private parseElements(): void {
+        // parse <title> and set widget title
+        const title = getByNameSVG('title');
+        if (title && title.length > 0) {
+            this.widget.title = DOM.getText(title[0]) ?? '';
+        }
+        // parse <desc> and set description
+        const desc = getByNameSVG('desc');
+        if (desc && desc.length > 0) {
+            this.widget.description = DOM.getText(desc[0]) ?? '';
+        }
         // get <svidget:params> xml element
         const paramsElement = getSvidgetElement('params');
         // populate params

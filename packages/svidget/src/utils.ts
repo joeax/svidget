@@ -91,3 +91,7 @@ export function getSvidgetElement(name: string): Element | null {
 export function getByNameSvidget(tagName: string, asArray?: boolean): ArrayLike<Element> | null {
     return DOM.getByNameNS(namespaces.svidget, tagName, asArray);
 }
+
+export function getByNameSVG(tagName: string, asArray?: boolean): ArrayLike<SVGElement> | null {
+    return DOM.getByNameNS(namespaces.svg, tagName, asArray) as ArrayLike<SVGElement>;
+}

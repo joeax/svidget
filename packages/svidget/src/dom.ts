@@ -41,6 +41,7 @@ export interface NodeLike {
     elements?: NodeLike[];
     attributes?: NodeLike[];
 }
+
 export class DOM {
     // Wrapper for getElementById
     static get(sel: string): HTMLElement | null {
@@ -52,7 +53,11 @@ export class DOM {
         return DOM.getChildrenByName(document, tagName, asArray);
     }
 
-    static getByNameNS(namespace: string, tagName: string, asArray?: boolean): ArrayLike<Element> | null {
+    static getByNameNS(
+        namespace: string,
+        tagName: string,
+        asArray?: boolean
+    ): ArrayLike<Element> | null {
         if (!document.getElementsByTagNameNS) return null;
         const tags = document.getElementsByTagNameNS(namespace, tagName);
         if (asArray) {
@@ -211,19 +216,19 @@ export class DOM {
         return null;
     }
 
-    static text(sel: string, text?: string): any {
-        const obj = DOM.select(sel);
-        if (text === undefined) return DOM.getText(obj);
-        else DOM.setText(obj, text);
-    }
+    // static text(sel: string, text?: string): any {
+    //     const obj = DOM.select(sel);
+    //     if (text === undefined) return DOM.getText(obj);
+    //     else DOM.setText(obj, text);
+    // }
 
-    static getText(obj: any): string | null {
+    static getText(obj: DOMElement): string | null {
         if (obj.textContent) return obj.textContent;
         else if (obj.innerHTML) return obj.innerHTML;
         else return null;
     }
 
-    static setText(obj: any, text: string): void {
+    static setText(obj: DOMElement, text: string): void {
         if (obj.textContent) obj.textContent = text + '';
         else if (obj.innerHTML) obj.innerHTML = text + '';
     }
@@ -231,7 +236,8 @@ export class DOM {
     static getDocument(objOrWinEle: any): Document | null | undefined {
         try {
             const doc = objOrWinEle.contentDocument;
-            const doc2 = objOrWinEle.contentWindow != null ? objOrWinEle.contentWindow.document : null;
+            const doc2 =
+                objOrWinEle.contentWindow != null ? objOrWinEle.contentWindow.document : null;
             if (doc != null && doc.URL == 'about:blank') return null;
             return doc;
         } catch (ex) {
