@@ -10,7 +10,13 @@ import { WidgetEvent } from './widgetEvent';
  */
 export interface ActionParamOptions extends ParamBaseOptions {}
 
-export const ActionParamOptionProperties = ['type', 'subtype', 'typedata', 'description', 'defaultValue'];
+export const ActionParamOptionProperties = [
+    'type',
+    'subType',
+    'typeData',
+    'description',
+    'defaultValue'
+];
 
 // ActionParam Events
 export const ActionParamEventTypes = ['change'] as const;

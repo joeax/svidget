@@ -1,4 +1,9 @@
-import { CommunicatorBase, MessageData } from './communicatorBase';
+import {
+    CommunicatorBase,
+    CommunicatorEventType, 
+    MessageData,
+    MessageHandler,
+} from './communicatorBase';
 import { logInfo } from './logging';
 import { Action } from './action'; // Add this import for Action type
 import { ActionParam } from './actionParam';
@@ -17,40 +22,18 @@ declare global {
     }
 }
 
-export type WidgetMessageHandler = (data: MessageData) => void;
-
-export const WidgetCommunicatorEventTypes = [
-    'startack',
-    'paramadded',
-    'paramremoved',
-    'paramchanged',
-    'paramset',
-    'actionadded',
-    'actionremoved',
-    'actionchanged',
-    'actioninvoked',
-    'actionparamadded',
-    'actionparamremoved',
-    'actionparamchanged',
-    'eventadded',
-    'eventremoved',
-    'eventchanged',
-    'eventtriggered'
-] as const;
-export type WidgetCommunicatorEventType = (typeof WidgetCommunicatorEventTypes)[number];
-
 /**
  * WidgetCommunicator class
  * Handles messaging between the widget and the web page from with widget context.
  * @module widgetCommunicator
  */
 export class WidgetCommunicator extends CommunicatorBase {
-    private messageHandler: WidgetMessageHandler;
+    private messageHandler: MessageHandler;
     private _widgetID: string;
     private sameParentDomain: boolean | null = null;
     private _connected: boolean = false;
 
-    constructor(widgetID: string, messageHandler: WidgetMessageHandler) {
+    constructor(widgetID: string, messageHandler: MessageHandler) {
         super();
         this._widgetID = widgetID;
         this.messageHandler = messageHandler;
@@ -80,7 +63,7 @@ export class WidgetCommunicator extends CommunicatorBase {
         this.messageHandler(data);
     }
 
-    public signalParent(name: WidgetCommunicatorEventType, payload: string | object) {
+    public signalParent(name: CommunicatorEventType, payload: string | object) {
         // todo: cache result of isParentSameDomain
         if (this.isParentSameDomain()) {
             this.signalParentDirect(name, payload, this.widgetID);
@@ -90,7 +73,7 @@ export class WidgetCommunicator extends CommunicatorBase {
     }
 
     private signalParentDirect(
-        name: WidgetCommunicatorEventType,
+        name: CommunicatorEventType,
         payload: string | object,
         widgetID: string
     ) {
@@ -108,7 +91,7 @@ export class WidgetCommunicator extends CommunicatorBase {
     }
 
     private signalParentXSM(
-        name: WidgetCommunicatorEventType,
+        name: CommunicatorEventType,
         payload: string | object,
         widgetID: string
     ) {

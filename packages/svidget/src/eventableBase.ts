@@ -60,7 +60,7 @@ export abstract class EventableBase<TEventType extends string = string> {
     trigger(type: TEventType, value: any, originalTarget?: any): void {
         // if (type == null) return; // nothing to do
         // get event object from handlers
-        var e = this.triggerHandlers(type, value, originalTarget);
+        var e = this.triggerHandlers(type, value, originalTarget ?? this);
         logInfo('trigger: ' + type);
         // if not stopPropagation call bubble
         if (!e.isPropagationStopped()) {

@@ -4,6 +4,8 @@
  * It includes interfaces for various payload types that are exchanged during widget operations.
  */
 
+import { ParamSubType, ParamType } from "./types";
+
 export interface Params {
     [key: string]: string;
 }
@@ -33,4 +35,32 @@ export interface ParentActionInvokePayload {
 export interface ParentEventTriggerPayload {
     event: string;
     data?: any;
+}
+
+export interface WidgetPropertyChangePayload {
+    propertyName: string;
+    name: string;
+    value?: any;
+}
+
+export interface WidgetActionInvokedPayload {
+    action: string;
+    returnValue?: any;
+}
+
+export interface WidgetActionParamAddedPayload {
+    actionName: string;
+    param: {
+        name: string;
+        type?: ParamType;
+        subType?: ParamSubType;
+        typeData?: string;
+        description?: string;
+        defaultValue?: any;
+    };
+}
+
+export interface WidgetActionParamRemovedPayload {
+    actionName: string;
+    name: string;
 }

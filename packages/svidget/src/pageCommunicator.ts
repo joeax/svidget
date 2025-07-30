@@ -1,8 +1,7 @@
-import { CommunicatorBase, MessageData } from './communicatorBase';
+import { CommunicatorBase, MessageData, MessageHandler } from './communicatorBase';
 import { logInfo } from './logging';
 import { WidgetReference } from './widgetReference';
 
-export type PageMessageHandler = (data: MessageData) => void;
 
 /**
  * PageCommunicator class
@@ -10,10 +9,10 @@ export type PageMessageHandler = (data: MessageData) => void;
  * @module pageCommunicator
  */
 export class PageCommunicator extends CommunicatorBase {
-    private messageHandler: PageMessageHandler;
+    private messageHandler: MessageHandler;
     private sameWidgetDomain: boolean | null = null;
 
-    constructor(messageHandler: PageMessageHandler) {
+    constructor(messageHandler: MessageHandler) {
         super();
         this.messageHandler = messageHandler;
     }
