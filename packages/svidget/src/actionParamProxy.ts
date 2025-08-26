@@ -1,4 +1,5 @@
 import { ActionParamEventNotifier, ActionParamEventType, ActionParamEventTypes, ActionParamOptions } from './actionParam';
+import { CommunicatorEventType } from './communication';
 import { toBool } from './conversion';
 import { EventHandler } from './eventableBase';
 import { WidgetPropertyChangePayload } from './payloads';
@@ -77,9 +78,9 @@ export class ActionParamProxy extends Proxy<ActionParamEventType, ActionParamOpt
 
     // --- Send/receive Handling ---
 
-    protected receiveSignal<TPayload>(signal: string, payload: TPayload): void {
+    protected receiveSignal<TPayload>(signal: CommunicatorEventType, payload: TPayload): void {
         // Handle incoming communication messages
-        if (signal === 'change') {
+        if (signal === 'propertychanged') {
             const { propertyName, value } = payload as WidgetPropertyChangePayload;
             this.receivePropertyChange(propertyName as keyof ActionParamOptions, value);
         } else {

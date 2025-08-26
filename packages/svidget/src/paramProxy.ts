@@ -1,11 +1,13 @@
-import { CommunicatorEventType } from './communicatorBase';
+import { WidgetCommunicatorEventType, SignalSubscriber, ParamCommunicatorEventType } from './communication';
 import { toBool, toString } from './conversion';
 import { EventHandler } from './eventableBase';
-import { ParamEventNotifier, ParamEventType, ParamEventTypes, ParamOptions } from './param';
-import { WidgetPropertyChangePayload } from './payloads';
-import { Proxy, SignalSubscriber } from './proxy';
+import { ParamEventType, ParamEventTypes, ParamOptions } from './param';
+import { WidgetObjectChangedPayload } from './payloads';
+import { Proxy } from './proxy';
+import { WidgetEvent } from './widgetEvent';
 
 export type ParamValueSetNotifier = (value: any, target: ParamProxy) => void;
+export type ParamProxyEventNotifier = (type: ParamEventType, event: WidgetEvent, target: ParamProxy) => void;
 
 // export type ParamChangeReceiver = (name: keyof ParamOptions, value: any) => void;
 // export type ParamChangeSubscriber = (callback: ParamChangeReceiver) => void;
@@ -37,9 +39,9 @@ export class ParamProxy extends Proxy<ParamEventType, ParamOptions> {
         name: string,
         value: any,
         options: ParamOptions,
-        eventNotifier?: ParamEventNotifier,
+        eventNotifier?: ParamProxyEventNotifier,
         valueSetNotifier?: ParamValueSetNotifier,
-        signalSubscriber?: SignalSubscriber
+        signalSubscriber?: string | object
     ) {
         super(signalSubscriber);
         this._name = name;
@@ -61,7 +63,7 @@ export class ParamProxy extends Proxy<ParamEventType, ParamOptions> {
         this._enabled = toBool(options.enabled);
     }
 
-    private registerEventNotifier(eventNotifier: ParamEventNotifier | undefined) {
+    private registerEventNotifier(eventNotifier: ParamProxyEventNotifier | undefined) {
         if (eventNotifier) {
             this.registerBubbleCallback(Array.from(ParamEventTypes), eventNotifier);
         }
@@ -151,17 +153,20 @@ export class ParamProxy extends Proxy<ParamEventType, ParamOptions> {
 
     // --- Send/receive Handling ---
 
-    protected receiveSignal<TPayload>(signal: string, payload: TPayload): void {
-        // Handle incoming communication messages
-        const { propertyName, value } = payload as WidgetPropertyChangePayload;
-        if (signal === 'change') {
-            this.receivePropertyChange(propertyName as keyof ParamOptions, value);
-        } else if (signal === 'set') {
-            this.receiveSetValue(value);
-        } else {
-            super.receiveSignal(signal, payload);
-        }
-    }
+    // protected receiveSignal<TPayload>(
+    //     signal: WidgetCommunicatorEventType,
+    //     payload: TPayload
+    // ): void {
+    //     // Handle incoming communication messages
+    //     const { propertyName, value } = payload as WidgetObjectChangedPayload;
+    //     if (signal === 'paramchanged') {
+    //         this.receiveChange(propertyName as keyof ParamOptions, value);
+    //     } else if (signal === 'paramset') {
+    //         this.receiveSetValue(value);
+    //     } else {
+    //         super.receiveSignal(signal, payload);
+    //     }
+    // }
 
     protected receivePropertyChange(name: keyof ParamOptions, value: any): void {
         // This method is called when the underlying object communicates a property change.
@@ -169,6 +174,9 @@ export class ParamProxy extends Proxy<ParamEventType, ParamOptions> {
         if (this.handlePropertyChange(name, value)) {
             // If the property change was handled, trigger the change event
             this.trigger('change', { property: name, value: value });
+            if (name === 'value') {
+                this.trigger('set', { value: value });
+            }
         }
     }
 

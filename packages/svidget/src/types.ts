@@ -15,3 +15,6 @@ export type ParamType = (typeof ParamTypes)[number];
 export const ParamSubTypes = ["color", "integer", "date", "time", "datetime", "regex", "choice"] as const;
 export type ParamSubType = (typeof ParamSubTypes)[number];
 
+export interface Nameable {
+    name: string;
+}

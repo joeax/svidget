@@ -1,3 +1,4 @@
+import { CommunicatorEventType, SignalSubscriber } from './communication';
 import { EventHandler } from './eventableBase';
 import {
     EventDescEventNotifier,
@@ -5,8 +6,8 @@ import {
     EventDescEventTypes,
     EventDescOptions,
 } from './eventDesc';
-import { WidgetPropertyChangePayload } from './payloads';
-import { Proxy, SignalSubscriber } from './proxy';
+import { WidgetEventTriggeredPayload, WidgetPropertyChangedPayload } from './payloads';
+import { Proxy } from './proxy';
 
 /**
  * EventDescProxy class
@@ -76,13 +77,13 @@ export class EventDescProxy extends Proxy<EventDescEventType, EventDescOptions> 
 
     // --- Send/receive Handling ---
 
-    protected receiveSignal(signal: string, payload: any): void {
+    protected receiveSignal<TPayload>(signal: CommunicatorEventType, payload: TPayload): void {
         // Handle incoming communication messages
-        if (signal === 'change') {
-            const { propertyName, value } = payload as WidgetPropertyChangePayload;
+        if (signal === 'propertychanged') {
+            const { propertyName, value } = payload as WidgetPropertyChangedPayload;
             this.receivePropertyChange(propertyName as keyof EventDescOptions, value);
-        } else if (signal === 'triggered') {
-            this.receiveTriggered(payload.data);
+        } else if (signal === 'eventtriggered') {
+            this.receiveTriggered((payload as WidgetEventTriggeredPayload).data);
         } else {
             super.receiveSignal(signal, payload);
         }

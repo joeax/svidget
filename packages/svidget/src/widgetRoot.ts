@@ -58,7 +58,7 @@ export class WidgetRoot extends RootBase<WidgetRootEventType> {
         return this.widget;
     }
 
-    readyWidget() {
+    private readyWidget() {
         logInfo('widget: readyWidget');
         // create communicator
         this.readyCommunicator();
@@ -68,7 +68,7 @@ export class WidgetRoot extends RootBase<WidgetRootEventType> {
         this.markLoaded();
     }
 
-    readyCommunicator() {
+    private readyCommunicator() {
         this._communicator = new WidgetCommunicator(
             this.widget.id,
             this.routeFromParent.bind(this)
@@ -76,7 +76,7 @@ export class WidgetRoot extends RootBase<WidgetRootEventType> {
         this.widget.setCommunicator(this._communicator);
     }
 
-    startWidget() {
+    private startWidget() {
         // Parse <svidget:params>, <svidget:actions>, <svidget:events>
         this.parseElements();
         // set up widget as either standalone or connected
@@ -84,7 +84,7 @@ export class WidgetRoot extends RootBase<WidgetRootEventType> {
         else this.startWidgetConnected();
     }
 
-    startWidgetStandalone() {
+    private startWidgetStandalone() {
         logInfo('startWidgetStandalone');
         // read values from query string and populate params
         var paramValues = this.getParamValuesFromQueryString() as Params;
@@ -92,7 +92,7 @@ export class WidgetRoot extends RootBase<WidgetRootEventType> {
         this.widget.start();
     }
 
-    startWidgetConnected() {
+    private startWidgetConnected() {
         logInfo('startWidgetConnected');
         if (this._connectedParamValues != null) {
             this.setParamValues(this._connectedParamValues);
@@ -103,7 +103,7 @@ export class WidgetRoot extends RootBase<WidgetRootEventType> {
     }
 
     // Gets the param values from the query string.
-    getParamValuesFromQueryString() {
+    private getParamValuesFromQueryString() {
         var qs = parseQueryString();
         return qs;
     }
@@ -113,7 +113,7 @@ export class WidgetRoot extends RootBase<WidgetRootEventType> {
      * @param paramValues - Optional initial parameter values.
      * @param connected - Whether the widget is connected.
      */
-    routeFromParent(data: MessageData): void {
+    private routeFromParent(data: MessageData): void {
         const { name, payload } = data;
         logInfo('widget: routeFromParent {name: ' + name + '}');
         if (name == 'start') this.handleReceiveParentStart(payload as ParentStartPayload);
@@ -128,7 +128,7 @@ export class WidgetRoot extends RootBase<WidgetRootEventType> {
     // SUMMARY
     // Sets the param values for every param using the values from the specified object. This object can be from the query string or parent.
     // Params initialized with a value will be skipped if there is no matching entry in the values object.
-    setParamValues(paramValues: Params, qsMode: boolean = false) {
+    private setParamValues(paramValues: Params, qsMode: boolean = false) {
         // note: can only be called internally
         // loop through all params, if value in paramValues then overwrite, if value not yet populated on param then use default value, otherwise skip
         //var widget = this.current();
@@ -176,7 +176,7 @@ export class WidgetRoot extends RootBase<WidgetRootEventType> {
     }
 
     // Populates Params into the widget based on the <svidget:params> element
-    protected populateParams(xele: Element | null): void {
+    private populateParams(xele: Element | null): void {
         if (xele == null) return; // param element missing
         const widget = this.current;
         this.populateElementObjects(xele, (nextEle, widget) => {
@@ -188,7 +188,7 @@ export class WidgetRoot extends RootBase<WidgetRootEventType> {
         this.wireDeclaredHandler(widget, widget.onParamRemove, DOM.attrValue(xele, 'onremove'));
     }
 
-    protected buildParam(xele: Element, widget: Widget): Param | null {
+    private buildParam(xele: Element, widget: Widget): Param | null {
         if (!isValidSvidgetElement(xele, 'param')) return null;
         const name = DOM.attrValue(xele, 'name');
         if (name == null) return null; // don't allow a param without a name
@@ -201,7 +201,7 @@ export class WidgetRoot extends RootBase<WidgetRootEventType> {
         return param;
     }
 
-    protected populateActions(xele: Element | null): void {
+    private populateActions(xele: Element | null): void {
         if (xele == null) return; // action element missing
         const widget = this.current;
         this.populateElementObjects(xele, (nextEle, widget) => {
@@ -217,7 +217,7 @@ export class WidgetRoot extends RootBase<WidgetRootEventType> {
     }
 
     // Populates action params into the action
-    protected populateActionParams(actionEle: Element, action: Action): void {
+    private populateActionParams(actionEle: Element, action: Action): void {
         if (actionEle == null) return;
         this.populateElementObjects(actionEle, (nextEle) => {
             const param = this.buildActionParam(nextEle, action);
@@ -225,7 +225,7 @@ export class WidgetRoot extends RootBase<WidgetRootEventType> {
         });
     }
 
-    protected buildAction(xele: Element, widget: Widget): Action | null {
+    private buildAction(xele: Element, widget: Widget): Action | null {
         if (!isValidSvidgetElement(xele, 'action')) return null;
         const name = DOM.attrValue(xele, 'name');
         if (name == null) return null;
@@ -252,7 +252,7 @@ export class WidgetRoot extends RootBase<WidgetRootEventType> {
         return action;
     }
 
-    protected buildActionParam(xele: Element, action: Action): ActionParam | null {
+    private buildActionParam(xele: Element, action: Action): ActionParam | null {
         if (!isValidSvidgetElement(xele, 'actionparam')) return null;
         const name = DOM.attrValue(xele, 'name');
         if (name == null) return null;
@@ -264,7 +264,7 @@ export class WidgetRoot extends RootBase<WidgetRootEventType> {
     }
 
     // Populates Events into the widget based on the <svidget:events> element
-    protected populateEvents(xele: Element | null): void {
+    private populateEvents(xele: Element | null): void {
         if (xele == null) return; // event element missing
         const widget = this.current;
         this.populateElementObjects(xele, (nextEle, widget) => {
@@ -276,7 +276,7 @@ export class WidgetRoot extends RootBase<WidgetRootEventType> {
         this.wireDeclaredHandler(widget, widget.onEventRemove, DOM.attrValue(xele, 'onremove'));
     }
 
-    protected buildEvent(xele: Element, widget: Widget): EventDesc | null {
+    private buildEvent(xele: Element, widget: Widget): EventDesc | null {
         if (!isValidSvidgetElement(xele, 'event')) return null;
         const name = DOM.attrValue(xele, 'name');
         if (name == null) return null;
@@ -289,7 +289,7 @@ export class WidgetRoot extends RootBase<WidgetRootEventType> {
         return ev;
     }
 
-    protected populateElementObjects(
+    private populateElementObjects(
         xele: Element | null,
         eachAction: (nextEle: Element, widget: Widget) => void
     ): void {
@@ -302,7 +302,7 @@ export class WidgetRoot extends RootBase<WidgetRootEventType> {
         }
     }
 
-    protected buildOptions<TOptions extends Record<string, any>>(
+    private buildOptions<TOptions extends Record<string, any>>(
         xele: Element,
         optionProps?: string[]
     ): TOptions {
@@ -324,7 +324,7 @@ export class WidgetRoot extends RootBase<WidgetRootEventType> {
      * @param onEventFunc - The "on" event handler function
      * @param funcStr - The function name as a string to find in global scope
      */
-    wireDeclaredHandler<TEventType extends string>(
+    private wireDeclaredHandler<TEventType extends string>(
         obj: EventableBase<TEventType>,
         onEventFunc: Function | null,
         funcStr: string
@@ -342,7 +342,7 @@ export class WidgetRoot extends RootBase<WidgetRootEventType> {
     /* Signal Handlers */
 
     // payload == { id: widgetRef.id(), params: paramValues };
-    handleReceiveParentStart(payload: ParentStartPayload) {
+    private handleReceiveParentStart(payload: ParentStartPayload) {
         payload = payload ?? {};
         // wire up data from parent
         var connected = payload.connected !== false;
@@ -353,7 +353,7 @@ export class WidgetRoot extends RootBase<WidgetRootEventType> {
         this.startWidgetWithPageParams();
     }
 
-    handleReceiveParentPropertyChange(payload: ParentPropertyChangePayload) {
+    private handleReceiveParentPropertyChange(payload: ParentPropertyChangePayload) {
         payload = payload || {};
         var objType = payload.type;
         // only support param.value for now
@@ -366,7 +366,7 @@ export class WidgetRoot extends RootBase<WidgetRootEventType> {
     }
 
     // payload == { action: actionProxy.name(), args: argList }
-    handleReceiveParentActionInvoke(payload: ParentActionInvokePayload) {
+    private handleReceiveParentActionInvoke(payload: ParentActionInvokePayload) {
         payload = payload || {};
         var actionName = payload.action;
         var action = this.widget.getAction(actionName);
@@ -374,7 +374,7 @@ export class WidgetRoot extends RootBase<WidgetRootEventType> {
         action.invoke(payload.args);
     }
 
-    handleReceiveParentEventTrigger(payload: ParentEventTriggerPayload) {
+    private handleReceiveParentEventTrigger(payload: ParentEventTriggerPayload) {
         payload = payload || {};
         var eventName = payload.event;
         var ev = this.widget.getEvent(eventName);
@@ -389,7 +389,7 @@ export class WidgetRoot extends RootBase<WidgetRootEventType> {
     //   connected: whether the widget is connected to its parent, if false it will remain in standalone mode and cease any further communication with the parent
     // Remarks:
     //   start() may be called at any point during the DOM lifecycle for this widget, i.e. while DOM is still parsing or when completed
-    connectWidget(id: string, paramValues: Params | undefined, connected: boolean) {
+    private connectWidget(id: string, paramValues: Params | undefined, connected: boolean) {
         var widget = this.widget;
         if (widget.connected) return;
         // connect, setting id

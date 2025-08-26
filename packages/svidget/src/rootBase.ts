@@ -59,11 +59,6 @@ export abstract class RootBase<TEventType extends string> extends EventableBase<
         this.triggerLoad();
     }
 
-    // Add more shared logic as needed
-    routeFromWidget(name: string, payload: any, widgetID: string): void {
-        // Implement routing logic here
-    }
-
     receiveFromParent(name: string, payload: any): void {
         // overriden in root.widget
     }

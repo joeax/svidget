@@ -1,8 +1,8 @@
+import { SignalSubscriber } from './communication';
+import { CommunicatorEventType } from './communication';
 import { EventableBase } from './eventableBase';
 
-export type SignalReceiver = (signal: string, payload: any) => void;
-export type SignalSubscriber = (callback: SignalReceiver) => void;
-
+export type PropertyChangeReceiver<TOptionsType extends {} = {}> = (name: keyof TOptionsType, value: any) => void;
 
 /**
  * Encapsulates logic for a proxy object that is meant to shadow a concrete one.
@@ -29,12 +29,14 @@ export class Proxy<
     TOptionsType extends {} = {}
 > extends EventableBase<TEventType> {
     private _connected: boolean = false;
+    private _subscriber?: string | object;
 
-    constructor(signalSubscriber?: SignalSubscriber) {
+    constructor(signalSubscriber?: string | object) {
         super();
-        if (signalSubscriber) {
-            signalSubscriber(this.receiveSignal.bind(this));
-        }
+        // if (signalSubscriber) {
+        //     signalSubscriber(this.receiveSignal.bind(this));
+        // }
+        this._subscriber = signalSubscriber;
     }
 
     /**
@@ -65,9 +67,18 @@ export class Proxy<
         this._connected = true;
     }
 
-    protected receiveSignal(signal: string, payload: any): void {
-        // This method is called when the underlying object communicates a property change.
-        // The implementor should handle the property change accordingly.
+    // protected receiveSignal(signal: CommunicatorEventType, payload: any): void {
+    //     // This method is called when the underlying object communicates a property change.
+    //     // The implementor should handle the property change accordingly.
+    // }
+
+    // Returns a callback bound to the private receiveSignal method
+    // The subscriber object must match the one used during construction.
+    public getPropertyChangeReceiver(
+        subscriber: string | object
+    ): PropertyChangeReceiver<TOptionsType> | undefined {
+        if (subscriber !== this._subscriber) return;
+        return this.receivePropertyChange.bind(this);
     }
 
     protected receivePropertyChange(name: keyof TOptionsType, value: any): void {
