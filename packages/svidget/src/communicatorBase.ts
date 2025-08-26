@@ -4,33 +4,7 @@
  * @module communicator
  */
 
-export interface MessageData {
-    name: string;
-    payload: string | object;
-    widget?: string;
-}
-
-export type MessageHandler = (data: MessageData) => void;
-
-export const CommunicatorEventTypes = [
-    'startack',
-    'paramadded',
-    'paramremoved',
-    'paramchanged',
-    'paramset',
-    'actionadded',
-    'actionremoved',
-    'actionchanged',
-    'actioninvoked',
-    'actionparamadded',
-    'actionparamremoved',
-    'actionparamchanged',
-    'eventadded',
-    'eventremoved',
-    'eventchanged',
-    'eventtriggered',
-] as const;
-export type CommunicatorEventType = (typeof CommunicatorEventTypes)[number];
+import { MessageData } from "./communication";
 
 export abstract class CommunicatorBase {
     constructor() {

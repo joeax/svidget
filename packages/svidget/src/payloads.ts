@@ -4,7 +4,7 @@
  * It includes interfaces for various payload types that are exchanged during widget operations.
  */
 
-import { ParamSubType, ParamType } from "./types";
+import { ActionParamTransport, EventDescTransport, ParamTransport, WidgetTransport } from "./transports";
 
 export interface Params {
     [key: string]: string;
@@ -18,7 +18,7 @@ export interface ParentStartPayload {
 }
 
 // Payload for handleReceiveParentPropertyChange
-export interface ParentPropertyChangePayload {
+export interface ParentPropertyChangedPayload {
     type: string;
     propertyName?: string;
     name?: string;
@@ -26,20 +26,26 @@ export interface ParentPropertyChangePayload {
 }
 
 // Payload for handleReceiveParentActionInvoke
-export interface ParentActionInvokePayload {
+export interface ParentActionInvokedPayload {
     action: string;
     args?: any[];
 }
 
 // Payload for handleReceiveParentEventTrigger
-export interface ParentEventTriggerPayload {
+export interface ParentEventTriggeredPayload {
     event: string;
     data?: any;
 }
 
-export interface WidgetPropertyChangePayload {
-    propertyName: string;
+export interface WidgetStartAckPayload {
+    widget: WidgetTransport;
+}
+
+// used by Param, Action, Event, ActionParam
+export interface WidgetObjectChangedPayload {
+    /** The name of the object (param, action, etc) being changed. */
     name: string;
+    propertyName: string;
     value?: any;
 }
 
@@ -48,19 +54,41 @@ export interface WidgetActionInvokedPayload {
     returnValue?: any;
 }
 
+export interface WidgetEventTriggeredPayload {
+    event: string;
+    data?: any;
+}
+
+export interface WidgetParamAddedPayload {
+    param: ParamTransport;
+}
+
+export interface WidgetParamRemovedPayload {
+    name: string;
+}
+
+export interface WidgetActionAddedPayload {
+    action: ActionParamTransport;
+}
+
+export interface WidgetActionRemovedPayload {
+    name: string;
+}
+
 export interface WidgetActionParamAddedPayload {
     actionName: string;
-    param: {
-        name: string;
-        type?: ParamType;
-        subType?: ParamSubType;
-        typeData?: string;
-        description?: string;
-        defaultValue?: any;
-    };
+    param: Omit<ActionParamTransport, 'actionName'>;
 }
 
 export interface WidgetActionParamRemovedPayload {
     actionName: string;
+    name: string;
+}
+
+export interface WidgetEventAddedPayload {
+    event: EventDescTransport;
+}
+
+export interface WidgetEventRemovedPayload {
     name: string;
 }

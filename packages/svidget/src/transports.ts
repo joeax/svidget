@@ -1,5 +1,7 @@
 // Transport interfaces for cross-window messaging and serialization
 
+import { ParamSubType, ParamType } from "./types";
+
 export interface WidgetTransport {
     id: string;
     enabled: boolean;
@@ -10,7 +12,8 @@ export interface WidgetTransport {
 
 export interface ParamTransport {
     name: string;
-    type?: string;
+    type?: ParamType;
+    subType?: ParamSubType;
     value: any;
     enabled?: boolean;
     shortName?: string;
@@ -18,7 +21,6 @@ export interface ParamTransport {
     group?: string;
     defaultValue?: any;
     description?: string;
-    subType?: string;
     typeData?: string;
 }
 

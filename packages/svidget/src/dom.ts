@@ -151,7 +151,7 @@ export class DOM {
     //     else return null;
     // }
 
-    static wrap(ele: any): any {
+    static wrap(ele: HTMLElement): DOMItem {
         return new DOMItem(ele);
     }
 

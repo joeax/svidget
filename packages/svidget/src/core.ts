@@ -29,6 +29,8 @@ export const emptyArray: any[] = [];
 export const defaultType = "object";
 
 
+
+
 /**
  * Converts any collection-like object to an array.
  */

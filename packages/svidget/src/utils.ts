@@ -11,6 +11,7 @@
 
 import { isArray } from "./core";
 import { DOM, DOMElement, namespaces } from "./dom";
+import { Nameable } from "./types";
 
 export interface QueryStringParams {
     [key: string]: string | string[];
@@ -57,6 +58,10 @@ export function isValidSvidgetElement(xele: Element, name: string): boolean {
     return xele != null && xele.localName == name && xele.namespaceURI == namespaces.svidget;
 }
 
+export function isHTMLElement(element: Element): element is HTMLElement {
+    return element instanceof HTMLElement;
+}
+
 /**
  * Fixes SVG sizing issues by setting width and height to 100% if viewBox is defined.
  * This ensures that SVG content scales correctly with the iframe size.
@@ -94,4 +99,28 @@ export function getByNameSvidget(tagName: string, asArray?: boolean): ArrayLike<
 
 export function getByNameSVG(tagName: string, asArray?: boolean): ArrayLike<SVGElement> | null {
     return DOM.getByNameNS(namespaces.svg, tagName, asArray) as ArrayLike<SVGElement>;
+}
+
+export function isAttrEmptyOrTrue(ele: HTMLElement, attr: string): boolean {
+    // if (Svidget.DOM.isAttrEmpty(ele, attr))
+    //     return Svidget.Conversion.toBool(Svidget.DOM.attrValue(ele, attr));
+    // For now, just check attribute presence and value
+    var val = ele.getAttribute(attr);
+    return val === null || val === '' || val === 'true';
+}
+
+export function randomHash(length: number = 8): string {
+    const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
+    let result = '';
+    for (let i = 0; i < length; i++) {
+        result += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    return result;
+}
+
+export function removeElementByName(array: Nameable[], name: string): boolean {
+    const idx = array.findIndex((p) => p.name === name);
+    if (idx === -1) return false;
+    array.splice(idx, 1);
+    return true;
 }

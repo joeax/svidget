@@ -1,26 +1,15 @@
 import {
-    CommunicatorBase,
     CommunicatorEventType, 
     MessageData,
     MessageHandler,
-} from './communicatorBase';
+} from './communication';
 import { logInfo } from './logging';
 import { Action } from './action'; // Add this import for Action type
 import { ActionParam } from './actionParam';
 import { Param } from './param';
 import { WidgetTransport } from './transports';
 import { EventDesc } from './eventDesc';
-
-export { MessageData };
-
-declare global {
-	interface Window {
-        svidget?: {
-            routeFromWidget: (data: MessageData) => void;
-            // other properties can be added as needed
-        };
-    }
-}
+import { CommunicatorBase } from './communicatorBase';
 
 /**
  * WidgetCommunicator class
@@ -63,7 +52,7 @@ export class WidgetCommunicator extends CommunicatorBase {
         this.messageHandler(data);
     }
 
-    public signalParent(name: CommunicatorEventType, payload: string | object) {
+    private signalParent(name: CommunicatorEventType, payload: string | object) {
         // todo: cache result of isParentSameDomain
         if (this.isParentSameDomain()) {
             this.signalParentDirect(name, payload, this.widgetID);
@@ -102,7 +91,7 @@ export class WidgetCommunicator extends CommunicatorBase {
         }
     }
 
-    /* Single Methods */
+    /* Signal Methods */
 
     signalStartAck(transport: WidgetTransport) {
         logInfo('widget: signalStartAck {id: ' + this.widgetID + '}');
@@ -228,7 +217,7 @@ export class WidgetCommunicator extends CommunicatorBase {
     /* Misc */
 
     private buildParentMessageData(
-        name: string,
+        name: CommunicatorEventType,
         payload: string | object,
         widgetID: string
     ): MessageData {
